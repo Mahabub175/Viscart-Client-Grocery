@@ -11,9 +11,9 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import {
   FaHeart,
-  FaPhoneAlt,
   FaSearch,
   FaShoppingBag,
+  FaShoppingCart,
   FaUser,
 } from "react-icons/fa";
 import { FaCodeCompare } from "react-icons/fa6";
@@ -29,7 +29,7 @@ import { GiCancel } from "react-icons/gi";
 import { useGetSingleCartByUserQuery } from "@/redux/services/cart/cartApi";
 import { usePathname } from "next/navigation";
 import { toast } from "sonner";
-import { IoMdArrowDropdown, IoMdMail } from "react-icons/io";
+import { IoMdArrowDropdown } from "react-icons/io";
 
 const LandingHeader = () => {
   const pathname = usePathname();
@@ -171,36 +171,11 @@ const LandingHeader = () => {
 
   return (
     <header
-      className={`fixed top-0 left-0 w-full bg-[#f8f7f7] shadow-md transition-transform duration-300 z-50 ${
+      className={`fixed bg-white top-0 left-0 w-full shadow-md transition-transform duration-300 z-50 ${
         showNavbar ? "translate-y-0" : "-translate-y-full"
       }`}
     >
-      <div
-        className={`bg-grey py-2 text-center px-2 text-sm md:text-base text-black ${
-          lastScrollY > 0 ? "hidden" : ""
-        }`}
-      >
-        <div className="my-container flex flex-col lg:flex-row items-center justify-between text-sm">
-          <Link
-            href={"/contact"}
-            className="hover:text-primary border-b border-b-transparent hover:border-b-primary duration-300"
-          >
-            Contact Us
-          </Link>
-          <div className="flex items-center gap-5">
-            <div className="flex items-center gap-2">
-              <FaPhoneAlt />
-              {globalData?.results?.businessWhatsapp}
-            </div>
-            <div className="h-[16px] w-[1px] bg-black"></div>
-            <div className="flex items-center gap-2">
-              <IoMdMail />
-              {globalData?.results?.businessEmail}
-            </div>
-          </div>
-        </div>
-      </div>
-      <nav className="my-container px-2 -my-3 lg:-my-2">
+      <nav className="px-5 -my-3">
         <div className="flex justify-between items-center gap-10">
           <Button
             type="text"
@@ -225,12 +200,14 @@ const LandingHeader = () => {
               size="large"
               className="w-full"
             />
-            <FaSearch className="absolute right-5 top-1/2 -translate-y-1/2 text-primary text-xl" />
+            <div className="absolute right-[1px] top-1/2 -translate-y-1/2 bg-primary p-[9.5px] rounded-r">
+              <FaSearch className="text-white text-xl" />
+            </div>
           </div>
 
-          <div className="flex gap-6 items-center text-lg">
+          <div className="flex gap-2 items-center text-lg">
             <div
-              className="cursor-pointer hover:text-primary duration-300 lg:hidden bg-redLight p-3 rounded-full"
+              className="cursor-pointer hover:text-primary duration-300 lg:hidden hover:bg-grey p-3 rounded-full"
               onClick={() => setIsSearchOpen(true)}
             >
               <FaSearch />
@@ -238,7 +215,7 @@ const LandingHeader = () => {
 
             <Link
               href={"/compare"}
-              className="hidden lg:flex bg-redLight p-3 rounded-full cursor-pointer hover:text-primary duration-300"
+              className="hidden lg:flex hover:bg-grey p-3 rounded-full cursor-pointer hover:text-primary duration-300"
             >
               {compareData?.[0]?.product?.length > 0 ? (
                 <span className="relative">
@@ -253,7 +230,7 @@ const LandingHeader = () => {
             </Link>
             <Link
               href={"/wishlist"}
-              className="hidden lg:flex bg-redLight p-3 rounded-full cursor-pointer hover:text-primary duration-300"
+              className="hidden lg:flex hover:bg-grey p-3 rounded-full cursor-pointer hover:text-primary duration-300"
             >
               {wishListData?.length > 0 ? (
                 <span className="relative">
@@ -297,7 +274,7 @@ const LandingHeader = () => {
               <>
                 <Link
                   href={"/sign-in"}
-                  className="bg-redLight p-3 rounded-full flex items-center gap-2 lg:w-[170px] cursor-pointer hover:text-primary duration-300"
+                  className="hover:bg-grey p-3 rounded-full flex items-center gap-2 lg:w-[160px] cursor-pointer hover:text-primary duration-300"
                 >
                   <FaUser />
                   <span className="text-sm hidden lg:block">
@@ -307,7 +284,7 @@ const LandingHeader = () => {
               </>
             )}
             <div
-              className="hidden lg:flex bg-redLight p-3 rounded-full cursor-pointer hover:text-primary duration-300"
+              className="hidden lg:flex hover:bg-grey p-3 rounded-full cursor-pointer hover:text-primary duration-300"
               onClick={() => setIsCartOpen(true)}
             >
               {cartData?.length > 0 ? (
@@ -315,19 +292,17 @@ const LandingHeader = () => {
                   <span className="absolute -top-2 -right-2 bg-primary text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
                     {cartData?.length}
                   </span>
-                  <FaShoppingBag />
+                  <FaShoppingCart />
                 </span>
               ) : (
-                <FaShoppingBag
-                  className="cursor-pointer hover:text-primary duration-300"
-                  onClick={() => setIsCartOpen(true)}
-                />
+                <FaShoppingCart className="cursor-pointer hover:text-primary duration-300" />
               )}
             </div>
           </div>
         </div>
       </nav>
-      <div className="hidden lg:flex gap-6 items-center bg-grey">
+      <hr />
+      <div className="hidden lg:flex gap-6 items-center">
         <CategoryNavigation />
       </div>
       <Drawer

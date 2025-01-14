@@ -1,114 +1,94 @@
 import { useGetAllCategoriesQuery } from "@/redux/services/category/categoryApi";
-import { Menu, Dropdown } from "antd";
 import Link from "next/link";
 import { useState } from "react";
 
 const CategoryNavigation = () => {
   const { data: categories } = useGetAllCategoriesQuery();
+  const [hoveredParent, setHoveredParent] = useState(null);
 
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-
-  const handleDropdownToggle = () => {
-    setDropdownVisible(!dropdownVisible);
+  const handleMouseEnter = (parentCategory) => {
+    setHoveredParent(parentCategory._id);
   };
 
-  const renderSubcategories = (category) => {
-    if (category?.subcategories && category?.subcategories.length > 0) {
-      return (
-        <Menu>
-          {category.subcategories.map((subCategory) => (
-            <Menu.Item key={subCategory?._id}>
-              <Link href={`/products?filter=${subCategory?.name}`}>
-                {subCategory?.name}
-              </Link>
-            </Menu.Item>
-          ))}
-        </Menu>
-      );
-    }
-    return null;
+  const handleMouseLeave = () => {
+    setHoveredParent(null);
   };
 
-  const renderCategories = (parentCategory) => {
-    return (
-      <Menu>
-        {parentCategory?.categories?.map((category) => (
-          <Menu.SubMenu
-            key={category?._id}
-            icon={null}
-            title={
-              <Link
-                href={`/products?filter=${category?.name}`}
-                className="flex items-center"
-              >
-                {category?.name}
-              </Link>
-            }
-          >
-            {renderSubcategories(category)}
-          </Menu.SubMenu>
-        ))}
-      </Menu>
+  const renderCategoriesInColumns = (parentCategory) => {
+    const categoriesToDisplay = parentCategory.categories || [];
+    const columnCount = 4;
+    const rows = Math.ceil(categoriesToDisplay.length / columnCount);
+
+    const categoryChunks = Array.from({ length: rows }, (_, rowIndex) =>
+      categoriesToDisplay.slice(
+        rowIndex * columnCount,
+        rowIndex * columnCount + columnCount
+      )
     );
+
+    if (!categoriesToDisplay.length)
+      return <div className="text-center">No Categories Available</div>;
+
+    return categoryChunks.map((row, rowIndex) => (
+      <div key={rowIndex} className="flex gap-8 mb-4">
+        {row.map((category) => (
+          <div key={category._id} className="flex flex-col">
+            <Link
+              href={`/products?filter=${category.name}`}
+              className="font-semibold text-primary"
+            >
+              {category.name}
+            </Link>
+            <div className="mt-2 text-sm text-gray-600">
+              {category.subcategories?.map((subCategory) => (
+                <Link
+                  key={subCategory._id}
+                  href={`/products?filter=${subCategory.name}`}
+                  className="block hover:text-gray-800"
+                >
+                  {subCategory.name}
+                </Link>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+    ));
   };
 
-  const renderParentCategories = () => {
-    return categories?.results
-      ?.filter((item) => item?.level === "parentCategory")
+  const renderParentCategories = () =>
+    categories?.results
+      ?.filter((item) => item.level === "parentCategory")
       .map((parentCategory) => (
-        <Dropdown
-          key={parentCategory?._id}
-          overlay={renderCategories(parentCategory)}
-          trigger={["hover"]}
+        <div
+          key={parentCategory._id}
+          onMouseEnter={() => handleMouseEnter(parentCategory)}
+          onMouseLeave={handleMouseLeave}
+          className="relative cursor-pointer"
         >
-          <Link
-            href={`/products?filter=${parentCategory?.name}`}
-            className="flex items-center cursor-pointer"
-          >
-            <span>{parentCategory?.name}</span>
-          </Link>
-        </Dropdown>
+          <div className="flex items-center">
+            <span
+              className={`hover:text-primary border-b-2 border-transparent hover:border-primary duration-300 ${
+                hoveredParent === parentCategory._id && "text-primary"
+              }`}
+            >
+              {parentCategory.name}
+            </span>
+          </div>
+          {hoveredParent === parentCategory._id && (
+            <div className="absolute -left-52 top-4 mt-2 py-10 px-4 bg-white shadow-lg rounded-lg xl:w-[500px] z-10">
+              {renderCategoriesInColumns(parentCategory)}
+            </div>
+          )}
+        </div>
       ));
-  };
 
   return (
-    <div className="my-container -mt-5 lg:-mt-0">
+    <div className="-mt-5 lg:-mt-0 px-8">
       <div className="flex flex-col lg:flex-row gap-5 lg:items-center justify-center xl:justify-start flex-wrap py-4 text-sm">
         <Link href={"/"}>Home</Link>
         <Link href={"/offers"}>Offers</Link>
         <Link href={"/products"}>All Products</Link>
-        <Dropdown
-          overlay={
-            <Menu>
-              {categories?.results
-                ?.filter((item) => item?.level === "parentCategory")
-                .map((parentCategory) => (
-                  <Menu.SubMenu
-                    key={parentCategory?._id}
-                    icon={null}
-                    title={
-                      <Link
-                        href={`/products?filter=${parentCategory?.name}`}
-                        className="flex items-center"
-                      >
-                        <div className="flex items-center justify-between">
-                          {parentCategory?.name}
-                        </div>
-                      </Link>
-                    }
-                  >
-                    {renderCategories(parentCategory)}
-                  </Menu.SubMenu>
-                ))}
-            </Menu>
-          }
-          open={dropdownVisible}
-          onOpenChange={setDropdownVisible}
-        >
-          <div onClick={handleDropdownToggle} className="cursor-pointer">
-            Shop By Categories
-          </div>
-        </Dropdown>
         {renderParentCategories()}
       </div>
     </div>
