@@ -42,7 +42,7 @@ const SidebarCategories = () => {
         className="mt-3"
       >
         <div
-          className="flex items-center justify-between cursor-pointer hover:text-primary ml-2 my-3 pr-2"
+          className="flex items-center justify-between cursor-pointer hover:text-primary ml-3 my-4 pr-2"
           onClick={() => toggleOpenKey(category._id)}
         >
           <span>{category.name}</span>
@@ -80,7 +80,7 @@ const SidebarCategories = () => {
             className="flex items-center justify-between cursor-pointer group-hover:text-primary border-y py-2 odd:border-b-0"
             onClick={() => toggleOpenKey(parentCategory._id)}
           >
-            <span className="flex items-center gap-2">
+            <span className="flex items-center gap-4">
               <Image
                 src={parentCategory.attachment}
                 alt={parentCategory.name}

@@ -1,13 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import { Autoplay } from "swiper/modules";
+import { useRef } from "react";
+import { Autoplay, Pagination } from "swiper/modules";
 import { SwiperSlide, Swiper } from "swiper/react";
 import "swiper/css";
+import "swiper/css/pagination";
 import { useGetAllSlidersQuery } from "@/redux/services/slider/sliderApi";
 import Link from "next/link";
 
 const Banner = () => {
+  const swiperRef = useRef();
+
   const { data: sliders } = useGetAllSlidersQuery();
 
   const activeSliders = sliders?.results?.filter(
@@ -15,10 +19,18 @@ const Banner = () => {
   );
 
   return (
-    <section className="relative mb-10">
+    <section className="relative new-container my-10">
       <Swiper
-        modules={[Autoplay]}
+        onBeforeInit={(swiper) => {
+          swiperRef.current = swiper;
+        }}
+        modules={[Autoplay, Pagination]}
+        loop={true}
         slidesPerView={1}
+        pagination={{
+          clickable: true,
+          el: ".custom-pagination",
+        }}
         autoplay={{
           delay: 3000,
           disableOnInteraction: false,
@@ -37,7 +49,7 @@ const Banner = () => {
                   alt={item.name}
                   width={2500}
                   height={700}
-                  className="h-[200px] lg:h-fit w-full"
+                  className="h-[200px] lg:h-fit w-full rounded-xl"
                 />
                 <div className="absolute z-10 top-20 lg:top-[45%] left-[5%]">
                   {item?.name && (
@@ -56,6 +68,8 @@ const Banner = () => {
           );
         })}
       </Swiper>
+
+      <div className="custom-pagination flex justify-center space-x-2 absolute bottom-5 z-10 left-1/2"></div>
     </section>
   );
 };

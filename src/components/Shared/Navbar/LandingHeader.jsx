@@ -222,7 +222,7 @@ const LandingHeader = () => {
             {user?._id ? (
               <>
                 {" "}
-                <div className="">
+                <div className="mr-3">
                   <Popover
                     placement="bottomRight"
                     content={content}
@@ -285,7 +285,7 @@ const LandingHeader = () => {
             className="w-full"
           />
           <div className="absolute right-2 top-1/2 -translate-y-1/2">
-            <FaSearch className="text-xl" />
+            <FaSearch className="text-xl text-primary" />
           </div>
         </div>
       </nav>
