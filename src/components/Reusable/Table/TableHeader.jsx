@@ -1,8 +1,12 @@
 "use client";
 
-import { Input } from "antd";
+import { Button, Input, Modal } from "antd";
 import { FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import { toast } from "sonner";
+import deleteImage from "@/assets/images/Trash-can.png";
+import { useState } from "react";
+import Image from "next/image";
+import { DeleteButton } from "../Button/CustomButton";
 
 const TableHeader = ({
   setOpen,
@@ -12,6 +16,8 @@ const TableHeader = ({
   deleteBulk,
   setSelectedRowKeys,
 }) => {
+  const [modalOpen, setModalOpen] = useState(false);
+
   const handleBulkDelete = async () => {
     const toastId = toast.loading(`Deleting ${title}...`);
     try {
@@ -19,6 +25,7 @@ const TableHeader = ({
       if (res.data.success) {
         toast.success(res.data.message, { id: toastId, duration: 2000 });
         setSelectedRowKeys(null);
+        setModalOpen(false);
       } else {
         toast.error(res.data.message, { id: toastId, duration: 2000 });
       }
@@ -50,7 +57,7 @@ const TableHeader = ({
               <div className="flex w-full gap-6">
                 <button
                   className="bg-[#d11b1bf1] rounded-lg px-6 py-2 border border-primary flex items-center gap-2 text-white font-bold text-md hover:bg-transparent hover:text-primary duration-300"
-                  onClick={handleBulkDelete}
+                  onClick={() => setModalOpen(true)}
                 >
                   <FaTrash className="mr-2 inline-block" />
                   Bulk Delete
@@ -72,6 +79,38 @@ const TableHeader = ({
           </div>
         </div>
       </div>
+
+      <Modal
+        centered
+        open={modalOpen}
+        onOk={() => setModalOpen(false)}
+        onCancel={() => setModalOpen(false)}
+        footer={null}
+      >
+        <div className="p-8">
+          <Image
+            height={60}
+            width={60}
+            src={deleteImage}
+            alt="delete image"
+            className="w-16 h-16 mx-auto mb-4"
+          />
+          <h2 className="text-center text-2xl font-bold">
+            Are your sure you want to permanently delete this{" "}
+            {title.toLowerCase()}s?
+          </h2>
+          <div className="lg:flex mt-10 gap-6 items-center justify-center">
+            <Button
+              onClick={() => setModalOpen(false)}
+              type="text"
+              className="!font-bold bg-transparent !text-red-500 px-10 py-4 border !border-red-500"
+            >
+              Cancel
+            </Button>
+            <DeleteButton func={handleBulkDelete} text={"Delete"} />
+          </div>
+        </div>
+      </Modal>
     </>
   );
 };

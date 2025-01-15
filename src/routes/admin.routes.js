@@ -8,6 +8,7 @@ import { IoSettingsSharp } from "react-icons/io5";
 import {
   MdAddShoppingCart,
   MdOutlineAcUnit,
+  MdOutlineBrandingWatermark,
   MdOutlineMergeType,
   MdOutlineReviews,
 } from "react-icons/md";
@@ -40,6 +41,11 @@ export const adminSidebarRoutes = [
       },
 
       { name: "Brand", path: "products/brand", icon: TbBrandAirtable },
+      {
+        name: "Generic",
+        path: "products/generic",
+        icon: MdOutlineBrandingWatermark,
+      },
       { name: "Category", path: "products/category", icon: BiCategoryAlt },
       { name: "Product", path: "products/product", icon: MdAddShoppingCart },
     ],

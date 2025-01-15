@@ -1,17 +1,17 @@
 "use client";
 
 import { paginationNumbers } from "@/assets/data/paginationData";
-import CategoryCreate from "@/components/Dashboard/Admin/Category/CategoryCreate";
-import CategoryEdit from "@/components/Dashboard/Admin/Category/CategoryEdit";
+import GenericCreate from "@/components/Dashboard/Admin/Generic/GenericCreate";
+import GenericEdit from "@/components/Dashboard/Admin/Generic/GenericEdit";
 import DeleteModal from "@/components/Reusable/Modal/DeleteModal";
 import DetailsModal from "@/components/Reusable/Modal/DetailsModal";
 import TableHeader from "@/components/Reusable/Table/TableHeader";
 import {
-  useDeleteBulkCategoryMutation,
-  useDeleteCategoryMutation,
-  useGetCategoriesQuery,
-  useGetSingleCategoryQuery,
-} from "@/redux/services/category/categoryApi";
+  useDeleteBulkGenericMutation,
+  useDeleteGenericMutation,
+  useGetGenericsQuery,
+  useGetSingleGenericQuery,
+} from "@/redux/services/generic/genericApi";
 import {
   Dropdown,
   Image,
@@ -28,7 +28,7 @@ import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { TbListDetails } from "react-icons/tb";
 
-const Category = () => {
+const Generic = () => {
   const [open, setOpen] = useState(false);
   const [openSearch, setOpenSearch] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
@@ -40,13 +40,13 @@ const Category = () => {
   const [search, setSearch] = useState("");
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
-  const { data: categories, isFetching } = useGetCategoriesQuery({
+  const { data: generics, isFetching } = useGetGenericsQuery({
     page: currentPage,
     limit: pageSize,
     search,
   });
 
-  const { data: categoryData } = useGetSingleCategoryQuery(itemId, {
+  const { data: genericData } = useGetSingleGenericQuery(itemId, {
     skip: !itemId,
   });
 
@@ -64,8 +64,8 @@ const Category = () => {
     onChange: onSelectChange,
   };
 
-  const [deleteCategory] = useDeleteCategoryMutation();
-  const [deleteBulkCategory] = useDeleteBulkCategoryMutation();
+  const [deleteGeneric] = useDeleteGenericMutation();
+  const [deleteBulkGeneric] = useDeleteBulkGenericMutation();
 
   const handleMenuClick = (key, id) => {
     setItemId(id);
@@ -83,34 +83,26 @@ const Category = () => {
 
   const columns = [
     {
-      title: "Category Image",
+      title: "Image",
       dataIndex: "attachment",
       key: "attachment",
       align: "start",
-      width: "200px",
       render: (item) => (
         <Image
           src={
             item ??
             "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
           }
-          alt={"category image"}
-          className="!w-12 !h-12 rounded-full"
+          alt={"generic image"}
+          className="!w-12 h-12 object-cover rounded-full"
         />
       ),
     },
     {
-      title: "Category Name",
+      title: "Name",
       dataIndex: "name",
       key: "name",
       align: "start",
-    },
-    {
-      title: "Category Level",
-      dataIndex: "level",
-      key: "level",
-      align: "start",
-      render: (item) => <div className="capitalize">{item}</div>,
     },
     {
       title: "Status",
@@ -179,10 +171,9 @@ const Category = () => {
     },
   ];
 
-  const tableData = categories?.results?.map((item) => ({
+  const tableData = generics?.results?.map((item) => ({
     key: item._id,
     name: item?.name,
-    level: item?.level,
     attachment: item?.attachment,
     status: item?.status,
   }));
@@ -191,13 +182,13 @@ const Category = () => {
     <div className="px-5">
       <TableHeader
         setOpen={setOpen}
-        title={"Category"}
+        title={"Generic"}
         selectedRowKeys={selectedRowKeys}
         itemId={itemId}
         setSearch={setSearch}
         openSearch={openSearch}
         setOpenSearch={setOpenSearch}
-        deleteBulk={deleteBulkCategory}
+        deleteBulk={deleteBulkGeneric}
         setSelectedRowKeys={setSelectedRowKeys}
       />
 
@@ -212,7 +203,7 @@ const Category = () => {
 
       <Pagination
         className="flex justify-end items-center !mt-10"
-        total={categories?.meta?.totalCount}
+        total={generics?.meta?.totalCount}
         current={currentPage}
         onChange={handlePageChange}
         pageSize={pageSize}
@@ -221,24 +212,24 @@ const Category = () => {
         simple
       />
 
-      <CategoryCreate open={open} setOpen={setOpen} />
-      <CategoryEdit itemId={itemId} open={openEdit} setOpen={setOpenEdit} />
+      <GenericCreate open={open} setOpen={setOpen} />
+      <GenericEdit itemId={itemId} open={openEdit} setOpen={setOpenEdit} />
       <DetailsModal
         itemId={itemId}
         modalOpen={detailsModalOpen}
         setModalOpen={setDetailsModalOpen}
-        title={"Category"}
-        details={categoryData}
+        title={"Generic"}
+        details={genericData}
       />
       <DeleteModal
         itemId={itemId}
         modalOpen={deleteModalOpen}
         setModalOpen={setDeleteModalOpen}
-        text={"category"}
-        func={deleteCategory}
+        text={"generic"}
+        func={deleteGeneric}
       />
     </div>
   );
 };
 
-export default Category;
+export default Generic;
