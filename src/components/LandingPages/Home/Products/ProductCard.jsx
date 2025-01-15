@@ -80,7 +80,7 @@ const ProductCard = ({ item }) => {
 
   return (
     <div
-      className="relative group lg:w-[220px] mx-auto h-[360px] flex flex-col border border-gray-200 bg-white rounded-xl overflow-hidden"
+      className="relative group lg:w-[220px] mx-auto h-[330px] lg:h-[360px] flex flex-col border border-gray-200 bg-white rounded-xl overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -143,7 +143,7 @@ const ProductCard = ({ item }) => {
         </div>
       </div>
       <div>
-        <div className="flex justify-between items-center mb-3 px-2 absolute bottom-2 w-full">
+        <div className="flex justify-between items-center mb-2 px-2 absolute bottom-0 w-full">
           <div>
             {item?.offerPrice && (
               <p className="text-xs lg:text-base line-through text-black/60">
@@ -168,7 +168,7 @@ const ProductCard = ({ item }) => {
             )}
           </div>
 
-          <div className="bg-primary px-2 lg:px-4 py-2 text-white rounded-xl text-xs lg:text-sm">
+          <div className="bg-primary border border-primary hover:bg-transparent duration-300 hover:text-primary px-2 lg:px-4 py-2 text-white rounded-xl text-xs lg:text-sm">
             {item?.isVariant || item?.variants?.length > 0 ? (
               <LinkButton href={`/products/${item?.slug}`}>
                 <div>Details</div>

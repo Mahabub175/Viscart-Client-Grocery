@@ -152,7 +152,7 @@ const AllProducts = ({ searchParams }) => {
   };
 
   return (
-    <section className="py-10 relative lg:mt-10">
+    <section className="py-10 relative -mt-5">
       <div className="my-container">
         <div className="bg-gray-200 flex items-center gap-2 justify-between py-3 px-2 lg:px-6 mb-6 rounded-xl">
           <p className="text-xs md:text-base">
@@ -161,6 +161,9 @@ const AllProducts = ({ searchParams }) => {
             </span>{" "}
             products showing.
           </p>
+          <Button type="primary" onClick={() => setFilterModal(true)}>
+            Advance Filter
+          </Button>
           <div className="flex items-center lg:w-1/4">
             <Select
               allowClear
@@ -172,85 +175,8 @@ const AllProducts = ({ searchParams }) => {
               <Option value="PriceHighToLow">Price High To Low</Option>
             </Select>
           </div>
-          <Button
-            type="primary"
-            className="lg:hidden"
-            onClick={() => setFilterModal(true)}
-          >
-            Advance Filter
-          </Button>
         </div>
         <div className="flex flex-col lg:flex-row gap-5 items-start">
-          <div className="w-full lg:w-3/12 p-4 border rounded-lg shadow-sm lg:sticky top-5 hidden lg:block bg-white">
-            <h2 className="mb-4 text-lg font-semibold">Filter Products</h2>
-            <div className="mb-6 border p-5 rounded-xl max-h-[500px] overflow-y-auto">
-              <label className="block mb-2 font-semibold">Brands</label>
-              <Checkbox.Group
-                options={activeBrands?.map((brand) => ({
-                  label: brand.name,
-                  value: brand.name,
-                }))}
-                value={selectedBrands}
-                onChange={handleBrandChange}
-                className="flex flex-col gap-2"
-              />
-            </div>
-            <div className="mb-6 border p-5 rounded-xl max-h-[500px] overflow-y-auto">
-              <label className="block mb-2 font-semibold">Categories</label>
-              <Checkbox.Group
-                options={activeCategories?.map((category) => ({
-                  label: category.name,
-                  value: category.name,
-                }))}
-                value={selectedCategories}
-                onChange={handleCategoryChange}
-                className="flex flex-col gap-2"
-              />
-            </div>
-            <div className="mb-6">
-              <label className="block mb-2 font-semibold">Price Range</label>
-              <Slider
-                range
-                min={0}
-                max={10000}
-                defaultValue={[0, 10000]}
-                value={priceRange}
-                onChange={handlePriceChange}
-                step={50}
-                tooltip={{
-                  formatter: (value) =>
-                    `${globalData?.results?.currency} ${value}`,
-                }}
-              />
-              <div className="flex justify-between mt-2 text-sm">
-                <span>
-                  {globalData?.results?.currency + " " + priceRange[0]}
-                </span>
-                <span>
-                  {globalData?.results?.currency + " " + priceRange[1]}
-                </span>
-              </div>
-            </div>
-            <div className="mb-6 rounded-xl border p-5">
-              <label className="block mb-2 font-semibold">Availability</label>
-              <Radio.Group
-                value={availability}
-                onChange={handleAvailabilityChange}
-                className="flex flex-col gap-2"
-              >
-                <Radio value="inStock">
-                  In Stock (
-                  {filteredProducts?.filter?.((item) => item?.stock > 0).length}
-                  )
-                </Radio>
-                <Radio value="outOfStock">
-                  Out of Stock (
-                  {filteredProducts?.filter?.((item) => item?.stock < 0).length}
-                  )
-                </Radio>
-              </Radio.Group>
-            </div>
-          </div>
           <div className="w-full">
             <div>
               {filteredProducts?.length > 0 ? (

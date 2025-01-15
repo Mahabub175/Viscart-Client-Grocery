@@ -13,7 +13,7 @@ const OfferProducts = () => {
         (item?.status !== "Inactive" && item?.offerPrice) ||
         item?.offerPrice > 0
     )
-    ?.slice(0, 12);
+    ?.slice(0, 10);
 
   return (
     <section className="relative mt-10 bg-[#EB494933] py-10">
@@ -30,7 +30,7 @@ const OfferProducts = () => {
           </Link>
         </div>
         {activeProducts?.length > 0 ? (
-          <div className="mt-5 grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap gap-10">
+          <div className="mt-5 grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap justify-center xxl:justify-start gap-5">
             {activeProducts?.map((product) => (
               <div key={product?._id}>
                 <ProductCard item={product} />

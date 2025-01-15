@@ -55,7 +55,7 @@ const QuickViewHover = ({ item }) => {
           className="text-sm lg:text-xl cursor-pointer hover:scale-110 duration-300 bg-primary text-white p-2 rounded-full"
           onClick={() => addToCompare(item?._id)}
         >
-          <FaCodeCompare className="rotate-90" />
+          <FaCodeCompare className="rotate-90 text-lg" />
         </div>
       </Tooltip>
       <Tooltip placement="top" title={"Quick View"}>
@@ -63,7 +63,7 @@ const QuickViewHover = ({ item }) => {
           className="text-lg lg:text-2xl cursor-pointer hover:scale-110 duration-300 bg-primary text-white p-2 rounded-full"
           onClick={showModal}
         >
-          <AiOutlineFullscreen className="text-xl" />
+          <AiOutlineFullscreen className="lg:text-xl" />
         </div>
       </Tooltip>
 

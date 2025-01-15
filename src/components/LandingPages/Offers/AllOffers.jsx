@@ -11,8 +11,8 @@ const AllOffers = () => {
   );
 
   return (
-    <section className="my-container relative border p-2 rounded-xl mt-32 lg:mt-52">
-      <h2 className="my-5 lg:my-10 text-3xl font-bold text-center">
+    <section className="my-container relative border p-2 rounded-xl mt-5">
+      <h2 className="my-5 lg:mb-10 text-3xl font-bold text-center">
         Offer Products
       </h2>
       {filteredProducts?.length > 0 ? (

@@ -20,14 +20,14 @@ const Brands = () => {
   );
 
   return (
-    <section className="new-container mt-20 relative">
+    <section className="new-container mt-20 relative -mb-10 lg:mb-0">
       <div className="flex items-center justify-between mb-5">
         <h2 className="text-lg lg:text-3xl font-medium text-center lg:text-start">
           Featured Brands
         </h2>
         <Link
           href={`/products`}
-          className="text-black hover:text-primary duration-300 font-semibold"
+          className="text-black hover:text-primary duration-300 font-semibold text-sm lg:text-base"
         >
           Show All
         </Link>
@@ -64,7 +64,7 @@ const Brands = () => {
                     alt={item?.name ?? "demo"}
                     width={240}
                     height={240}
-                    className="bg-white shadow-xl border-2 border-transparent hover:border-primary duration-500 w-[220px] h-[220px] rounded-3xl mx-auto"
+                    className="bg-white shadow-xl border-2 border-transparent hover:border-primary duration-500 lg:w-[220px] lg:h-[220px] rounded-3xl mx-auto"
                   />
                 </LinkButton>
               </SwiperSlide>

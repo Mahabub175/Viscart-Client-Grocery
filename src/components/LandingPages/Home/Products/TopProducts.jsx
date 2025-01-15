@@ -51,18 +51,18 @@ const TopProducts = () => {
               >
                 <div className="new-container">
                   <div className="flex items-center justify-between mb-5">
-                    <h2 className="text-lg lg:text-3xl font-medium text-center lg:text-start">
+                    <h2 className="text-lg lg:text-3xl font-medium">
                       {category?.name}
                     </h2>
                     <Link
                       href={`/products?filter=${category?.name}`}
-                      className="hover:text-primary duration-300 font-semibold"
+                      className="hover:text-primary duration-300 font-semibold text-sm lg:text-base"
                     >
                       Show All
                     </Link>
                   </div>
                   {products?.length > 0 ? (
-                    <div className="mt-5 grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap gap-10">
+                    <div className="mt-5 grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap justify-center xxl:justify-start gap-5">
                       {products.map((product) => (
                         <div key={product?._id}>
                           <ProductCard item={product} />

@@ -9,11 +9,11 @@ const LandingLayout = ({ children }) => {
     <>
       <LandingHeader />
       <div className="mt-28 md:mt-[6.4rem] lg:mt-[7.5rem] flex items-start relative">
-        <div className="sticky top-5 z-10 w-[300px]">
+        <div className="sticky top-5 z-10 w-[300px] hidden lg:block">
           <SidebarCategories />
         </div>
 
-        <div className="my-container overflow-x-hidden pl-5">
+        <div className="lg:my-container overflow-x-hidden lg:pl-5">
           <div>{children}</div>
           <LandingFooter />
         </div>

@@ -164,7 +164,7 @@ const LandingHeader = () => {
         showNavbar ? "translate-y-0" : "-translate-y-full"
       }`}
     >
-      <nav className="px-5 -my-5 lg:-my-4 pb-5 lg:pb-0">
+      <nav className="lg:px-5 -my-5 lg:-my-4 pb-5 lg:pb-0">
         <div className="flex justify-between items-center gap-10">
           <Link href={"/"} className="flex flex-[1] lg:flex-none">
             <Image
@@ -222,7 +222,7 @@ const LandingHeader = () => {
             {user?._id ? (
               <>
                 {" "}
-                <div className="mr-3">
+                <div className="lg:mr-3">
                   <Popover
                     placement="bottomRight"
                     content={content}
@@ -239,7 +239,7 @@ const LandingHeader = () => {
                     ) : (
                       <Avatar className="" size={30} icon={<UserOutlined />} />
                     )}
-                    <h2 className="font-normal text-sm flex items-center mr-2">
+                    <h2 className="font-normal text-sm flex items-center lg:mr-2">
                       {data?.name ?? "User"}
                       <IoMdArrowDropdown />
                     </h2>
