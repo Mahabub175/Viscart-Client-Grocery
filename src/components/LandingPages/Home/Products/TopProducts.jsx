@@ -38,7 +38,7 @@ const TopProducts = () => {
   );
 
   return (
-    <section className="my-container mt-10">
+    <section className="new-container">
       {sortedCategories?.length > 0
         ? sortedCategories?.slice(0, 7)?.map(({ category, products }) => (
             <div key={category?._id} className="py-10">
@@ -48,7 +48,7 @@ const TopProducts = () => {
                 </h2>
                 <Link
                   href={`/products?filter=${category?.name}`}
-                  className="text-primary border-b border-primary font-semibold"
+                  className="hover:text-primary duration-300 font-semibold"
                 >
                   Show All
                 </Link>

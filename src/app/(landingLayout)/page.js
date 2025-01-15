@@ -1,7 +1,6 @@
 import Banner from "@/components/LandingPages/Home/Banner";
 import Brands from "@/components/LandingPages/Home/Brands";
 import Categories from "@/components/LandingPages/Home/Categories";
-import NewsletterBanner from "@/components/LandingPages/Home/NewsletterBanner";
 import PopularProducts from "@/components/LandingPages/Home/Products/PopularProducts";
 import TopProducts from "@/components/LandingPages/Home/Products/TopProducts";
 
@@ -18,7 +17,6 @@ const page = async () => {
       <Categories />
       <Brands />
       <TopProducts />
-      <NewsletterBanner />
     </div>
   );
 };
