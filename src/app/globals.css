@@ -30,9 +30,9 @@
 body {
 }
 
-.ant-menu-submenu-arrow {
+/* .ant-menu-submenu-arrow {
   display: none !important;
-}
+} */
 
 .ant-btn-primary {
   background-color: var(--primaryColor) !important;
