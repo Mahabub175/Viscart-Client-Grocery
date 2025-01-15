@@ -5,7 +5,7 @@ const nextConfig = {
       "localhost",
       "thumbs.dreamstime.com",
       "photohouseapi.photohousemagazine.com",
-      "viscarttoolsapi.moonsgallerysystem.com",
+      "komedeiapi.moonsgallerysystem.com",
       "facebook.com",
     ],
   },

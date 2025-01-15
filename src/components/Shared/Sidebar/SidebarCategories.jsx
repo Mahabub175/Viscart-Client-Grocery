@@ -4,117 +4,117 @@ import { useGetAllCategoriesQuery } from "@/redux/services/category/categoryApi"
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-import { FiChevronRight, FiChevronDown } from "react-icons/fi";
+import { DownOutlined, RightOutlined } from "@ant-design/icons";
 
 const SidebarCategories = () => {
   const { data: categories } = useGetAllCategoriesQuery();
-  const [openDropdown, setOpenDropdown] = useState(null);
+  const [openKeys, setOpenKeys] = useState([]);
 
-  const toggleDropdown = (categoryId) => {
-    setOpenDropdown((prev) => (prev === categoryId ? null : categoryId));
+  const toggleOpenKey = (key) => {
+    setOpenKeys((prev) =>
+      prev.includes(key) ? prev.filter((k) => k !== key) : [...prev, key]
+    );
   };
 
   const renderSubcategories = (subcategories) => {
-    if (!subcategories || subcategories.length === 0)
-      return <div className="text-gray-500">No Subcategories</div>;
+    if (!subcategories || subcategories.length === 0) {
+      return <li className="text-gray-500 pl-6">No Subcategories</li>;
+    }
 
-    return (
-      <ul className="ml-4 pl-4 border-l border-gray-200">
-        {subcategories.map((subcategory) => (
-          <li key={subcategory._id}>
-            <Link
-              href={`/products?filter=${subcategory.name}`}
-              className="block hover:text-primary"
-            >
-              {subcategory.name}
-            </Link>
-          </li>
-        ))}
-      </ul>
-    );
+    return subcategories.map((subcategory) => (
+      <li key={subcategory._id} className="pl-6">
+        <Link href={`/products?filter=${subcategory.name}`}>
+          <span className="hover:text-primary">{subcategory.name}</span>
+        </Link>
+      </li>
+    ));
   };
 
   const renderCategories = (categories) => {
-    if (!categories || categories.length === 0)
-      return (
-        <div className="text-gray-500 text-center mt-2">No Categories</div>
-      );
+    if (!categories || categories.length === 0) {
+      return <li className="text-gray-500 text-center mt-2">No Categories</li>;
+    }
 
-    return (
-      <ul className="ml-4 pl-4 border-l border-gray-200">
-        {categories.map((category) => (
-          <li key={category._id} className="relative">
-            <Link
-              href={`/products?filter=${category.name}`}
-              onClick={() => toggleDropdown(category._id)}
-              className="flex items-center justify-between cursor-pointer hover:text-primary mt-5"
-            >
-              <span>{category.name}</span>
-              {category.subcategories && category.subcategories.length > 0 && (
-                <span className="ml-2 text-sm text-gray-400">
-                  {openDropdown === category._id ? (
-                    <FiChevronDown size={18} />
-                  ) : (
-                    <FiChevronRight size={18} />
-                  )}
-                </span>
+    return categories.map((category) => (
+      <Link
+        href={`/products?filter=${category?.name}`}
+        key={category._id}
+        className="mt-3"
+      >
+        <div
+          className="flex items-center justify-between cursor-pointer hover:text-primary ml-2 my-3 pr-2"
+          onClick={() => toggleOpenKey(category._id)}
+        >
+          <span>{category.name}</span>
+          {category.subcategories && category.subcategories.length > 0 && (
+            <span className="text-sm">
+              {openKeys.includes(category._id) ? (
+                <DownOutlined className="text-gray-400" />
+              ) : (
+                <RightOutlined className="text-gray-400" />
               )}
-            </Link>
-            {openDropdown === category._id &&
-              renderSubcategories(category.subcategories)}
-          </li>
-        ))}
-      </ul>
-    );
+            </span>
+          )}
+        </div>
+        {openKeys.includes(category._id) && (
+          <ul className="ml-4 border-l border-gray-200 mt-2">
+            {renderSubcategories(category.subcategories)}
+          </ul>
+        )}
+      </Link>
+    ));
   };
 
-  const renderParentCategories = () =>
-    categories?.results
-      ?.filter((item) => item.level === "parentCategory")
+  const renderParentCategories = () => {
+    if (!categories?.results) return null;
+
+    return categories.results
+      .filter((item) => item.level === "parentCategory")
       .map((parentCategory) => (
-        <li key={parentCategory._id} className="relative">
-          <Link
-            href={`/products?filter=${parentCategory?.name}`}
-            onClick={() => toggleDropdown(parentCategory._id)}
-            className="flex items-center justify-between group cursor-pointer w-[300px] border-y pt-4 odd:border-b-0"
+        <Link
+          href={`/products?filter=${parentCategory?.name}`}
+          key={parentCategory._id}
+          className="mt-4 group"
+        >
+          <div
+            className="flex items-center justify-between cursor-pointer group-hover:text-primary border-y py-2 odd:border-b-0"
+            onClick={() => toggleOpenKey(parentCategory._id)}
           >
             <span className="flex items-center gap-2">
               <Image
                 src={parentCategory.attachment}
                 alt={parentCategory.name}
-                width={30}
+                width={40}
                 height={20}
               />
-              <span className="text-base group-hover:text-primary duration-300">
-                {parentCategory.name}
-              </span>
+              <span>{parentCategory.name}</span>
             </span>
             {parentCategory.categories &&
               parentCategory.categories.length > 0 && (
-                <span className="ml-2 text-sm text-gray-400 group-hover:text-primary duration-300">
-                  {openDropdown === parentCategory._id ? (
-                    <FiChevronDown size={18} />
+                <span className="text-sm text-gray-400 group-hover:text-primary">
+                  {openKeys.includes(parentCategory._id) ? (
+                    <DownOutlined />
                   ) : (
-                    <FiChevronRight size={18} />
+                    <RightOutlined />
                   )}
                 </span>
               )}
-          </Link>
-          {openDropdown === parentCategory._id &&
-            renderCategories(parentCategory.categories)}
-        </li>
+          </div>
+          {openKeys.includes(parentCategory._id) && (
+            <ul className="ml-4 border-l border-gray-200 mt-2">
+              {renderCategories(parentCategory.categories)}
+            </ul>
+          )}
+        </Link>
       ));
+  };
 
   return (
-    <nav className="bg-white rounded-lg p-4">
-      <ul className="space-y-3">
-        <li>
-          <ul className="mt-2 space-y-5 overflow-y-auto h-[800px]">
-            {renderParentCategories()}
-          </ul>
-        </li>
+    <aside className="bg-white rounded-lg p-4">
+      <ul className="w-[300px] overflow-y-auto h-[800px] space-y-2 pr-3">
+        {renderParentCategories()}
       </ul>
-    </nav>
+    </aside>
   );
 };
 
