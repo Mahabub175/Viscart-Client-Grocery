@@ -1,14 +1,17 @@
 "use client";
 
 import { useGetAllProductsQuery } from "@/redux/services/product/productApi";
-import "swiper/css";
-import "swiper/css/navigation";
-import "swiper/css/pagination";
 import ProductCard from "./ProductCard";
 import { useGetAllCategoriesQuery } from "@/redux/services/category/categoryApi";
 import Link from "next/link";
+import { useRef } from "react";
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { SwiperSlide, Swiper } from "swiper/react";
+import "swiper/css";
 
 const TopProducts = () => {
+  const swiperRef = useRef();
   const { data: productData } = useGetAllProductsQuery();
   const { data: categories } = useGetAllCategoriesQuery();
 
@@ -49,7 +52,7 @@ const TopProducts = () => {
                   index % 2 === 0 ? "bg-[#ffffff]" : "bg-[#013D341A]"
                 }`}
               >
-                <div className="new-container">
+                <div className="new-container relative">
                   <div className="flex items-center justify-between mb-5">
                     <h2 className="text-lg lg:text-3xl font-medium">
                       {category?.name}
@@ -62,18 +65,52 @@ const TopProducts = () => {
                     </Link>
                   </div>
                   {products?.length > 0 ? (
-                    <div className="mt-5 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 xxl:grid-cols-5 gap-5">
-                      {products.map((product) => (
-                        <div key={product?._id}>
+                    <Swiper
+                      onBeforeInit={(swiper) => {
+                        swiperRef.current = swiper;
+                      }}
+                      modules={[Navigation, Pagination, Autoplay]}
+                      spaceBetween={20}
+                      slidesPerView={2}
+                      breakpoints={{
+                        640: { slidesPerView: 2 },
+                        768: { slidesPerView: 3 },
+                        1280: { slidesPerView: 4 },
+                        1480: { slidesPerView: 5 },
+                      }}
+                      navigation
+                      autoplay={{
+                        delay: 3000,
+                        disableOnInteraction: false,
+                      }}
+                      className="mySwiper"
+                    >
+                      {products?.map((product) => (
+                        <SwiperSlide key={product?._id}>
                           <ProductCard item={product} />
-                        </div>
+                        </SwiperSlide>
                       ))}
-                    </div>
+                    </Swiper>
                   ) : (
                     <p className="text-center text-sm text-gray-500">
                       No products available in this category.
                     </p>
                   )}
+
+                  <div className="flex items-center justify-center gap-5 mt-10">
+                    <button
+                      className="lg:w-10 lg:h-10 flex z-10 items-center justify-center rounded-full bg-white text-black border border-primary hover:bg-primary hover:text-white duration-300 absolute top-[45%] left-0"
+                      onClick={() => swiperRef.current.slidePrev()}
+                    >
+                      <FaAngleLeft className="text-2xl" />
+                    </button>
+                    <button
+                      className="lg:w-10 lg:h-10 z-10 flex items-center justify-center rounded-full bg-white text-black border border-primary hover:bg-primary hover:text-white duration-300 absolute top-[45%] right-0"
+                      onClick={() => swiperRef.current.slideNext()}
+                    >
+                      <FaAngleRight className="text-2xl" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))
