@@ -30,7 +30,7 @@ const CategoryNavigation = () => {
       return <div className="text-center">No Categories Available</div>;
 
     return categoryChunks.map((row, rowIndex) => (
-      <div key={rowIndex} className="flex gap-8 mb-4">
+      <div key={rowIndex} className="grid grid-cols-4 gap-8 mb-4">
         {row.map((category) => (
           <div key={category._id} className="flex flex-col">
             <Link
@@ -44,7 +44,7 @@ const CategoryNavigation = () => {
                 <Link
                   key={subCategory._id}
                   href={`/products?filter=${subCategory.name}`}
-                  className="block hover:text-gray-800"
+                  className="block text-gray-800 hover:text-black hover:font-medium"
                 >
                   {subCategory.name}
                 </Link>
@@ -76,7 +76,7 @@ const CategoryNavigation = () => {
             </span>
           </Link>
           {hoveredParent === parentCategory._id && (
-            <div className="absolute -left-52 top-4 mt-2 py-10 px-4 bg-white shadow-lg rounded-lg xl:w-[500px] z-10">
+            <div className="absolute -left-52 top-3 mt-2 py-10 px-4 bg-white shadow-lg rounded-lg lg:w-[700px] z-10">
               {renderCategoriesInColumns(parentCategory)}
             </div>
           )}
