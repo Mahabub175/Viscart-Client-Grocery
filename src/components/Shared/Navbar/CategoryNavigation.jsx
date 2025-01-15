@@ -66,7 +66,7 @@ const CategoryNavigation = () => {
           onMouseLeave={handleMouseLeave}
           className="relative cursor-pointer"
         >
-          <div className="flex items-center">
+          <Link href={`/products?filter=${parentCategory?.name}`} className="">
             <span
               className={`hover:text-primary border-b-2 border-transparent hover:border-primary duration-300 ${
                 hoveredParent === parentCategory._id && "text-primary"
@@ -74,7 +74,7 @@ const CategoryNavigation = () => {
             >
               {parentCategory.name}
             </span>
-          </div>
+          </Link>
           {hoveredParent === parentCategory._id && (
             <div className="absolute -left-52 top-4 mt-2 py-10 px-4 bg-white shadow-lg rounded-lg xl:w-[500px] z-10">
               {renderCategoriesInColumns(parentCategory)}
@@ -86,9 +86,24 @@ const CategoryNavigation = () => {
   return (
     <div className="-mt-5 lg:-mt-0 px-8">
       <div className="flex flex-col lg:flex-row gap-5 lg:items-center justify-center xl:justify-start flex-wrap py-4 text-sm">
-        <Link href={"/"}>Home</Link>
-        <Link href={"/offers"}>Offers</Link>
-        <Link href={"/products"}>All Products</Link>
+        <Link
+          href={"/"}
+          className="hover:text-primary border-b-2 border-transparent hover:border-primary duration-300"
+        >
+          Home
+        </Link>
+        <Link
+          href={"/offers"}
+          className="hover:text-primary border-b-2 border-transparent hover:border-primary duration-300"
+        >
+          Offers
+        </Link>
+        <Link
+          href={"/products"}
+          className="hover:text-primary border-b-2 border-transparent hover:border-primary duration-300"
+        >
+          All Products
+        </Link>
         {renderParentCategories()}
       </div>
     </div>

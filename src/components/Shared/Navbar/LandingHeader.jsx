@@ -1,40 +1,33 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
+import { useGetSingleUserQuery } from "@/redux/services/auth/authApi";
+import { logout, useCurrentUser } from "@/redux/services/auth/authSlice";
+import { useGetSingleCartByUserQuery } from "@/redux/services/cart/cartApi";
+import { useGetSingleCompareByUserQuery } from "@/redux/services/compare/compareApi";
+import { useDeviceId } from "@/redux/services/device/deviceSlice";
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 import { useGetAllProductsQuery } from "@/redux/services/product/productApi";
+import { useGetSingleWishlistByUserQuery } from "@/redux/services/wishlist/wishlistApi";
 import { formatImagePath } from "@/utilities/lib/formatImagePath";
-import { MenuOutlined, UserOutlined } from "@ant-design/icons";
+import { UserOutlined } from "@ant-design/icons";
 import { AutoComplete, Avatar, Button, Drawer, Popover } from "antd";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import {
-  FaHeart,
-  FaSearch,
-  FaShoppingBag,
-  FaShoppingCart,
-  FaUser,
-} from "react-icons/fa";
-import { FaCodeCompare } from "react-icons/fa6";
-import CategoryNavigation from "./CategoryNavigation";
-import { useDispatch, useSelector } from "react-redux";
-import { logout, useCurrentUser } from "@/redux/services/auth/authSlice";
-import { useDeviceId } from "@/redux/services/device/deviceSlice";
-import { useGetSingleUserQuery } from "@/redux/services/auth/authApi";
-import { useGetSingleCompareByUserQuery } from "@/redux/services/compare/compareApi";
-import { useGetSingleWishlistByUserQuery } from "@/redux/services/wishlist/wishlistApi";
-import DrawerCart from "../Product/DrawerCart";
-import { GiCancel } from "react-icons/gi";
-import { useGetSingleCartByUserQuery } from "@/redux/services/cart/cartApi";
 import { usePathname } from "next/navigation";
-import { toast } from "sonner";
+import { useEffect, useState } from "react";
+import { FaHeart, FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
+import { FaCodeCompare } from "react-icons/fa6";
+import { GiCancel } from "react-icons/gi";
 import { IoMdArrowDropdown } from "react-icons/io";
+import { useDispatch, useSelector } from "react-redux";
+import { toast } from "sonner";
+import DrawerCart from "../Product/DrawerCart";
+import CategoryNavigation from "./CategoryNavigation";
 
 const LandingHeader = () => {
   const pathname = usePathname();
-  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
-  const [isSearchOpen, setIsSearchOpen] = useState(false);
+
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [options, setOptions] = useState([]);
   const dispatch = useDispatch();
@@ -53,10 +46,6 @@ const LandingHeader = () => {
 
   const { data: globalData } = useGetAllGlobalSettingQuery();
   const { data: products } = useGetAllProductsQuery();
-
-  const toggleDrawer = () => {
-    setIsDrawerOpen(!isDrawerOpen);
-  };
 
   const handleLogout = () => {
     dispatch(logout());
@@ -171,19 +160,13 @@ const LandingHeader = () => {
 
   return (
     <header
-      className={`fixed bg-white top-0 left-0 w-full shadow-md transition-transform duration-300 z-50 ${
+      className={`fixed bg-white top-0 left-0 w-full lg:shadow-md transition-transform duration-300 z-50 ${
         showNavbar ? "translate-y-0" : "-translate-y-full"
       }`}
     >
-      <nav className="px-5 -my-3">
+      <nav className="px-5 -my-5 lg:-my-4 pb-5 lg:pb-0">
         <div className="flex justify-between items-center gap-10">
-          <Button
-            type="text"
-            className="lg:hidden"
-            icon={<MenuOutlined />}
-            onClick={toggleDrawer}
-          />
-          <Link href={"/"} className="flex flex-[1] lg:flex-none ml-10 lg:ml-0">
+          <Link href={"/"} className="flex flex-[1] lg:flex-none">
             <Image
               src={globalData?.results?.logo}
               alt="logo"
@@ -206,13 +189,6 @@ const LandingHeader = () => {
           </div>
 
           <div className="flex gap-2 items-center text-lg">
-            <div
-              className="cursor-pointer hover:text-primary duration-300 lg:hidden hover:bg-grey p-3 rounded-full"
-              onClick={() => setIsSearchOpen(true)}
-            >
-              <FaSearch />
-            </div>
-
             <Link
               href={"/compare"}
               className="hidden lg:flex hover:bg-grey p-3 rounded-full cursor-pointer hover:text-primary duration-300"
@@ -300,91 +276,25 @@ const LandingHeader = () => {
             </div>
           </div>
         </div>
+        <div className="relative w-full lg:hidden -mt-5">
+          <AutoComplete
+            options={options}
+            onSearch={handleSearch}
+            placeholder="Search for Products..."
+            size="large"
+            className="w-full"
+          />
+          <div className="absolute right-2 top-1/2 -translate-y-1/2">
+            <FaSearch className="text-xl" />
+          </div>
+        </div>
       </nav>
-      <hr />
+
+      <hr className="hidden lg:block" />
       <div className="hidden lg:flex gap-6 items-center">
         <CategoryNavigation />
       </div>
-      <Drawer
-        placement="left"
-        onClose={() => setIsDrawerOpen(false)}
-        open={isDrawerOpen}
-      >
-        <div className="flex justify-between items-center -mt-5 mb-5">
-          <Link href={"/"}>
-            <Image
-              src={globalData?.results?.logo}
-              alt="logo"
-              width={80}
-              height={80}
-            />
-          </Link>
-          <button
-            className="mt-1 bg-gray-200 hover:scale-110 duration-500 rounded-full p-1"
-            onClick={() => setIsDrawerOpen(false)}
-          >
-            <GiCancel className="text-xl text-gray-700" />
-          </button>
-        </div>
-        <CategoryNavigation />
-      </Drawer>
-      <Drawer
-        open={isSearchOpen}
-        onCancel={() => setIsSearchOpen(false)}
-        footer={null}
-        keyboard={true}
-        destroyOnClose
-        placement="top"
-        height={200}
-      >
-        <div className="flex justify-between items-center -mt-2">
-          <div></div>
-          <button
-            className="mt-1 bg-gray-200 hover:scale-110 duration-500 rounded-full p-1"
-            onClick={() => setIsSearchOpen(false)}
-          >
-            <GiCancel className="text-xl text-gray-700" />
-          </button>
-        </div>
-        <div className="mt-10 flex items-center justify-between gap-10">
-          <Link href={"/"} className="hidden lg:flex">
-            <Image
-              src={globalData?.results?.logo}
-              alt="logo"
-              width={80}
-              height={80}
-            />
-          </Link>
-          <div className="relative w-full">
-            <AutoComplete
-              options={options}
-              onSearch={handleSearch}
-              placeholder="Search for Products..."
-              size="large"
-              className="w-full"
-            />
-            <FaSearch className="absolute right-8 top-1/2 -translate-y-1/2 text-primary text-xl" />
-          </div>
-          <div className="hidden lg:flex">
-            {cartData?.length > 0 ? (
-              <span className="relative">
-                <span className="absolute -top-2 -right-2 bg-primary text-white rounded-full w-4 h-4 flex items-center justify-center text-xs">
-                  {cartData?.length}
-                </span>
-                <FaShoppingBag
-                  className="cursor-pointer hover:text-primary duration-300 text-2xl"
-                  onClick={() => setIsCartOpen(true)}
-                />
-              </span>
-            ) : (
-              <FaShoppingBag
-                className="cursor-pointer hover:text-primary duration-300 text-2xl"
-                onClick={() => setIsCartOpen(true)}
-              />
-            )}
-          </div>
-        </div>
-      </Drawer>
+
       <Drawer
         placement="right"
         onClose={() => setIsCartOpen(false)}
