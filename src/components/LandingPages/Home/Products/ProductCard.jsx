@@ -13,6 +13,8 @@ import { useAddWishlistMutation } from "@/redux/services/wishlist/wishlistApi";
 import { useCurrentUser } from "@/redux/services/auth/authSlice";
 import { toast } from "sonner";
 import { TbHeart } from "react-icons/tb";
+import { useAddCartMutation } from "@/redux/services/cart/cartApi";
+import Link from "next/link";
 
 const ProductCard = ({ item }) => {
   const { data: globalData } = useGetAllGlobalSettingQuery();
@@ -21,7 +23,7 @@ const ProductCard = ({ item }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const deviceId = useSelector(useDeviceId);
-
+  const [addCart] = useAddCartMutation();
   const [addWishlist] = useAddWishlistMutation();
   const user = useSelector(useCurrentUser);
 
@@ -51,9 +53,34 @@ const ProductCard = ({ item }) => {
     }
   };
 
+  const addToCart = async () => {
+    const data = {
+      ...(user?._id ? { user: user._id } : { deviceId }),
+      product: item?._id,
+      quantity: 1,
+      sku: item?.sku,
+      price: item?.offerPrice ? item?.offerPrice : item?.sellingPrice,
+    };
+
+    const toastId = toast.loading("Adding to cart");
+
+    try {
+      const res = await addCart(data);
+      if (res?.data?.success) {
+        toast.success(res.data.message, { id: toastId });
+      }
+      if (res?.error) {
+        toast.error(res?.error?.data?.errorMessage, { id: toastId });
+      }
+    } catch (error) {
+      console.error("Failed to add item to cart:", error);
+      toast.error("Failed to add item to cart.", { id: toastId });
+    }
+  };
+
   return (
     <div
-      className="relative group lg:w-[220px] mx-auto h-[330px] flex flex-col border border-gray-200 bg-white rounded-xl overflow-hidden"
+      className="relative group lg:w-[220px] mx-auto h-[360px] flex flex-col border border-gray-200 bg-white rounded-xl overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -65,98 +92,92 @@ const ProductCard = ({ item }) => {
           <TbHeart />
         </div>
       </Tooltip>
-      <div className="relative">
-        {item?.video && isHovered ? (
-          <video
-            src={formatImagePath(item?.video)}
-            frameBorder="0"
-            allow="autoplay; encrypted-media"
-            allowFullScreen
-            autoPlay
-            muted
-            controls={false}
-            className="w-full h-[160px] lg:h-[200px] object-cover"
-          >
-            Your browser does not support the video tag.
-          </video>
-        ) : (
-          <Image
-            src={
-              pathname === "/products"
-                ? item?.mainImage
-                : formatImagePath(item?.mainImage)
-            }
-            alt={item?.name}
-            width={220}
-            height={260}
-            className="h-[180px] lg:h-[200px] lg:group-hover:scale-110 duration-500"
-          />
-        )}
+      <div className="relative overflow-hidden rounded-t-xl">
+        <Link href={`/products/${item?.slug}`}>
+          {item?.video && isHovered ? (
+            <video
+              src={formatImagePath(item?.video)}
+              frameBorder="0"
+              allow="autoplay; encrypted-media"
+              allowFullScreen
+              autoPlay
+              muted
+              controls={false}
+              className="w-full h-[160px] lg:h-[220px] rounded-t-xl object-cover"
+            >
+              Your browser does not support the video tag.
+            </video>
+          ) : (
+            <Image
+              src={
+                pathname === "/products"
+                  ? item?.mainImage
+                  : formatImagePath(item?.mainImage)
+              }
+              alt={item?.name}
+              width={230}
+              height={220}
+              className="rounded-t-xl w-[250px] h-[160px] lg:h-[220px] group-hover:scale-110 duration-500"
+            />
+          )}
+        </Link>
+        <div className="hidden lg:block absolute inset-x-0 bottom-0 transform translate-y-full group-hover:translate-y-0 duration-500 z-10">
+          <QuickViewHover item={item} />
+        </div>
+        <div className="lg:hidden">
+          <QuickViewHover item={item} />
+        </div>
       </div>
 
-      <div>
-        <div
-          className={`text-center lg:text-start px-2 transition-transform duration-500 bg-white ${
-            isHovered ? "lg:-translate-y-[50px]" : "lg:translate-y-0"
-          }`}
-        >
+      <div className="px-2">
+        <div>
           <LinkButton href={`/products/${item?.slug}`}>
             <Tooltip placement="top" title={item?.name}>
               <h2 className="text-sm text-start md:text-base mt-2 lg:mt-3 hover:text-gray-500 duration-300 mb-1">
-                {item?.name.length > 30
-                  ? item.name.slice(0, 30).concat("...")
+                {item?.name.length > 40
+                  ? item.name.slice(0, 40).concat("...")
                   : item.name}
               </h2>
             </Tooltip>
           </LinkButton>
-          <LinkButton href={`/products?filter=${item?.category?.name}`}>
-            <h2 className="text-[10px] lg:text-xs text-start md:text-sm hover:text-gray-500 duration-300 text-gray-400">
-              {item?.category?.name}
-            </h2>
-          </LinkButton>
         </div>
       </div>
-      <div
-        className={`text-center lg:text-start px-2 transition-transform duration-500 bg-white absolute bottom-10 lg:bottom-0 ${
-          isHovered ? "lg:-translate-y-[50px]" : "lg:translate-y-0"
-        }`}
-      >
-        <div className="flex items-center gap-2 lg:gap-4 mb-3">
-          {item?.offerPrice && (
-            <p className="text-xs lg:text-base line-through text-black/60">
-              {globalData?.results?.currency + " " + item?.sellingPrice}
-            </p>
-          )}
-          {item?.offerPrice ? (
-            <p className="text-black text-xs lg:text-base text-primary">
-              {globalData?.results?.currency + " " + item?.offerPrice}
-            </p>
-          ) : (
-            <p className="text-black text-xs lg:text-base text-primary">
-              {globalData?.results?.currency + " " + item?.sellingPrice}
-            </p>
-          )}
-          <div className="text-center">
-            {!item?.stock > 0 ? (
-              <div className="text-xs text-red-500">(Out Of Stock)</div>
+      <div>
+        <div className="flex justify-between items-center mb-3 px-2 absolute bottom-2 w-full">
+          <div>
+            {item?.offerPrice && (
+              <p className="text-xs lg:text-base line-through text-black/60">
+                {globalData?.results?.currency + " " + item?.sellingPrice}
+              </p>
+            )}
+            {item?.offerPrice ? (
+              <p className="text-black text-xs lg:text-base text-primary font-medium">
+                {globalData?.results?.currency + " " + item?.offerPrice}
+              </p>
             ) : (
-              <div className="text-xs text-green-500">(In Stock)</div>
+              <p className="text-black text-xs lg:text-base text-primary font-medium">
+                {globalData?.results?.currency + " " + item?.sellingPrice}
+              </p>
+            )}
+          </div>
+          <div className="text-center text-[10px]">
+            {!item?.stock > 0 ? (
+              <div className="text-red-500">(Out Of Stock)</div>
+            ) : (
+              <div className="text-green-500">(In Stock)</div>
+            )}
+          </div>
+
+          <div className="bg-primary px-2 lg:px-4 py-2 text-white rounded-xl text-xs lg:text-sm">
+            {item?.isVariant || item?.variants?.length > 0 ? (
+              <LinkButton href={`/products/${item?.slug}`}>
+                <div>Details</div>
+              </LinkButton>
+            ) : (
+              <button onClick={addToCart}>Add</button>
             )}
           </div>
         </div>
-      </div>
-
-      <div className="hidden lg:block">
-        <div
-          className={`absolute bottom-0 left-0 right-0 bg-white z-10 rounded-b-xl overflow-hidden transition-transform duration-500 ${
-            isHovered ? "translate-y-0" : "translate-y-full"
-          }`}
-        >
-          <QuickViewHover item={item} />
-        </div>
-      </div>
-      <div className="lg:hidden absolute bottom-0">
-        <QuickViewHover item={item} />
       </div>
 
       <QuickProductView

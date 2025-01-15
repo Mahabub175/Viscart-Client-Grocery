@@ -38,36 +38,45 @@ const TopProducts = () => {
   );
 
   return (
-    <section className="new-container">
+    <section>
       {sortedCategories?.length > 0
-        ? sortedCategories?.slice(0, 7)?.map(({ category, products }) => (
-            <div key={category?._id} className="py-10">
-              <div className="flex items-center justify-between mb-5">
-                <h2 className="text-lg lg:text-3xl font-medium text-center lg:text-start">
-                  {category?.name}
-                </h2>
-                <Link
-                  href={`/products?filter=${category?.name}`}
-                  className="hover:text-primary duration-300 font-semibold"
-                >
-                  Show All
-                </Link>
-              </div>
-              {products?.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap justify-center gap-5">
-                  {products.map((product) => (
-                    <div key={product?._id}>
-                      <ProductCard item={product} />
+        ? sortedCategories
+            ?.slice(0, 7)
+            ?.map(({ category, products }, index) => (
+              <div
+                key={category?._id}
+                className={`py-10 ${
+                  index % 2 === 0 ? "bg-[#ffffff]" : "bg-[#013D341A]"
+                }`}
+              >
+                <div className="new-container">
+                  <div className="flex items-center justify-between mb-5">
+                    <h2 className="text-lg lg:text-3xl font-medium text-center lg:text-start">
+                      {category?.name}
+                    </h2>
+                    <Link
+                      href={`/products?filter=${category?.name}`}
+                      className="hover:text-primary duration-300 font-semibold"
+                    >
+                      Show All
+                    </Link>
+                  </div>
+                  {products?.length > 0 ? (
+                    <div className="mt-5 grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap gap-10">
+                      {products.map((product) => (
+                        <div key={product?._id}>
+                          <ProductCard item={product} />
+                        </div>
+                      ))}
                     </div>
-                  ))}
+                  ) : (
+                    <p className="text-center text-sm text-gray-500">
+                      No products available in this category.
+                    </p>
+                  )}
                 </div>
-              ) : (
-                <p className="text-center text-sm text-gray-500">
-                  No products available in this category.
-                </p>
-              )}
-            </div>
-          ))
+              </div>
+            ))
         : null}
     </section>
   );
