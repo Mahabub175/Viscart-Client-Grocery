@@ -16,7 +16,7 @@ const Categories = () => {
       <h2 className="text-lg lg:text-3xl font-medium text-center lg:text-start">
         Category
       </h2>
-      <div className="grid grid-cols-2 md:flex md:flex-wrap gap-x-5 gap-y-14 justify-center xxl:justify-start mt-10">
+      <div className="grid grid-cols-2 md:flex md:flex-wrap gap-x-5 gap-y-14 justify-center mt-10">
         {activeCategories?.map((item) => (
           <div
             className="group relative w-[160px] h-[160px] rounded-xl bg-[#E5F3F3] p-3 border-2 border-transparent hover:border-primary duration-300"

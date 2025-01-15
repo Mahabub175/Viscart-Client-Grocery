@@ -12,16 +12,7 @@ import {
   useGetGenericsQuery,
   useGetSingleGenericQuery,
 } from "@/redux/services/generic/genericApi";
-import {
-  Dropdown,
-  Image,
-  Menu,
-  Pagination,
-  Space,
-  Table,
-  Tag,
-  Tooltip,
-} from "antd";
+import { Dropdown, Menu, Pagination, Space, Table, Tag, Tooltip } from "antd";
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaEdit } from "react-icons/fa";
@@ -82,22 +73,6 @@ const Generic = () => {
   };
 
   const columns = [
-    {
-      title: "Image",
-      dataIndex: "attachment",
-      key: "attachment",
-      align: "start",
-      render: (item) => (
-        <Image
-          src={
-            item ??
-            "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
-          }
-          alt={"generic image"}
-          className="!w-12 h-12 object-cover rounded-full"
-        />
-      ),
-    },
     {
       title: "Name",
       dataIndex: "name",

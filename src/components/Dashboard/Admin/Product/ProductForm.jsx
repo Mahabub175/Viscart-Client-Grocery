@@ -10,6 +10,7 @@ import { VariantComponent } from "./VariantComponent";
 import CustomTextEditor from "@/components/Reusable/Form/CustomTextEditor";
 import CustomVideoUploader from "@/components/Reusable/Form/VideoUploader";
 import MultipleFileUploader from "@/components/Reusable/Form/MultipleFIleUploader";
+import { useGetAllGenericsQuery } from "@/redux/services/generic/genericApi";
 
 const ProductForm = ({
   attachment,
@@ -28,6 +29,16 @@ const ProductForm = ({
     useGetAllBrandsQuery();
 
   const brandOptions = brandData?.results
+    ?.filter((item) => item?.status !== "Inactive")
+    .map((item) => ({
+      value: item?._id,
+      label: item?.name,
+    }));
+
+  const { data: genericData, isFetching: isGenericFetching } =
+    useGetAllGenericsQuery();
+
+  const genericOptions = genericData?.results
     ?.filter((item) => item?.status !== "Inactive")
     .map((item) => ({
       value: item?._id,
@@ -75,7 +86,7 @@ const ProductForm = ({
           icon={<RiRefreshLine className="text-xl" />}
         />
       </div>
-      <div className="two-grid">
+      <div className="three-grid">
         <CustomSelect
           label={"Product Brand"}
           name={"brand"}
@@ -90,6 +101,13 @@ const ProductForm = ({
           required={true}
           loading={isCategoryFetching}
           disabled={isCategoryFetching}
+        />
+        <CustomSelect
+          label={"Product Generic"}
+          name={"generic"}
+          options={genericOptions}
+          loading={isGenericFetching}
+          disabled={isGenericFetching}
         />
       </div>
       <CustomSelect label={"Product Tags"} name={"tags"} mode={"tags"} />
