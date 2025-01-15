@@ -14,18 +14,18 @@ const LandingFooter = () => {
   return (
     <section className="bg-[#0f0f0f] border-t mt-10 mb-16 lg:mb-0 text-gray-400">
       <footer className="pt-10 ">
-        <div className="new-container">
+        <div className="w-[1400px] mx-auto">
           <Link href={"/"}>
             <Image
               src={globalData?.results?.logo}
               alt="logo"
               width={200}
               height={200}
-              className="-ml-5"
+              className="xxl:-ml-5"
             />
           </Link>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 md:gap-0 xl:gap-10 items-start justify-center  new-container">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5 md:gap-0 xl:gap-10 items-start justify-center max-w-[1400px] mx-auto px-10 xxl:px-0">
           <ContactInfo globalData={globalData} />
 
           {footerData?.map((item, i) => (
@@ -82,7 +82,7 @@ const LandingFooter = () => {
 
         <hr className="mt-10 border-textColor" />
 
-        <div className="flex flex-col md:flex-row gap-5 lg:gap-0 justify-between items-center py-5 new-container">
+        <div className="flex flex-col md:flex-row gap-5 lg:gap-0 justify-between items-center py-5 w-[1400px] mx-auto">
           <p className="font-medium text-white">
             Trade License: TRAD/DNCC/0342302/2022
           </p>

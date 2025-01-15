@@ -153,14 +153,9 @@ const AllProducts = ({ searchParams }) => {
 
   return (
     <section className="py-10 relative -mt-5">
-      <div className="my-container">
+      <div className="xxl:px-32">
         <div className="bg-gray-200 flex items-center gap-2 justify-between py-3 px-2 lg:px-6 mb-6 rounded-xl">
-          <p className="text-xs md:text-base">
-            <span className="font-semibold text-lg">
-              {filteredProducts?.length}
-            </span>{" "}
-            products showing.
-          </p>
+          <p className="text-xs md:text-base">{searchParams || "Products"}</p>
           <Button type="primary" onClick={() => setFilterModal(true)}>
             Advance Filter
           </Button>
@@ -176,32 +171,28 @@ const AllProducts = ({ searchParams }) => {
             </Select>
           </div>
         </div>
-        <div className="flex flex-col lg:flex-row gap-5 items-start">
-          <div className="w-full">
-            <div>
-              {filteredProducts?.length > 0 ? (
-                <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap gap-5">
-                  {filteredProducts?.map((product) => (
-                    <ProductCard key={product?._id} item={product} />
-                  ))}
-                </div>
-              ) : (
-                <p className="text-center text-gray-500 mt-32 text-xl">
-                  No products found.
-                </p>
-              )}
-              <Pagination
-                className="flex justify-end items-center !mt-10"
-                total={productData?.meta?.totalCount}
-                current={currentPage}
-                onChange={handlePageChange}
-                pageSize={pageSize}
-                showSizeChanger
-                pageSizeOptions={paginationNumbers}
-                simple
-              />
+        <div>
+          {filteredProducts?.length > 0 ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap justify-center gap-5">
+              {filteredProducts?.map((product) => (
+                <ProductCard key={product?._id} item={product} />
+              ))}
             </div>
-          </div>
+          ) : (
+            <p className="text-center text-gray-500 mt-32 text-xl">
+              No products found.
+            </p>
+          )}
+          <Pagination
+            className="flex justify-end items-center !mt-10"
+            total={filteredProducts?.length}
+            current={currentPage}
+            onChange={handlePageChange}
+            pageSize={pageSize}
+            showSizeChanger
+            pageSizeOptions={paginationNumbers}
+            simple
+          />
         </div>
       </div>
       <Modal
