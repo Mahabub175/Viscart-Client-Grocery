@@ -2,43 +2,24 @@
 
 import LinkButton from "@/components/Shared/LinkButton";
 import { useGetAllCategoriesQuery } from "@/redux/services/category/categoryApi";
-import { useGetAllProductsQuery } from "@/redux/services/product/productApi";
 import Image from "next/image";
 
 const Categories = () => {
   const { data: categories } = useGetAllCategoriesQuery();
-  const { data: products } = useGetAllProductsQuery();
 
   const activeCategories = categories?.results?.filter(
     (item) => item?.status !== "Inactive"
   );
-  const activeProducts = products?.results?.filter(
-    (item) => item?.status !== "Inactive"
-  );
-
-  const getProductCountByCategory = (categoryId) => {
-    return activeProducts?.filter(
-      (product) => product?.category?._id === categoryId
-    )?.length;
-  };
-
-  const sortedCategories = activeCategories
-    ?.map((category) => ({
-      ...category,
-      productCount: getProductCountByCategory(category?._id),
-    }))
-    .sort((a, b) => b.productCount - a.productCount)
-    .slice(0, 6);
 
   return (
-    <section className="my-container p-5 mt-10 relative">
-      <h2 className="text-2xl lg:text-3xl font-medium text-center lg:text-start mb-5">
-        Top Categories
+    <section className="new-container mt-10 relative">
+      <h2 className="text-lg lg:text-3xl font-medium text-center lg:text-start">
+        Category
       </h2>
-      <div className="grid grid-cols-2 md:flex md:flex-wrap gap-5">
-        {sortedCategories?.map((item) => (
+      <div className="grid grid-cols-2 md:flex md:flex-wrap gap-x-5 gap-y-14 justify-center mt-10">
+        {activeCategories?.map((item) => (
           <div
-            className="group relative w-[160px] h-[160px] mx-auto rounded-xl"
+            className="group relative w-[160px] h-[160px] rounded-xl bg-[#E5F3F3] p-3 border-2 border-transparent hover:border-primary duration-300"
             key={item?._id}
           >
             <LinkButton href={`/products?filter=${item?.name}`}>
@@ -51,16 +32,9 @@ const Categories = () => {
                   alt={item?.name ?? "demo"}
                   width={160}
                   height={160}
-                  className="w-full h-full object-cover group-hover:scale-110 duration-500 rounded-xl"
+                  className="w-full h-full object-cover rounded-xl"
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-20 flex items-center justify-center rounded-xl">
-                  <h2 className="text-white text-lg font-medium group-hover:-translate-y-2 duration-500">
-                    {item?.name}
-                  </h2>
-                </div>
-                <div className="absolute bottom-10 left-0 right-0 text-white text-center py-1 opacity-0 group-hover:opacity-100 translate-y-full group-hover:translate-y-0 transition-transform duration-500 text-sm">
-                  {item.productCount} products
-                </div>
+                <h2 className="text-sm font-medium mt-4">{item?.name}</h2>
               </div>
             </LinkButton>
           </div>

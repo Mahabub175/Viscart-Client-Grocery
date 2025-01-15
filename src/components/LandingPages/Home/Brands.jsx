@@ -1,10 +1,18 @@
 "use client";
 
-import LinkButton from "@/components/Shared/LinkButton";
-import { useGetAllBrandsQuery } from "@/redux/services/brand/brandApi";
 import Image from "next/image";
+import { useRef } from "react";
+import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { Autoplay, Navigation, Pagination } from "swiper/modules";
+import { SwiperSlide, Swiper } from "swiper/react";
+import "swiper/css";
+import { useGetAllBrandsQuery } from "@/redux/services/brand/brandApi";
+import LinkButton from "@/components/Shared/LinkButton";
+import Link from "next/link";
 
 const Brands = () => {
+  const swiperRef = useRef();
+
   const { data: brands } = useGetAllBrandsQuery();
 
   const activeBrands = brands?.results?.filter(
@@ -12,37 +20,71 @@ const Brands = () => {
   );
 
   return (
-    <section className="my-container p-5 rounded-xl mt-20 relative">
-      <h2 className="text-2xl lg:text-3xl font-medium text-center lg:text-start mb-5">
-        Top Brands We Deal In
-      </h2>
-      <div className="flex flex-wrap justify-center items-center gap-5">
-        {activeBrands?.map((item) => {
-          return (
-            <div
-              key={item?._id}
-              className="relative w-[240px] h-[400px] rounded-xl overflow-hidden group bg-black bg-opacity-10 hover:bg-opacity-20 transition-all duration-500"
-            >
-              <LinkButton href={`/products?filter=${item?.name}`}>
-                <Image
-                  src={
-                    item?.attachment ??
-                    "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
-                  }
-                  alt={item?.name ?? "demo"}
-                  width={240}
-                  height={400}
-                  className="border-2 border-transparent hover:border-primary duration-500 w-[240px] h-[400px] rounded-xl mx-auto object-fill"
-                />
-                <div className="absolute top-0 left-0 w-full flex justify-center items-center h-14 z-10">
-                  <h2 className="text-white text-lg font-medium">
-                    {item?.name}
-                  </h2>
-                </div>
-              </LinkButton>
-            </div>
-          );
-        })}
+    <section className="new-container mt-20 relative">
+      <div className="flex items-center justify-between mb-5">
+        <h2 className="text-lg lg:text-3xl font-medium text-center lg:text-start">
+          Featured Brands
+        </h2>
+        <Link
+          href={`/products`}
+          className="text-black hover:text-primary duration-300 font-semibold"
+        >
+          Show All
+        </Link>
+      </div>
+      <div>
+        <Swiper
+          onBeforeInit={(swiper) => {
+            swiperRef.current = swiper;
+          }}
+          modules={[Navigation, Pagination, Autoplay]}
+          spaceBetween={20}
+          slidesPerView={2}
+          breakpoints={{
+            640: { slidesPerView: 2 },
+            768: { slidesPerView: 3 },
+            1024: { slidesPerView: 5 },
+          }}
+          navigation
+          autoplay={{
+            delay: 3000,
+            disableOnInteraction: false,
+          }}
+          className="mySwiper"
+        >
+          {activeBrands?.map((item) => {
+            return (
+              <SwiperSlide key={item?._id} className="py-5">
+                <LinkButton href={`/products?filter=${item?.name}`}>
+                  <Image
+                    src={
+                      item?.attachment ??
+                      "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
+                    }
+                    alt={item?.name ?? "demo"}
+                    width={240}
+                    height={240}
+                    className="bg-white shadow-xl border-2 border-transparent hover:border-primary duration-500 w-[220px] h-[220px] rounded-3xl mx-auto"
+                  />
+                </LinkButton>
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
+        <div className="flex items-center justify-center gap-5 mt-10">
+          <button
+            className="lg:w-10 lg:h-10 flex z-10 items-center justify-center rounded-full bg-white text-black border border-primary hover:bg-primary hover:text-white duration-300 absolute top-[45%] left-0"
+            onClick={() => swiperRef.current.slidePrev()}
+          >
+            <FaAngleLeft className="text-2xl" />
+          </button>
+          <button
+            className="lg:w-10 lg:h-10 z-10 flex items-center justify-center rounded-full bg-white text-black border border-primary hover:bg-primary hover:text-white duration-300 absolute top-[45%] right-0"
+            onClick={() => swiperRef.current.slideNext()}
+          >
+            <FaAngleRight className="text-2xl" />
+          </button>
+        </div>
       </div>
     </section>
   );
