@@ -26,7 +26,7 @@ const PopularProducts = () => {
         </Link>
       </div>
       {activeProducts?.length > 0 ? (
-        <div className="mt-5 grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap justify-center xxl:justify-start gap-5">
+        <div className="mt-5 grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 xxl:grid-cols-5 gap-5">
           {activeProducts?.map((product) => (
             <div key={product?._id}>
               <ProductCard item={product} />
