@@ -80,7 +80,7 @@ const ProductCard = ({ item }) => {
 
   return (
     <div
-      className="relative group lg:w-[220px] mx-auto h-[330px] lg:h-[360px] flex flex-col border border-gray-200 bg-white rounded-xl overflow-hidden"
+      className="relative group lg:w-[220px] mx-auto h-[330px] lg:h-[360px] hover:shadow-xl duration-500 flex flex-col border border-gray-200 bg-white rounded-xl overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

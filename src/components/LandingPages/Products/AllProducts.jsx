@@ -105,8 +105,16 @@ const AllProducts = ({ searchParams }) => {
           : availability === "outOfStock"
           ? product.stock === 0
           : true;
+      const isGenericMatch = searchFilter
+        ? product?.generic?.name?.toLowerCase().includes(searchFilter)
+        : true;
+
       return (
-        isBrandMatch && isCategoryMatch && isPriceMatch && isAvailabilityMatch
+        isBrandMatch &&
+        isCategoryMatch &&
+        isPriceMatch &&
+        isAvailabilityMatch &&
+        isGenericMatch
       );
     });
 
@@ -124,6 +132,7 @@ const AllProducts = ({ searchParams }) => {
     priceRange,
     sorting,
     availability,
+    searchFilter,
   ]);
 
   const handlePageChange = (page, size) => {

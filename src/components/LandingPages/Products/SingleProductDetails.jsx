@@ -1,20 +1,19 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 
 import ProductCountCart from "@/components/LandingPages/Home/Products/ProductCountCart";
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
-import {
-  useGetAllProductsQuery,
-  useGetSingleProductBySlugQuery,
-} from "@/redux/services/product/productApi";
+import { useGetSingleProductBySlugQuery } from "@/redux/services/product/productApi";
 import { formatImagePath } from "@/utilities/lib/formatImagePath";
 import { Rate } from "antd";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FaPlay, FaWhatsapp } from "react-icons/fa";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
-import ProductCard from "../Home/Products/ProductCard";
 import AttributeOptionSelector from "@/components/Shared/Product/AttributeOptionSelector";
+import RelatedProducts from "./RelatedProducts";
+import LinkButton from "@/components/Shared/LinkButton";
 
 const SingleProductDetails = ({ params }) => {
   const { data: globalData } = useGetAllGlobalSettingQuery();
@@ -27,17 +26,6 @@ const SingleProductDetails = ({ params }) => {
   const handleWhatsappClick = () => {
     window.open(`https://wa.me/${businessWhatsapp}`, "_blank");
   };
-
-  const { data: productData } = useGetAllProductsQuery();
-
-  const activeProducts = productData?.results
-    ?.filter(
-      (item) =>
-        item?.status !== "Inactive" &&
-        item?.name !== singleProduct?.name &&
-        item?.category?.name === singleProduct?.category?.name
-    )
-    ?.slice(0, 8);
 
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [selectedAttributes, setSelectedAttributes] = useState({});
@@ -144,81 +132,178 @@ const SingleProductDetails = ({ params }) => {
     }
   };
 
-  return (
-    <section className="py-10 -mt-10">
-      <div className="bg-white">
-        <div className="p-5 flex flex-col lg:flex-row items-center justify-center gap-10 mb-10 my-container pt-16 lg:pt-20">
-          <div className="relative mx-auto flex flex-col lg:flex-row-reverse items-center lg:gap-5">
-            <div className="relative mx-auto lg:w-[300px] xl:w-full">
-              {isVideoPlaying && singleProduct?.video ? (
-                <video
-                  src={formatImagePath(singleProduct?.video)}
-                  controls
-                  autoPlay
-                  className="mx-auto rounded-xl w-full h-auto"
-                >
-                  Your browser does not support the video tag.
-                </video>
-              ) : currentImage ? (
-                <Zoom>
-                  <Image
-                    src={currentImage}
-                    alt="product image"
-                    height={450}
-                    width={450}
-                    className="mx-auto rounded-xl"
-                  />
-                </Zoom>
-              ) : (
-                <p>No image available</p>
-              )}
-            </div>
+  const [isMagnifying, setIsMagnifying] = useState(false);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-            <div className="flex flex-row lg:flex-col justify-start gap-2 mt-5 max-h-[400px] w-[300px] lg:w-auto xl:w-[143px] border rounded-xl p-4 !overflow-x-auto lg:overflow-y-auto thumbnail">
-              {allMedia?.map((media, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleMediaClick(media)}
-                  className={`cursor-pointer border-2 rounded-xl ${
-                    selectedImage === media ||
-                    (media === "video-thumbnail" && isVideoPlaying)
-                      ? "border-primary"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {media === "video-thumbnail" ? (
-                    <div className="flex items-center justify-center rounded-xl w-20 h-20">
-                      <FaPlay className="text-white text-2xl" />
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex items-center justify-center rounded-xl w-20 h-20">
+  const handleMouseEnter = () => {
+    setIsMagnifying(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsMagnifying(false);
+  };
+  const throttle = (func, delay) => {
+    let lastCall = 0;
+    return (...args) => {
+      const now = new Date().getTime();
+      if (now - lastCall >= delay) {
+        lastCall = now;
+        return func(...args);
+      }
+    };
+  };
+
+  const handleMouseMove = useCallback(
+    throttle((e) => {
+      const { left, top } = e.currentTarget.getBoundingClientRect();
+      const x = e.clientX - left;
+      const y = e.clientY - top;
+      setMousePosition({ x, y });
+    }, 50),
+    []
+  );
+
+  const magnifierSize = 100;
+  const zoomLevel = 2;
+
+  return (
+    <section className="py-10 -mt-20">
+      <div className="bg-white">
+        <div className="p-5 flex flex-col lg:flex-row items-start justify-center gap-10 mb-10 new-container pt-16 lg:pt-20">
+          <div>
+            <div className="relative mx-auto flex flex-col lg:flex-row-reverse items-center lg:gap-5 border p-5 rounded-xl">
+              <div className="relative mx-auto lg:w-[300px] xl:w-full">
+                {isVideoPlaying && singleProduct?.video ? (
+                  <video
+                    src={formatImagePath(singleProduct?.video)}
+                    controls
+                    autoPlay
+                    className="mx-auto rounded-xl w-full h-auto"
+                  >
+                    Your browser does not support the video tag.
+                  </video>
+                ) : currentImage ? (
+                  <>
+                    <div className="hidden lg:block">
+                      <div className="relative">
                         <Image
-                          src={media}
-                          alt={`media ${index}`}
-                          height={80}
-                          width={80}
-                          className="object-cover rounded-xl"
+                          src={currentImage}
+                          alt={singleProduct?.name}
+                          width={450}
+                          height={450}
+                          className="object-cover"
+                          onMouseEnter={handleMouseEnter}
+                          onMouseLeave={handleMouseLeave}
+                          onMouseMove={handleMouseMove}
                         />
                       </div>
-                    </>
-                  )}
-                </div>
-              ))}
+
+                      {isMagnifying && (
+                        <div className="absolute top-0 xxl:top-[0px] -right-[120px] w-[100px] h-[80px] xxl:w-[120px] xxl:h-[120px] z-10">
+                          <div
+                            className="absolute w-full h-full"
+                            style={{
+                              backgroundImage: `url(${currentImage})`,
+                              backgroundSize: `${zoomLevel * 100}%`,
+                              backgroundPosition: `-${
+                                mousePosition.x * zoomLevel - magnifierSize / 2
+                              }px -${
+                                mousePosition.y * zoomLevel - magnifierSize / 2
+                              }px`,
+                              width: `${zoomLevel * 200}%`,
+                              height: `${zoomLevel * 200}%`,
+                              backgroundRepeat: "no-repeat",
+                            }}
+                          />
+                        </div>
+                      )}
+                    </div>
+                    <div className="lg:hidden">
+                      <Zoom>
+                        <Image
+                          src={currentImage}
+                          alt="product image"
+                          height={450}
+                          width={450}
+                          className="mx-auto rounded-xl"
+                        />
+                      </Zoom>
+                    </div>
+                  </>
+                ) : (
+                  <p>No image available</p>
+                )}
+              </div>
+
+              <div className="flex flex-row lg:flex-col justify-start gap-2 mt-5 max-h-[400px] w-[300px] lg:w-auto xl:w-[115px] xxl:w-[125px] border rounded-xl xxl:p-2 !overflow-x-auto lg:overflow-y-auto thumbnail">
+                {allMedia?.map((media, index) => (
+                  <div
+                    key={index}
+                    onClick={() => handleMediaClick(media)}
+                    className={`cursor-pointer border-2 rounded-xl ${
+                      selectedImage === media ||
+                      (media === "video-thumbnail" && isVideoPlaying)
+                        ? "border-primary"
+                        : "border-gray-300"
+                    }`}
+                  >
+                    {media === "video-thumbnail" ? (
+                      <div className="flex items-center justify-center rounded-xl w-20 h-20">
+                        <FaPlay className="text-white text-2xl" />
+                      </div>
+                    ) : (
+                      <>
+                        <div className="flex items-center justify-center rounded-xl w-20 h-20">
+                          <Image
+                            src={media}
+                            alt={`media ${index}`}
+                            height={80}
+                            width={80}
+                            className="object-cover rounded-xl xl:w-[75px] xxl:w-[80px]"
+                          />
+                        </div>
+                      </>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="border p-4 rounded-xl mt-5 max-w-[1200px]">
+              <div
+                dangerouslySetInnerHTML={{ __html: singleProduct?.description }}
+              ></div>
             </div>
           </div>
-          <div className="lg:w-1/2 flex flex-col text-sm lg:text-base">
+          <div className="lg:w-full flex flex-col text-sm lg:text-base border p-5 rounded-xl">
             <h2 className="text-xl md:text-3xl font-medium mb-2">
               {singleProduct?.name}
             </h2>
-            <div className="flex items-center gap-2 mb-1">
+            <div className="flex items-center gap-2 border-y py-2 hover:text-primary duration-300">
               <span className="font-medium">Category:</span>
-              <span>{singleProduct?.category?.name}</span>
+              <LinkButton
+                href={`/products?filter=${singleProduct?.category?.name}`}
+              >
+                {singleProduct?.category?.name}
+              </LinkButton>
             </div>
             {singleProduct?.brand && (
-              <div className="flex items-center gap-2">
+              <div className="flex items-center gap-2 border-b py-2 hover:text-primary duration-300">
                 <span className="font-medium">Brand:</span>
-                <span>{singleProduct?.brand?.name}</span>
+                <LinkButton
+                  href={`/products?filter=${singleProduct?.brand?.name}`}
+                >
+                  {singleProduct?.brand?.name}
+                </LinkButton>
+              </div>
+            )}
+            {singleProduct?.generic && (
+              <div className="flex items-center gap-2 border-b py-2 hover:text-primary duration-300">
+                <span className="font-medium">Generic:</span>
+                <LinkButton
+                  href={`/products?filter=${singleProduct?.generic?.name}`}
+                >
+                  {singleProduct?.generic?.name}
+                </LinkButton>
               </div>
             )}
             <div className="flex items-center mt-4 gap-4 font-medium">
@@ -231,7 +316,7 @@ const SingleProductDetails = ({ params }) => {
             </div>
             <div className="flex items-center gap-4 text-textColor font-medium my-2">
               Price:{" "}
-              {singleProduct?.offerPrice ? (
+              {singleProduct?.offerPrice || singleProduct?.offerPrice > 0 ? (
                 <p className="text-primary text-xl">
                   {globalData?.results?.currency +
                     " " +
@@ -242,7 +327,7 @@ const SingleProductDetails = ({ params }) => {
                   {globalData?.results?.currency + " " + currentPrice}
                 </p>
               )}
-              {singleProduct?.offerPrice && (
+              {(singleProduct?.offerPrice || singleProduct?.offerPrice > 0) && (
                 <p className="text-base line-through text-red-500">
                   {globalData?.results?.currency +
                     " " +
@@ -276,30 +361,7 @@ const SingleProductDetails = ({ params }) => {
           </div>
         </div>
       </div>
-      <div className="my-container">
-        <div className="rounded-xl p-5 mb-10 shadow-xl bg-white">
-          <div className="bg-primary mb-10 px-10 py-2 text-white font-bold rounded-xl inline-block">
-            Description
-          </div>
-          <div
-            dangerouslySetInnerHTML={{ __html: singleProduct?.description }}
-          ></div>
-        </div>
-        <div className="mt-20">
-          {activeProducts && activeProducts.length > 0 ? (
-            <>
-              <h2 className="text-xl lg:text-3xl font-normal mb-5 border-b pb-2 px-2">
-                Related Products
-              </h2>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-x-2 gap-y-5 lg:gap-5">
-                {activeProducts.map((product) => (
-                  <ProductCard key={product._id} item={product} />
-                ))}
-              </div>
-            </>
-          ) : null}
-        </div>
-      </div>
+      <RelatedProducts singleProduct={singleProduct} />
     </section>
   );
 };
