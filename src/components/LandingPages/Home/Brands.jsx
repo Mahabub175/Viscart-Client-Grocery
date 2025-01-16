@@ -26,7 +26,7 @@ const Brands = () => {
           Featured Brands
         </h2>
         <Link
-          href={`/products`}
+          href={`/brand`}
           className="text-black hover:text-primary duration-300 font-semibold text-sm lg:text-base"
         >
           Show All
