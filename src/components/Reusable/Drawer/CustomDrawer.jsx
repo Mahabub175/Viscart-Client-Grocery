@@ -9,7 +9,7 @@ const CustomDrawer = ({ setOpen, open, children, title, placement }) => {
       onClose={() => setOpen(false)}
       open={open}
       keyboard={true}
-      destroyOnClose
+      destroyOnClose={true}
     >
       <div className="mb-10 flex items-center gap-4">
         <button

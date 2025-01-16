@@ -77,12 +77,15 @@ const SidebarCategories = () => {
           className="mt-4 group"
         >
           <div
-            className="flex items-center justify-between cursor-pointer group-hover:text-primary border-y py-2 odd:border-b-0"
+            className="flex items-center justify-between cursor-pointer group-hover:text-primary duration-300 border-y py-2 odd:border-b-0"
             onClick={() => toggleOpenKey(parentCategory._id)}
           >
             <span className="flex items-center gap-4">
               <Image
-                src={parentCategory.attachment}
+                src={
+                  parentCategory.attachment ??
+                  "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
+                }
                 alt={parentCategory.name}
                 width={40}
                 height={20}
@@ -91,7 +94,7 @@ const SidebarCategories = () => {
             </span>
             {parentCategory.categories &&
               parentCategory.categories.length > 0 && (
-                <span className="text-sm text-gray-400 group-hover:text-primary">
+                <span className="text-sm text-gray-400 group-hover:text-primary duration-300">
                   {openKeys.includes(parentCategory._id) ? (
                     <DownOutlined />
                   ) : (

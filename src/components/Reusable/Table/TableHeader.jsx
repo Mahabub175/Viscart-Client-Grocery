@@ -10,7 +10,7 @@ import { DeleteButton, SubmitButton } from "../Button/CustomButton";
 import { usePathname } from "next/navigation";
 import CustomForm from "../Form/CustomForm";
 import FileUploader from "../Form/FileUploader";
-import { CiImport } from "react-icons/ci";
+import { CiImport, CiExport } from "react-icons/ci";
 import { useImportProductMutation } from "@/redux/services/product/productApi";
 import { base_url_image } from "@/utilities/configs/base_api";
 
@@ -21,6 +21,7 @@ const TableHeader = ({
   selectedRowKeys,
   deleteBulk,
   setSelectedRowKeys,
+  handleExport,
 }) => {
   const pathname = usePathname();
   const [modalOpen, setModalOpen] = useState(false);
@@ -54,8 +55,8 @@ const TableHeader = ({
     const formData = new FormData();
     formData.append("file", values.file[0].originFileObj);
 
+    const res = await importProduct(formData);
     try {
-      const res = await importProduct(formData);
       if (res.error) {
         toast.error(res?.error?.data?.errorMessage, { id: toastId });
       }
@@ -65,14 +66,12 @@ const TableHeader = ({
       }
     } catch (error) {
       console.error("Error uploading file:", error);
-      toast.error("An error occurred while uploading the file.", {
-        id: toastId,
-      });
+      toast.error(res?.error?.data?.errorMessage, { id: toastId });
     }
   };
 
   const handleDownload = () => {
-    const fileUrl = `${base_url_image}uploads/1737043704779-ProductUploadDemo.xlsx`;
+    const fileUrl = `${base_url_image}uploads/1737052637481-ProductUploadDemo.xlsx`;
     const link = document.createElement("a");
     link.href = fileUrl;
     link.download = "ProductUploadDemo.xlsx";
@@ -94,15 +93,26 @@ const TableHeader = ({
           </div>
 
           {pathname === "/admin/products/product" && (
-            <div
-              className="flex gap-3 items-center justify-center"
-              onClick={() => setImportModalOpen(true)}
-            >
-              <button className="bg-transparent rounded-lg px-6 py-2 border border-primary flex items-center gap-2 text-primary font-bold text-md hover:bg-primary hover:text-white duration-300">
-                <CiImport className="text-2xl" />
-                Import {title}
-              </button>
-            </div>
+            <>
+              <div
+                className="flex gap-3 items-center justify-center"
+                onClick={() => setImportModalOpen(true)}
+              >
+                <button className="bg-transparent rounded-lg px-6 py-2 border border-primary flex items-center gap-2 text-primary font-bold text-md hover:bg-primary hover:text-white duration-300">
+                  <CiImport className="text-2xl" />
+                  Import {title}
+                </button>
+              </div>
+              <div
+                className="flex gap-3 items-center justify-center"
+                onClick={handleExport}
+              >
+                <button className="bg-green-500 rounded-lg px-6 py-2 border border-primary flex items-center gap-2 text-white font-bold text-md hover:bg-primary duration-300">
+                  <CiExport className="text-2xl" />
+                  Export {title}
+                </button>
+              </div>
+            </>
           )}
 
           <div>

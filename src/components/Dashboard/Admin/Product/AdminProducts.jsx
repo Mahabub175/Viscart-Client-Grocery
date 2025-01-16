@@ -12,6 +12,7 @@ import {
   useGetProductsQuery,
   useGetSingleProductQuery,
 } from "@/redux/services/product/productApi";
+import { exportToExcel } from "@/utilities/lib/exportToExcel";
 import {
   Dropdown,
   Image,
@@ -94,7 +95,7 @@ const AdminProducts = () => {
             item ??
             "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
           }
-          alt={"brand image"}
+          alt={"product image"}
           className="!w-12 !h-12 rounded-full"
         />
       ),
@@ -266,6 +267,24 @@ const AdminProducts = () => {
     status: item?.status,
   }));
 
+  const exportData = products?.results?.map((item) => ({
+    name: item?.name,
+    sku: item?.sku,
+    slug: item?.slug,
+    brand: item?.brand?.name,
+    category: item?.category?.name,
+    buyingPrice: item?.buyingPrice,
+    sellingPrice: item?.sellingPrice,
+    stock: item?.stock,
+    isVariant: item?.isVariant,
+    isFeatured: item?.isFeatured,
+    attachment: item?.mainImage,
+  }));
+
+  const handleExport = () => {
+    exportToExcel(exportData, "Products.xlsx");
+  };
+
   return (
     <div className="lg:px-5">
       <TableHeader
@@ -278,6 +297,7 @@ const AdminProducts = () => {
         setOpenSearch={setOpenSearch}
         deleteBulk={deleteBulkProduct}
         setSelectedRowKeys={setSelectedRowKeys}
+        handleExport={handleExport}
       />
 
       <Table
