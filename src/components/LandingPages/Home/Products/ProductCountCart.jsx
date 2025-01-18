@@ -213,7 +213,7 @@ const ProductCountCart = ({
           />
         </>
       ) : (
-        <div className="p-2 bg-gradient-to-r from-red-500 to-red-700 text-white rounded font-bold text-xs z-10">
+        <div className="p-2 bg-gradient-to-r from-red-500 to-red-700 text-white rounded font-bold text-xs">
           Out Of Stock
         </div>
       )}

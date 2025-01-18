@@ -8,24 +8,19 @@ import { formatImagePath } from "@/utilities/lib/formatImagePath";
 import { Rate } from "antd";
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
-import { FaPlay, FaWhatsapp } from "react-icons/fa";
+import { FaPlay } from "react-icons/fa";
 import Zoom from "react-medium-image-zoom";
 import "react-medium-image-zoom/dist/styles.css";
 import AttributeOptionSelector from "@/components/Shared/Product/AttributeOptionSelector";
 import RelatedProducts from "./RelatedProducts";
 import LinkButton from "@/components/Shared/LinkButton";
+import RelatedGenericProducts from "./RelatedGenericProduct";
 
 const SingleProductDetails = ({ params }) => {
   const { data: globalData } = useGetAllGlobalSettingQuery();
   const { data: singleProduct } = useGetSingleProductBySlugQuery(
     params?.productId
   );
-
-  const businessWhatsapp = globalData?.results?.businessWhatsapp;
-
-  const handleWhatsappClick = () => {
-    window.open(`https://wa.me/${businessWhatsapp}`, "_blank");
-  };
 
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [selectedAttributes, setSelectedAttributes] = useState({});
@@ -169,7 +164,7 @@ const SingleProductDetails = ({ params }) => {
   return (
     <section className="py-10 -mt-20">
       <div className="bg-white">
-        <div className="p-5 flex flex-col lg:flex-row items-start justify-center gap-10 mb-10 new-container pt-16 lg:pt-20">
+        <div className="p-5 flex flex-col lg:flex-row items-start justify-center gap-2 xxl:gap-10 mb-10 new-container pt-16 lg:pt-20">
           <div>
             <div className="relative mx-auto flex flex-col lg:flex-row-reverse items-center lg:gap-5 border p-5 rounded-xl">
               <div className="relative mx-auto lg:w-[300px] xl:w-full">
@@ -189,7 +184,7 @@ const SingleProductDetails = ({ params }) => {
                         <Image
                           src={currentImage}
                           alt={singleProduct?.name}
-                          width={450}
+                          width={850}
                           height={450}
                           className="object-cover"
                           onMouseEnter={handleMouseEnter}
@@ -199,7 +194,7 @@ const SingleProductDetails = ({ params }) => {
                       </div>
 
                       {isMagnifying && (
-                        <div className="absolute top-0 xxl:top-[0px] -right-[120px] w-[100px] h-[80px] xxl:w-[120px] xxl:h-[120px] z-10">
+                        <div className="absolute top-0 xxl:top-[0px] -right-[125px] w-[100px] h-[80px] xxl:w-[120px] xxl:h-[120px] z-50">
                           <div
                             className="absolute w-full h-full"
                             style={{
@@ -235,7 +230,7 @@ const SingleProductDetails = ({ params }) => {
                 )}
               </div>
 
-              <div className="flex flex-row lg:flex-col justify-start gap-2 mt-5 max-h-[400px] w-[300px] lg:w-auto xl:w-[115px] xxl:w-[125px] border rounded-xl xxl:p-2 !overflow-x-auto lg:overflow-y-auto thumbnail">
+              <div className="flex flex-row lg:flex-col justify-start gap-2 mt-5 max-h-[400px] w-[300px] lg:w-auto xl:w-[130px] xxl:w-[122.5px] border rounded-xl xxl:p-2 !overflow-x-auto lg:overflow-y-auto thumbnail">
                 {allMedia?.map((media, index) => (
                   <div
                     key={index}
@@ -274,7 +269,7 @@ const SingleProductDetails = ({ params }) => {
               ></div>
             </div>
           </div>
-          <div className="lg:w-full flex flex-col text-sm lg:text-base border p-5 rounded-xl">
+          <div className="w-full lg:w-5/6 xxl:w-4/6 flex flex-col text-sm lg:text-base border p-5 rounded-xl">
             <h2 className="text-xl md:text-3xl font-medium mb-2">
               {singleProduct?.name}
             </h2>
@@ -348,16 +343,7 @@ const SingleProductDetails = ({ params }) => {
               fullWidth
               selectedPreviousAttributes={selectedAttributes}
             />
-            <div
-              className="w-full bg-primary px-10 py-2 text-xs lg:text-sm rounded-full shadow-xl mt-10 text-center text-white font-bold cursor-pointer"
-              onClick={handleWhatsappClick}
-            >
-              <p>Click To Place a Order With Just a Phone Call</p>
-              <div className="flex items-center justify-center gap-2 mt-1">
-                <FaWhatsapp className="text-2xl" />
-                <p>{businessWhatsapp}</p>
-              </div>
-            </div>
+            <RelatedGenericProducts singleProduct={singleProduct} />
           </div>
         </div>
       </div>

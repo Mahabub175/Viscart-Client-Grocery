@@ -11,6 +11,7 @@ import {
   Button,
   Modal,
   Radio,
+  Spin,
 } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { paginationNumbers } from "@/assets/data/paginationData";
@@ -30,6 +31,7 @@ const AllProducts = ({ searchParams }) => {
   const [filterModal, setFilterModal] = useState(false);
   const [searchFilter, setSearchFilter] = useState("");
   const [availability, setAvailability] = useState("inStock");
+  const [loading, setLoading] = useState(false);
 
   const { data: globalData } = useGetAllGlobalSettingQuery();
   const { data: brandData } = useGetAllBrandsQuery();
@@ -56,7 +58,7 @@ const AllProducts = ({ searchParams }) => {
   );
 
   const debouncedSetSearchFilter = useMemo(
-    () => debounce((value) => setSearchFilter(value?.toLowerCase()), 300),
+    () => debounce((value) => setSearchFilter(value?.toLowerCase())),
     []
   );
 
@@ -64,13 +66,14 @@ const AllProducts = ({ searchParams }) => {
     if (searchParams) {
       debouncedSetSearchFilter(searchParams);
     } else {
+      setSearchFilter("");
       setSelectedBrands([]);
       setSelectedCategories([]);
       setPriceRange([0, 10000]);
       setSorting("");
     }
     return () => debouncedSetSearchFilter.cancel();
-  }, [searchParams, debouncedSetSearchFilter]);
+  }, [searchParams, debouncedSetSearchFilter, searchFilter]);
 
   useEffect(() => {
     if (searchFilter) {
@@ -89,6 +92,8 @@ const AllProducts = ({ searchParams }) => {
   }, [searchFilter, activeBrands, activeCategories]);
 
   const filteredProducts = useMemo(() => {
+    setLoading(true);
+
     const filtered = activeProducts?.filter((product) => {
       const isBrandMatch = selectedBrands.length
         ? selectedBrands.includes(product?.brand?.name)
@@ -105,25 +110,40 @@ const AllProducts = ({ searchParams }) => {
           : availability === "outOfStock"
           ? product.stock === 0
           : true;
-      const isGenericMatch = searchFilter
-        ? product?.generic?.name?.toLowerCase().includes(searchFilter)
-        : true;
-
       return (
-        isBrandMatch &&
-        isCategoryMatch &&
-        isPriceMatch &&
-        isAvailabilityMatch &&
-        isGenericMatch
+        isBrandMatch && isCategoryMatch && isPriceMatch && isAvailabilityMatch
       );
     });
 
     if (sorting === "PriceLowToHigh") {
-      return filtered?.sort((a, b) => a.sellingPrice - b.sellingPrice);
+      setLoading(false);
+      return filtered?.sort((a, b) => {
+        const offerPriceA = a.offerPrice || a.sellingPrice;
+        const offerPriceB = b.offerPrice || b.sellingPrice;
+
+        if (offerPriceA !== offerPriceB) {
+          return offerPriceA - offerPriceB;
+        }
+
+        return a.sellingPrice - b.sellingPrice;
+      });
     }
+
     if (sorting === "PriceHighToLow") {
-      return filtered?.sort((a, b) => b.sellingPrice - a.sellingPrice);
+      setLoading(false);
+      return filtered?.sort((a, b) => {
+        const offerPriceA = a.offerPrice || a.sellingPrice;
+        const offerPriceB = b.offerPrice || b.sellingPrice;
+
+        if (offerPriceA !== offerPriceB) {
+          return offerPriceB - offerPriceA;
+        }
+
+        return b.sellingPrice - a.sellingPrice;
+      });
     }
+
+    setLoading(false);
     return filtered;
   }, [
     activeProducts,
@@ -132,7 +152,6 @@ const AllProducts = ({ searchParams }) => {
     priceRange,
     sorting,
     availability,
-    searchFilter,
   ]);
 
   const handlePageChange = (page, size) => {
@@ -181,7 +200,11 @@ const AllProducts = ({ searchParams }) => {
           </div>
         </div>
         <div>
-          {filteredProducts?.length > 0 ? (
+          {loading ? (
+            <div className="flex justify-center py-10">
+              <Spin size="large" />
+            </div>
+          ) : filteredProducts?.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap gap-5 xl:gap-0 xl:gap-y-5">
               {filteredProducts?.map((product) => (
                 <ProductCard key={product?._id} item={product} />
