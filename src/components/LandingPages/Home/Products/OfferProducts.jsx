@@ -41,13 +41,14 @@ const OfferProducts = () => {
               swiperRef.current = swiper;
             }}
             modules={[Navigation, Pagination, Autoplay]}
-            spaceBetween={20}
+            spaceBetween={10}
             slidesPerView={2}
             breakpoints={{
-              640: { slidesPerView: 2 },
-              768: { slidesPerView: 3 },
+              480: { slidesPerView: 2 },
+              500: { slidesPerView: 3 },
               1280: { slidesPerView: 4 },
               1480: { slidesPerView: 5 },
+              1680: { slidesPerView: 6 },
             }}
             navigation
             autoplay={{
@@ -69,13 +70,13 @@ const OfferProducts = () => {
         )}
         <div className="flex items-center justify-center gap-5 mt-10">
           <button
-            className="lg:w-10 lg:h-10 flex z-10 items-center justify-center rounded-full bg-white text-black border border-primary hover:bg-primary hover:text-white duration-300 absolute top-[45%] left-0"
+            className="lg:w-10 lg:h-10 flex z-10 items-center justify-center rounded-full bg-white text-black border border-primary hover:bg-primary hover:text-white duration-300 absolute top-[45%] left-0 lg:left-8 xxl:-left-5"
             onClick={() => swiperRef.current.slidePrev()}
           >
             <FaAngleLeft className="text-2xl" />
           </button>
           <button
-            className="lg:w-10 lg:h-10 z-10 flex items-center justify-center rounded-full bg-white text-black border border-primary hover:bg-primary hover:text-white duration-300 absolute top-[45%] right-0"
+            className="lg:w-10 lg:h-10 z-10 flex items-center justify-center rounded-full bg-white text-black border border-primary hover:bg-primary hover:text-white duration-300 absolute top-[45%] right-0 lg:right-8 xxl:-right-5"
             onClick={() => swiperRef.current.slideNext()}
           >
             <FaAngleRight className="text-2xl" />

@@ -80,7 +80,7 @@ const ProductCard = ({ item }) => {
 
   return (
     <div
-      className="relative group lg:w-[220px] mx-auto h-[330px] lg:h-[360px] hover:shadow-xl duration-500 flex flex-col border border-gray-200 bg-white rounded-xl overflow-hidden"
+      className="relative group w-full lg:w-[200px] mx-auto h-[330px] lg:h-[360px] hover:shadow-xl duration-500 flex flex-col border border-gray-200 bg-white rounded-xl overflow-hidden"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -115,9 +115,9 @@ const ProductCard = ({ item }) => {
                   : formatImagePath(item?.mainImage)
               }
               alt={item?.name}
-              width={230}
+              width={200}
               height={220}
-              className="rounded-t-xl w-[250px] h-[160px] lg:h-[220px] group-hover:scale-110 duration-500"
+              className="rounded-t-xl w-full lg:w-[200px] h-[160px] lg:h-[220px] group-hover:scale-110 duration-500"
             />
           )}
         </Link>
@@ -134,8 +134,8 @@ const ProductCard = ({ item }) => {
           <LinkButton href={`/products/${item?.slug}`}>
             <Tooltip placement="top" title={item?.name}>
               <h2 className="text-sm text-start md:text-base mt-2 lg:mt-3 hover:text-gray-500 duration-300 mb-1">
-                {item?.name.length > 40
-                  ? item.name.slice(0, 40).concat("...")
+                {item?.name.length > 36
+                  ? item.name.slice(0, 36).concat("...")
                   : item.name}
               </h2>
             </Tooltip>
@@ -146,7 +146,7 @@ const ProductCard = ({ item }) => {
         <div className="flex justify-between items-center mb-2 px-2 absolute bottom-0 w-full">
           <div>
             {(item?.offerPrice || item?.offerPrice > 0) && (
-              <p className="text-xs lg:text-base line-through text-black/60">
+              <p className="text-xs line-through text-black/60">
                 {globalData?.results?.currency + " " + item?.sellingPrice}
               </p>
             )}

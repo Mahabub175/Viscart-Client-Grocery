@@ -162,7 +162,7 @@ const AllProducts = ({ searchParams }) => {
 
   return (
     <section className="py-10 relative -mt-5">
-      <div className="xxl:px-32">
+      <div className="new-container">
         <div className="bg-gray-200 flex items-center gap-2 justify-between py-3 px-2 lg:px-6 mb-6 rounded-xl">
           <p className="text-xs md:text-base">{searchParams || "Products"}</p>
           <Button type="primary" onClick={() => setFilterModal(true)}>
@@ -182,7 +182,7 @@ const AllProducts = ({ searchParams }) => {
         </div>
         <div>
           {filteredProducts?.length > 0 ? (
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap justify-center gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap gap-5 xl:gap-0 xl:gap-y-5">
               {filteredProducts?.map((product) => (
                 <ProductCard key={product?._id} item={product} />
               ))}

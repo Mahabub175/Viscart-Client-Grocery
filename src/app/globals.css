@@ -97,7 +97,7 @@ body {
 }
 
 .new-container {
-  @apply max-w-[1280px] mx-auto px-2;
+  @apply max-w-[1280px] mx-auto px-2 lg:px-12 xxl:px-0;
 }
 
 .swiper-pagination-bullet {
