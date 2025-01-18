@@ -152,6 +152,11 @@ const ProductCard = ({ item }) => {
             </Tooltip>
           </LinkButton>
         </div>
+        {item?.weight && item?.unit && (
+          <p className="text-xs text-black/60 mt-1">
+            Weight: {item?.weight} {item?.unit?.name}
+          </p>
+        )}
       </div>
       <div>
         <div className="flex justify-between items-center mb-2 px-2 absolute bottom-0 w-full">
