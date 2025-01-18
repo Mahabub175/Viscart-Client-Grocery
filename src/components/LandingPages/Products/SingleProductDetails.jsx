@@ -82,7 +82,9 @@ const SingleProductDetails = ({ params }) => {
 
   const currentPrice = currentVariant
     ? currentVariant?.sellingPrice
-    : singleProduct?.offerPrice ?? singleProduct?.sellingPrice;
+    : singleProduct?.offerPrice && singleProduct?.offerPrice > 0
+    ? singleProduct?.offerPrice
+    : singleProduct?.sellingPrice;
 
   const currentImage = selectedImage
     ? selectedImage

@@ -63,7 +63,9 @@ const QuickProductView = ({
 
   const currentPrice = currentVariant
     ? currentVariant?.sellingPrice
-    : item?.offerPrice ?? item?.sellingPrice;
+    : item?.offerPrice && item?.offerPrice > 0
+    ? item?.offerPrice
+    : item?.sellingPrice;
 
   const currentImage = currentVariant?.images?.length
     ? formatImagePath(currentVariant.images[0])
