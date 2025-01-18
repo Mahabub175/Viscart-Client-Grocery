@@ -11,6 +11,7 @@ import CustomTextEditor from "@/components/Reusable/Form/CustomTextEditor";
 import CustomVideoUploader from "@/components/Reusable/Form/VideoUploader";
 import MultipleFileUploader from "@/components/Reusable/Form/MultipleFIleUploader";
 import { useGetAllGenericsQuery } from "@/redux/services/generic/genericApi";
+import { useGetAllUnitsQuery } from "@/redux/services/unit/unitApi";
 
 const ProductForm = ({
   attachment,
@@ -39,6 +40,15 @@ const ProductForm = ({
     useGetAllGenericsQuery();
 
   const genericOptions = genericData?.results
+    ?.filter((item) => item?.status !== "Inactive")
+    .map((item) => ({
+      value: item?._id,
+      label: item?.name,
+    }));
+
+  const { data: unitData, isFetching: isUnitFetching } = useGetAllUnitsQuery();
+
+  const unitOptions = unitData?.results
     ?.filter((item) => item?.status !== "Inactive")
     .map((item) => ({
       value: item?._id,
@@ -108,6 +118,16 @@ const ProductForm = ({
           options={genericOptions}
           loading={isGenericFetching}
           disabled={isGenericFetching}
+        />
+      </div>
+      <div className="two-grid">
+        <CustomInput label={"Product Weight"} name={"weight"} type={"number"} />
+        <CustomSelect
+          label={"Product Unit"}
+          name={"unit"}
+          options={unitOptions}
+          loading={isUnitFetching}
+          disabled={isUnitFetching}
         />
       </div>
       <CustomSelect label={"Product Tags"} name={"tags"} mode={"tags"} />

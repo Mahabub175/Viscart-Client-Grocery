@@ -1,7 +1,7 @@
 import { AiFillProduct } from "react-icons/ai";
 import { BiCategoryAlt } from "react-icons/bi";
 import { BsFillCartCheckFill, BsFillCartFill } from "react-icons/bs";
-import { CiGift } from "react-icons/ci";
+import { CiBoxList, CiGift } from "react-icons/ci";
 import { FaUser, FaImage } from "react-icons/fa";
 import { FaCartFlatbed, FaCartPlus } from "react-icons/fa6";
 import { IoSettingsSharp } from "react-icons/io5";
@@ -45,6 +45,11 @@ export const adminSidebarRoutes = [
         name: "Generic",
         path: "products/generic",
         icon: MdOutlineBrandingWatermark,
+      },
+      {
+        name: "Unit",
+        path: "products/unit",
+        icon: CiBoxList,
       },
       { name: "Category", path: "products/category", icon: BiCategoryAlt },
       { name: "Product", path: "products/product", icon: MdAddShoppingCart },

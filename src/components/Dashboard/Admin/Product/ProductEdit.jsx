@@ -137,6 +137,11 @@ const ProductEdit = ({ open, setOpen, itemId }) => {
           errors: "",
         },
         {
+          name: "unit",
+          value: productData?.unit?._id,
+          errors: "",
+        },
+        {
           name: "category",
           value: productData?.category?._id,
           errors: "",

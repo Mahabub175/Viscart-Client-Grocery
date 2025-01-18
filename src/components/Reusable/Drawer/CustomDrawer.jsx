@@ -10,6 +10,7 @@ const CustomDrawer = ({ setOpen, open, children, title, placement }) => {
       open={open}
       keyboard={true}
       destroyOnClose={true}
+      closeIcon={<GiCancel className="text-xl text-gray-700" />}
     >
       <div className="mb-10 flex items-center gap-4">
         <button

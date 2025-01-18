@@ -307,6 +307,12 @@ const SingleProductDetails = ({ params }) => {
                 </LinkButton>
               </div>
             )}
+            {singleProduct?.weight && (
+              <div className="flex items-center gap-2 border-b py-2 hover:text-primary duration-300">
+                <span className="font-medium">Weight:</span>
+                {singleProduct?.weight} {singleProduct?.unit?.name}
+              </div>
+            )}
             <div className="flex items-center mt-4 gap-4 font-medium">
               <Rate
                 disabled
