@@ -15,6 +15,7 @@ import { toast } from "sonner";
 import { TbHeart } from "react-icons/tb";
 import { useAddCartMutation } from "@/redux/services/cart/cartApi";
 import Link from "next/link";
+import { calculateDiscountPercentage } from "@/utilities/lib/discountCalculator";
 
 const ProductCard = ({ item }) => {
   const { data: globalData } = useGetAllGlobalSettingQuery();
@@ -78,6 +79,11 @@ const ProductCard = ({ item }) => {
     }
   };
 
+  const discountPercentage = calculateDiscountPercentage(
+    item?.sellingPrice,
+    item?.offerPrice
+  );
+
   return (
     <div
       className="relative group w-full lg:w-[200px] mx-auto h-[330px] lg:h-[360px] hover:shadow-xl duration-500 flex flex-col border border-gray-200 bg-white rounded-xl overflow-hidden"
@@ -127,6 +133,11 @@ const ProductCard = ({ item }) => {
         <div className="lg:hidden">
           <QuickViewHover item={item} />
         </div>
+        {discountPercentage > 0 && (
+          <p className="text-xs font-medium absolute top-2 bg-blue-500 text-white left-2 p-1 rounded-xl">
+            -{discountPercentage}%
+          </p>
+        )}
       </div>
 
       <div className="px-2">

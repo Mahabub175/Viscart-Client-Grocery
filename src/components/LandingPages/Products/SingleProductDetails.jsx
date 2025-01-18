@@ -15,6 +15,7 @@ import AttributeOptionSelector from "@/components/Shared/Product/AttributeOption
 import RelatedProducts from "./RelatedProducts";
 import LinkButton from "@/components/Shared/LinkButton";
 import RelatedGenericProducts from "./RelatedGenericProduct";
+import { calculateDiscountPercentage } from "@/utilities/lib/discountCalculator";
 
 const SingleProductDetails = ({ params }) => {
   const { data: globalData } = useGetAllGlobalSettingQuery();
@@ -160,6 +161,11 @@ const SingleProductDetails = ({ params }) => {
 
   const magnifierSize = 100;
   const zoomLevel = 2;
+
+  const discountPercentage = calculateDiscountPercentage(
+    singleProduct?.sellingPrice,
+    singleProduct?.offerPrice
+  );
 
   return (
     <section className="py-10 -mt-20">
@@ -327,6 +333,11 @@ const SingleProductDetails = ({ params }) => {
                   {globalData?.results?.currency +
                     " " +
                     singleProduct?.sellingPrice}
+                </p>
+              )}
+              {discountPercentage > 0 && (
+                <p className="text-xs font-medium bg-blue-500 text-white left-2 p-1 rounded-xl">
+                  -{discountPercentage}%
                 </p>
               )}
             </div>
