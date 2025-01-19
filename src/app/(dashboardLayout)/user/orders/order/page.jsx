@@ -4,6 +4,7 @@ import { paginationNumbers } from "@/assets/data/paginationData";
 import { SubmitButton } from "@/components/Reusable/Button/CustomButton";
 import CustomForm from "@/components/Reusable/Form/CustomForm";
 import CustomInput from "@/components/Reusable/Form/CustomInput";
+import OrderInvoice from "@/components/Reusable/OrderInvoice";
 import { useCurrentUser } from "@/redux/services/auth/authSlice";
 import { useGetOrdersByUserQuery } from "@/redux/services/order/orderApi";
 import { useAddReviewMutation } from "@/redux/services/review/reviewApi";
@@ -158,6 +159,13 @@ const UserOrders = () => {
           </Tag>
         );
       },
+    },
+    {
+      title: "Invoice",
+      dataIndex: "invoice",
+      key: "invoice",
+      align: "center",
+      render: (_, record) => <OrderInvoice order={record} />,
     },
     {
       title: "Review",

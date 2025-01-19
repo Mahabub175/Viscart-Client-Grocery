@@ -6,6 +6,8 @@ import CustomForm from "@/components/Reusable/Form/CustomForm";
 import CustomSelect from "@/components/Reusable/Form/CustomSelect";
 import DeleteModal from "@/components/Reusable/Modal/DeleteModal";
 import DetailsModal from "@/components/Reusable/Modal/DetailsModal";
+import OrderInvoice from "@/components/Reusable/OrderInvoice";
+import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 import {
   useDeleteOrderMutation,
   useGetOrdersQuery,
@@ -27,12 +29,11 @@ import {
 } from "antd";
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
+import { FaSearch } from "react-icons/fa";
+import { IoIosRefresh } from "react-icons/io";
 import { MdDelete } from "react-icons/md";
 import { TbListDetails } from "react-icons/tb";
 import { toast } from "sonner";
-import { IoIosRefresh } from "react-icons/io";
-import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
-import { FaSearch } from "react-icons/fa";
 
 const Orders = () => {
   const [detailsModalOpen, setDetailsModalOpen] = useState(false);
@@ -161,12 +162,6 @@ const Orders = () => {
       title: "Transaction ID",
       dataIndex: "tranId",
       key: "tranId",
-      align: "center",
-    },
-    {
-      title: "Invoice",
-      dataIndex: "invoice",
-      key: "invoice",
       align: "center",
     },
     {
@@ -365,21 +360,13 @@ const Orders = () => {
         );
       },
     },
-    // {
-    //   title: "Fraud Detection",
-    //   dataIndex: "fraudDetection",
-    //   key: "fraudDetection",
-    //   align: "center",
-    //   render: () => (
-    //     <div
-    //       onClick={() => {
-    //         toast.info("Fraud Detection is not available in demo version.");
-    //       }}
-    //     >
-    //       <Progress type="circle" percent={0} size={40} />
-    //     </div>
-    //   ),
-    // },
+    {
+      title: "Invoice",
+      dataIndex: "invoice",
+      key: "invoice",
+      align: "center",
+      render: (_, record) => <OrderInvoice order={record} />,
+    },
     {
       title: "Auto Delivery",
       dataIndex: "autoDelivery",
@@ -446,7 +433,6 @@ const Orders = () => {
     key: item._id,
     orderId: item.orderId,
     tranId: item.tranId ?? "N/A",
-    invoice: item.invoice ?? "N/A",
     trackingCode: item.trackingCode,
     name: item?.name,
     email: item?.email,
