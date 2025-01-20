@@ -273,12 +273,11 @@ const AdminProducts = () => {
     slug: item?.slug,
     brand: item?.brand?.name,
     category: item?.category?.name,
+    generic: item?.generic?.name,
     buyingPrice: item?.buyingPrice,
     sellingPrice: item?.sellingPrice,
     stock: item?.stock,
-    isVariant: item?.isVariant,
-    isFeatured: item?.isFeatured,
-    attachment: item?.mainImage,
+    mainImage: item?.mainImage,
   }));
 
   const handleExport = () => {

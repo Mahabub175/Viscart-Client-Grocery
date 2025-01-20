@@ -1,18 +1,14 @@
 "use client";
 
+import deleteImage from "@/assets/images/Trash-can.png";
 import { Button, Input, Modal } from "antd";
+import Image from "next/image";
+import { usePathname } from "next/navigation";
+import { useState } from "react";
+import { CiExport } from "react-icons/ci";
 import { FaPlus, FaSearch, FaTrash } from "react-icons/fa";
 import { toast } from "sonner";
-import deleteImage from "@/assets/images/Trash-can.png";
-import { useState } from "react";
-import Image from "next/image";
-import { DeleteButton, SubmitButton } from "../Button/CustomButton";
-import { usePathname } from "next/navigation";
-import CustomForm from "../Form/CustomForm";
-import FileUploader from "../Form/FileUploader";
-import { CiImport, CiExport } from "react-icons/ci";
-import { useImportProductMutation } from "@/redux/services/product/productApi";
-import { base_url_image } from "@/utilities/configs/base_api";
+import { DeleteButton } from "../Button/CustomButton";
 
 const TableHeader = ({
   setOpen,
@@ -25,9 +21,6 @@ const TableHeader = ({
 }) => {
   const pathname = usePathname();
   const [modalOpen, setModalOpen] = useState(false);
-  const [importModalOpen, setImportModalOpen] = useState(false);
-
-  const [importProduct, { isLoading }] = useImportProductMutation();
 
   const handleBulkDelete = async () => {
     const toastId = toast.loading(`Deleting ${title}...`);
@@ -49,35 +42,6 @@ const TableHeader = ({
     }
   };
 
-  const handleUpload = async (values) => {
-    const toastId = toast.loading("Uploading File...");
-
-    const formData = new FormData();
-    formData.append("file", values.file[0].originFileObj);
-
-    const res = await importProduct(formData);
-    try {
-      if (res.error) {
-        toast.error(res?.error?.data?.errorMessage, { id: toastId });
-      }
-      if (res.data.success) {
-        toast.success(res.data.message, { id: toastId });
-        setImportModalOpen(false);
-      }
-    } catch (error) {
-      console.error("Error uploading file:", error);
-      toast.error(res?.error?.data?.errorMessage, { id: toastId });
-    }
-  };
-
-  const handleDownload = () => {
-    const fileUrl = `${base_url_image}uploads/1737052637481-ProductUploadDemo.xlsx`;
-    const link = document.createElement("a");
-    link.href = fileUrl;
-    link.download = "ProductUploadDemo.xlsx";
-    link.click();
-  };
-
   return (
     <>
       <div className="flex flex-col lg:flex-row items-center justify-between">
@@ -96,18 +60,9 @@ const TableHeader = ({
             <>
               <div
                 className="flex gap-3 items-center justify-center"
-                onClick={() => setImportModalOpen(true)}
-              >
-                <button className="bg-transparent rounded-lg px-6 py-2 border border-primary flex items-center gap-2 text-primary font-bold text-md hover:bg-primary hover:text-white duration-300">
-                  <CiImport className="text-2xl" />
-                  Import {title}
-                </button>
-              </div>
-              <div
-                className="flex gap-3 items-center justify-center"
                 onClick={handleExport}
               >
-                <button className="bg-green-500 rounded-lg px-6 py-2 border border-primary flex items-center gap-2 text-white font-bold text-md hover:bg-primary duration-300">
+                <button className="bg-transparent rounded-lg px-6 py-2 border border-primary flex items-center gap-2 text-primary hover:text-white font-bold text-md hover:bg-primary duration-300">
                   <CiExport className="text-2xl" />
                   Export {title}
                 </button>
@@ -173,27 +128,6 @@ const TableHeader = ({
             </Button>
             <DeleteButton func={handleBulkDelete} text={"Delete"} />
           </div>
-        </div>
-      </Modal>
-      <Modal
-        centered
-        open={importModalOpen}
-        onOk={() => setImportModalOpen(false)}
-        onCancel={() => setImportModalOpen(false)}
-        footer={null}
-        destroyOnClose
-      >
-        <div className="p-8">
-          <CustomForm onSubmit={handleUpload}>
-            <FileUploader name={"file"} />
-            <SubmitButton fullWidth text={"Upload"} loading={isLoading} />
-          </CustomForm>
-          <p
-            className="mt-5 text-center hover:text-primary duration-300"
-            onClick={handleDownload}
-          >
-            Click To Download The Sample File
-          </p>
         </div>
       </Modal>
     </>
