@@ -235,25 +235,32 @@ const Orders = () => {
             color = "orange";
             text = "Pending";
             break;
-          case "delivered":
+          case "confirmed":
             color = "green";
-            text = "delivered";
+            text = "Confirmed";
             break;
-          case "returned":
-            color = "red";
-            text = "Returned";
+          case "packaging":
+            color = "purple";
+            text = "Packaging";
             break;
-          case "processing":
+          case "out for delivery":
             color = "blue";
-            text = "Processing";
+            text = "Out For Delivery";
             break;
           case "cancelled":
             color = "red";
             text = "Cancelled";
             break;
-          case "received":
+          case "delivered":
             color = "blue";
-            text = "Received";
+            text = "Delivered";
+            break;
+          case "failed to deliver":
+            color = "red";
+            text = "Failed To Deliver";
+          case "returned":
+            color = "red";
+            text = "Returned";
             break;
           default:
             color = "gray";
@@ -545,11 +552,12 @@ const Orders = () => {
             label={"Order Status"}
             options={[
               { label: "Pending", value: "pending" },
-              { label: "Received", value: "received" },
+              { label: "Confirmed", value: "confirmed" },
+              { label: "Packaging", value: "packaging" },
+              { label: "Out For Delivery", value: "out for delivery" },
               { label: "Delivered", value: "delivered" },
               { label: "Returned", value: "returned" },
-              { label: "Cancelled", value: "cancelled" },
-              { label: "Processing", value: "processing" },
+              { label: "Failed To Deliver", value: "failed to deliver" },
             ]}
           />
           <SubmitButton fullWidth text={"Update"} loading={isLoading} />
