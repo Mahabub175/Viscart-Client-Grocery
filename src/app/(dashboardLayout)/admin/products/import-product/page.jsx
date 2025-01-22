@@ -97,12 +97,12 @@ const ImportProduct = () => {
 
       toast.loading("Uploading data...", { id: toastId });
 
-      const bulkRes = await bulkProduct(uniqueData).unwrap();
+      const bulkRes = await bulkProduct(uniqueData);
       if (bulkRes.error) {
-        toast.error(res?.error?.data?.errorMessage, { id: toastId });
+        toast.error(bulkRes?.error?.data?.errorMessage, { id: toastId });
       }
       if (bulkRes.success) {
-        toast.success("Bulk Product Uploaded Successfully!", { id: toastId });
+        toast.success(bulkRes?.data?.message, { id: toastId });
       }
     } catch (error) {
       console.error("Error importing data:", error);
