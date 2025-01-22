@@ -24,6 +24,17 @@ const productApi = baseApi.injectEndpoints({
 
       invalidatesTags: ["product"],
     }),
+    bulkProduct: build.mutation({
+      query: (data) => {
+        return {
+          url: "/bulk-products/",
+          method: "POST",
+          body: data,
+        };
+      },
+
+      invalidatesTags: ["product"],
+    }),
     getProducts: build.query({
       query: ({ page = 1, limit = 5, search }) => ({
         url: `/product?page=${page}&limit=${limit}&searchText=${search}`,
@@ -110,6 +121,7 @@ const productApi = baseApi.injectEndpoints({
 export const {
   useAddProductMutation,
   useImportProductMutation,
+  useBulkProductMutation,
   useGetProductsQuery,
   useGetAllProductsQuery,
   useGetSingleProductQuery,

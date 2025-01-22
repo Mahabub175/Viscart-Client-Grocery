@@ -3,17 +3,26 @@
 import { SubmitButton } from "@/components/Reusable/Button/CustomButton";
 import CustomForm from "@/components/Reusable/Form/CustomForm";
 import FileUploader from "@/components/Reusable/Form/FileUploader";
-import { useImportProductMutation } from "@/redux/services/product/productApi";
+import {
+  useBulkProductMutation,
+  useGetAllProductsQuery,
+  useImportProductMutation,
+} from "@/redux/services/product/productApi";
 import { Tabs } from "antd";
 import { toast } from "sonner";
 import { base_url_image } from "@/utilities/configs/base_api";
 import CustomInput from "@/components/Reusable/Form/CustomInput";
 import { useSelector } from "react-redux";
+import { generateSKU } from "@/utilities/lib/generateSKU";
 
 const ImportProduct = () => {
   const token = useSelector((state) => state.auth.token);
+  const url = "https://scrapper.moonsgallerysystem.com/";
 
   const [importProduct, { isLoading }] = useImportProductMutation();
+  const { data: productData } = useGetAllProductsQuery();
+
+  const [bulkProduct, { isLoading: isBulkLoading }] = useBulkProductMutation();
 
   const handleUpload = async (values) => {
     const toastId = toast.loading("Uploading File...");
@@ -36,13 +45,13 @@ const ImportProduct = () => {
   };
 
   const handleAraggaImport = async (values) => {
-    const toastId = toast.loading("Importing Data...");
+    const toastId = toast.loading("Fetching Data...");
 
-    const url = `YOUR_API_URL?${values?.araggaCategory}?${token}`;
+    const apiUrl = `${url}${values?.araggaCategory}`;
 
     try {
-      const response = await fetch(url, {
-        method: "POST",
+      const response = await fetch(apiUrl, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
@@ -50,17 +59,53 @@ const ImportProduct = () => {
 
       const res = await response.json();
 
-      if (!response.ok) {
-        throw new Error(res?.errorMessage || "Something went wrong");
+      if (!response.ok || !res.success) {
+        throw new Error(res?.errorMessage || "Failed to fetch data");
       }
 
-      if (res.success) {
-        toast.success(res.message, { id: toastId });
-      } else {
-        toast.error(res?.errorMessage || "Import failed", { id: toastId });
+      toast.success("Data fetched successfully!", { id: toastId });
+
+      const uniqueData = res?.data
+        ?.map((item, index, self) => {
+          const normalizedName = item.name.trim().toLowerCase();
+
+          const isUniqueInData =
+            index ===
+            self.findIndex(
+              (t) => t.name.trim().toLowerCase() === normalizedName
+            );
+
+          const existsInResults = productData?.results?.some(
+            (result) => result.name.trim().toLowerCase() === normalizedName
+          );
+
+          const isDuplicateSku = productData?.results?.some(
+            (result) => result.sku === item.sku
+          );
+
+          const generatedSku =
+            isDuplicateSku || !item.sku ? generateSKU(item.name) : item.sku;
+
+          return isUniqueInData && !existsInResults
+            ? {
+                ...item,
+                sku: generatedSku,
+              }
+            : null;
+        })
+        .filter(Boolean);
+
+      toast.loading("Uploading data...", { id: toastId });
+
+      const bulkRes = await bulkProduct(uniqueData).unwrap();
+      if (bulkRes.error) {
+        toast.error(res?.error?.data?.errorMessage, { id: toastId });
+      }
+      if (bulkRes.success) {
+        toast.success("Bulk Product Uploaded Successfully!", { id: toastId });
       }
     } catch (error) {
-      console.error("Error Importing Data:", error);
+      console.error("Error importing data:", error);
       toast.error(error.message || "An unexpected error occurred", {
         id: toastId,
       });
@@ -141,7 +186,7 @@ const ImportProduct = () => {
               name={"araggaCategory"}
               required
             />
-            <SubmitButton fullWidth text={"Import"} loading={isLoading} />
+            <SubmitButton fullWidth text={"Import"} loading={isBulkLoading} />
           </CustomForm>
         </div>
       ),

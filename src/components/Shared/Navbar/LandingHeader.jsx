@@ -164,7 +164,7 @@ const LandingHeader = () => {
         showNavbar ? "translate-y-0" : "-translate-y-full"
       }`}
     >
-      <nav className="lg:px-5 -my-5 lg:-my-4 pb-5 lg:pb-0">
+      <nav className="lg:px-5 lg:my-2 pb-5 lg:pb-0">
         <div className="flex justify-between items-center gap-10">
           <Link href={"/"} className="flex flex-[1] lg:flex-none">
             <Image
@@ -276,7 +276,7 @@ const LandingHeader = () => {
             </div>
           </div>
         </div>
-        <div className="relative w-full lg:hidden -mt-5">
+        <div className="relative w-full lg:hidden mt-1">
           <AutoComplete
             options={options}
             onSearch={handleSearch}

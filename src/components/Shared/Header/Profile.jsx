@@ -71,7 +71,7 @@ const Profile = () => {
             src={globalData?.results?.logo ?? logo}
             alt="logo"
             height={40}
-            width={40}
+            width={200}
             className="w-full h-12"
           />
         </Link>
@@ -79,7 +79,7 @@ const Profile = () => {
       <Popover
         placement="bottomLeft"
         content={content}
-        className="lg:mr-4 cursor-pointer bg-primary"
+        className="cursor-pointer bg-primary"
       >
         {data?.profile_image ? (
           <Image
