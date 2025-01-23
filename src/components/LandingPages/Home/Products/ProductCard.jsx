@@ -152,7 +152,7 @@ const ProductCard = ({ item }) => {
         </div>
         {item?.weight && item?.unit && (
           <p className="text-xs text-black/60 mt-1">
-            Weight: {item?.weight} {item?.unit?.name}
+            {item?.weight} {item?.unit?.name}
           </p>
         )}
       </div>

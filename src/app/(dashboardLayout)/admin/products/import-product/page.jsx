@@ -12,12 +12,13 @@ import { Tabs } from "antd";
 import { toast } from "sonner";
 import { base_url_image } from "@/utilities/configs/base_api";
 import CustomInput from "@/components/Reusable/Form/CustomInput";
-import { useSelector } from "react-redux";
 import { generateSKU } from "@/utilities/lib/generateSKU";
 
 const ImportProduct = () => {
-  const token = useSelector((state) => state.auth.token);
-  const url = "https://scrapper.moonsgallerysystem.com/";
+  // const token = useSelector((state) => state.auth.token);
+  const araggaUrl = "https://scrapper.moonsgallerysystem.com/";
+  const chaldalUrl =
+    "https://komedeiscrapper.eddoktapos.xyz/api/scrape/?category=";
 
   const [importProduct, { isLoading }] = useImportProductMutation();
   const { data: productData } = useGetAllProductsQuery();
@@ -47,7 +48,7 @@ const ImportProduct = () => {
   const handleAraggaImport = async (values) => {
     const toastId = toast.loading("Fetching Data...");
 
-    const apiUrl = `${url}${values?.araggaCategory}`;
+    const apiUrl = `${araggaUrl}${values?.araggaCategory}`;
 
     try {
       const response = await fetch(apiUrl, {
@@ -98,10 +99,10 @@ const ImportProduct = () => {
       toast.loading("Uploading data...", { id: toastId });
 
       const bulkRes = await bulkProduct(uniqueData);
-      if (bulkRes.error) {
+      if (bulkRes?.data?.error) {
         toast.error(bulkRes?.error?.data?.errorMessage, { id: toastId });
       }
-      if (bulkRes.success) {
+      if (bulkRes?.data?.success) {
         toast.success(bulkRes?.data?.message, { id: toastId });
       }
     } catch (error) {
@@ -113,13 +114,13 @@ const ImportProduct = () => {
   };
 
   const handleChalDaalImport = async (values) => {
-    const toastId = toast.loading("Importing Data...");
+    const toastId = toast.loading("Fetching Data...");
 
-    const url = `YOUR_API_URL?${values?.chaldaalCategory}?${token}`;
+    const apiUrl = `${chaldalUrl}${values?.chaldalCategory}`;
 
     try {
-      const response = await fetch(url, {
-        method: "POST",
+      const response = await fetch(apiUrl, {
+        method: "GET",
         headers: {
           "Content-Type": "application/json",
         },
@@ -127,17 +128,63 @@ const ImportProduct = () => {
 
       const res = await response.json();
 
-      if (!response.ok) {
-        throw new Error(res?.errorMessage || "Something went wrong");
+      if (res?.error) {
+        toast.error("Failed to fetch data", {
+          id: toastId,
+        });
+        return;
       }
 
-      if (res.success) {
-        toast.success(res.message, { id: toastId });
-      } else {
-        toast.error(res?.errorMessage || "Import failed", { id: toastId });
+      toast.success("Data fetched successfully!", { id: toastId });
+
+      const uniqueData = res
+        ?.map((item, index, self) => {
+          const normalizedName = item.name.trim().toLowerCase();
+
+          const isUniqueInData =
+            index ===
+            self.findIndex(
+              (t) => t.name.trim().toLowerCase() === normalizedName
+            );
+
+          const existsInResults = productData?.results?.some(
+            (result) => result.name.trim().toLowerCase() === normalizedName
+          );
+
+          const isDuplicateSku = productData?.results?.some(
+            (result) => result.sku === item.sku
+          );
+
+          const generatedSku =
+            isDuplicateSku || !item.sku ? generateSKU(item.name) : item.sku;
+
+          const sellingPrice = Number(item.sellingPrice);
+          const offerPrice = Number(item.offerPrice);
+          const weight = Number(item.weight);
+
+          return isUniqueInData && !existsInResults
+            ? {
+                ...item,
+                sku: generatedSku,
+                sellingPrice,
+                offerPrice,
+                weight,
+              }
+            : null;
+        })
+        .filter(Boolean);
+
+      toast.loading("Uploading data...", { id: toastId });
+
+      const bulkRes = await bulkProduct(uniqueData);
+      if (bulkRes?.data?.error) {
+        toast.error(bulkRes?.error?.data?.errorMessage, { id: toastId });
+      }
+      if (bulkRes?.data?.success) {
+        toast.success(bulkRes?.data?.message, { id: toastId });
       }
     } catch (error) {
-      console.error("Error Importing Data:", error);
+      console.error("Error importing data:", error);
       toast.error(error.message || "An unexpected error occurred", {
         id: toastId,
       });
@@ -199,7 +246,7 @@ const ImportProduct = () => {
           <CustomForm onSubmit={handleChalDaalImport}>
             <CustomInput
               label={"Product Category"}
-              name={"chaldaalCategory"}
+              name={"chaldalCategory"}
               required
             />
             <SubmitButton fullWidth text={"Import"} loading={isLoading} />
