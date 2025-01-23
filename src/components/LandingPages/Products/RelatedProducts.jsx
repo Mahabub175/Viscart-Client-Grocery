@@ -21,7 +21,7 @@ const RelatedProducts = ({ singleProduct }) => {
         (item?.category?.name === singleProduct?.category?.name ||
           item?.generic?.name === singleProduct?.generic?.name)
     )
-    ?.slice(0, 12);
+    ?.slice(0, 20);
 
   return (
     <section className="mt-10 bg-[#EB494933] py-10">
