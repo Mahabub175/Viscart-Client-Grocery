@@ -2,19 +2,9 @@
 
 import { useGetAllBrandsQuery } from "@/redux/services/brand/brandApi";
 import { useGetAllCategoriesQuery } from "@/redux/services/category/categoryApi";
-import { useGetProductsQuery } from "@/redux/services/product/productApi";
-import {
-  Pagination,
-  Slider,
-  Checkbox,
-  Select,
-  Button,
-  Modal,
-  Radio,
-  Spin,
-} from "antd";
+import { useGetAllProductsQuery } from "@/redux/services/product/productApi";
+import { Pagination, Slider, Select, Button, Modal, Radio, Spin } from "antd";
 import { useEffect, useMemo, useState } from "react";
-import { paginationNumbers } from "@/assets/data/paginationData";
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 import ProductCard from "../Home/Products/ProductCard";
 import { debounce } from "lodash";
@@ -23,24 +13,23 @@ const { Option } = Select;
 
 const AllProducts = ({ searchParams }) => {
   const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(18);
-  const [selectedBrands, setSelectedBrands] = useState([]);
-  const [selectedCategories, setSelectedCategories] = useState([]);
+  const [pageSize, setPageSize] = useState(24);
+  const [selectedBrand, setSelectedBrand] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
   const [priceRange, setPriceRange] = useState([0, 10000]);
   const [sorting, setSorting] = useState("");
   const [filterModal, setFilterModal] = useState(false);
   const [searchFilter, setSearchFilter] = useState("");
   const [availability, setAvailability] = useState("inStock");
   const [loading, setLoading] = useState(false);
+  const [delayedLoading, setDelayedLoading] = useState(true);
+
+  const [filteredProducts, setFilteredProducts] = useState([]);
 
   const { data: globalData } = useGetAllGlobalSettingQuery();
   const { data: brandData } = useGetAllBrandsQuery();
   const { data: categoryData } = useGetAllCategoriesQuery();
-  const { data: productData } = useGetProductsQuery({
-    page: currentPage,
-    limit: pageSize,
-    search: "",
-  });
+  const { data: productData } = useGetAllProductsQuery();
 
   const activeBrands = useMemo(
     () => brandData?.results?.filter((item) => item?.status !== "Inactive"),
@@ -53,12 +42,13 @@ const AllProducts = ({ searchParams }) => {
   );
 
   const activeProducts = useMemo(
-    () => productData?.results?.filter((item) => item?.status !== "Inactive"),
+    () =>
+      productData?.results?.filter((item) => item?.status !== "Inactive") || [],
     [productData]
   );
 
   const debouncedSetSearchFilter = useMemo(
-    () => debounce((value) => setSearchFilter(value?.toLowerCase())),
+    () => debounce((value) => setSearchFilter(value?.toLowerCase()), 300),
     []
   );
 
@@ -67,104 +57,132 @@ const AllProducts = ({ searchParams }) => {
       debouncedSetSearchFilter(searchParams);
     } else {
       setSearchFilter("");
-      setSelectedBrands([]);
-      setSelectedCategories([]);
+      setSelectedBrand("");
+      setSelectedCategory("");
       setPriceRange([0, 10000]);
       setSorting("");
     }
     return () => debouncedSetSearchFilter.cancel();
-  }, [searchParams, debouncedSetSearchFilter, searchFilter]);
+  }, [searchParams, debouncedSetSearchFilter]);
 
   useEffect(() => {
     if (searchFilter) {
-      const matchedBrands = activeBrands
-        ?.filter((brand) => brand?.name?.toLowerCase().includes(searchFilter))
-        .map((brand) => brand.name);
-      const matchedCategories = activeCategories
-        ?.filter((category) =>
-          category?.name?.toLowerCase().includes(searchFilter)
-        )
-        .map((category) => category.name);
+      const matchedBrand = activeBrands?.find((brand) =>
+        brand?.name?.includes(searchFilter)
+      );
 
-      setSelectedBrands(matchedBrands || []);
-      setSelectedCategories(matchedCategories || []);
+      const matchedCategory = !matchedBrand
+        ? activeCategories?.find((category) =>
+            category?.name?.includes(searchFilter)
+          )
+        : null;
+
+      setSelectedBrand(matchedBrand?.name || "");
+      setSelectedCategory(matchedCategory?.name || "");
+    } else {
+      setSelectedBrand("");
+      setSelectedCategory("");
     }
   }, [searchFilter, activeBrands, activeCategories]);
 
-  const filteredProducts = useMemo(() => {
-    setLoading(true);
+  useEffect(() => {
+    const applyFilters = () => {
+      setLoading(true);
 
-    const filtered = activeProducts?.filter((product) => {
-      const isBrandMatch = selectedBrands.length
-        ? selectedBrands.includes(product?.brand?.name)
-        : true;
-      const isCategoryMatch = selectedCategories.length
-        ? selectedCategories.includes(product?.category?.name)
-        : true;
-      const isPriceMatch =
-        product.sellingPrice >= priceRange[0] &&
-        product.sellingPrice <= priceRange[1];
-      const isAvailabilityMatch =
-        availability === "inStock"
-          ? product.stock > 0
-          : availability === "outOfStock"
-          ? product.stock === 0
+      let filtered = activeProducts?.filter((product) => {
+        if (!product) return false;
+
+        const isBrandMatch = selectedBrand
+          ? selectedBrand.toLowerCase() === product?.brand?.name?.toLowerCase()
           : true;
-      return (
-        isBrandMatch && isCategoryMatch && isPriceMatch && isAvailabilityMatch
-      );
-    });
 
-    if (sorting === "PriceLowToHigh") {
+        const isCategoryMatch = selectedCategory
+          ? selectedCategory.toLowerCase() ===
+            product?.category?.name?.toLowerCase()
+          : true;
+
+        const isSearchMatch = searchFilter
+          ? product?.brand?.name?.toLowerCase().includes(searchFilter) ||
+            product?.category?.name?.toLowerCase().includes(searchFilter) ||
+            product?.name?.toLowerCase().includes(searchFilter)
+          : true;
+
+        const isPriceMatch =
+          product.sellingPrice >= priceRange[0] &&
+          product.sellingPrice <= priceRange[1];
+
+        const isAvailabilityMatch =
+          availability === "inStock"
+            ? product.stock > 0
+            : availability === "outOfStock"
+            ? product.stock === 0
+            : true;
+
+        return (
+          isBrandMatch &&
+          isCategoryMatch &&
+          isSearchMatch &&
+          isPriceMatch &&
+          isAvailabilityMatch
+        );
+      });
+
+      let sorted = [...filtered];
+      if (sorting === "PriceLowToHigh") {
+        sorted.sort(
+          (a, b) =>
+            (a.offerPrice || a.sellingPrice) - (b.offerPrice || b.sellingPrice)
+        );
+      } else if (sorting === "PriceHighToLow") {
+        sorted.sort(
+          (a, b) =>
+            (b.offerPrice || b.sellingPrice) - (a.offerPrice || a.sellingPrice)
+        );
+      }
+
+      setFilteredProducts(sorted);
       setLoading(false);
-      return filtered?.sort((a, b) => {
-        const offerPriceA = a.offerPrice || a.sellingPrice;
-        const offerPriceB = b.offerPrice || b.sellingPrice;
 
-        if (offerPriceA !== offerPriceB) {
+      if (sorting === "PriceLowToHigh") {
+        sorted = sorted.sort((a, b) => {
+          const offerPriceA = a.offerPrice || a.sellingPrice;
+          const offerPriceB = b.offerPrice || b.sellingPrice;
           return offerPriceA - offerPriceB;
-        }
-
-        return a.sellingPrice - b.sellingPrice;
-      });
-    }
-
-    if (sorting === "PriceHighToLow") {
-      setLoading(false);
-      return filtered?.sort((a, b) => {
-        const offerPriceA = a.offerPrice || a.sellingPrice;
-        const offerPriceB = b.offerPrice || b.sellingPrice;
-
-        if (offerPriceA !== offerPriceB) {
+        });
+      } else if (sorting === "PriceHighToLow") {
+        sorted = sorted.sort((a, b) => {
+          const offerPriceA = a.offerPrice || a.sellingPrice;
+          const offerPriceB = b.offerPrice || b.sellingPrice;
           return offerPriceB - offerPriceA;
-        }
+        });
+      }
 
-        return b.sellingPrice - a.sellingPrice;
-      });
-    }
+      setTimeout(() => {
+        setFilteredProducts(sorted);
+        setLoading(false);
+      }, 200);
+    };
 
-    setLoading(false);
-    return filtered;
+    applyFilters();
   }, [
     activeProducts,
-    selectedBrands,
-    selectedCategories,
+    selectedBrand,
+    selectedCategory,
     priceRange,
     sorting,
     availability,
+    searchFilter,
   ]);
+
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    return filteredProducts.slice(startIndex, endIndex);
+  }, [filteredProducts, currentPage, pageSize]);
 
   const handlePageChange = (page, size) => {
     setCurrentPage(page);
     setPageSize(size);
-  };
-
-  const handleBrandChange = (checkedValues) => {
-    setSelectedBrands(checkedValues);
-  };
-
-  const handleCategoryChange = (checkedValues) => {
-    setSelectedCategories(checkedValues);
   };
 
   const handlePriceChange = (value) => {
@@ -178,6 +196,15 @@ const AllProducts = ({ searchParams }) => {
   const handleAvailabilityChange = (e) => {
     setAvailability(e.target.value);
   };
+
+  useEffect(() => {
+    if (!loading) {
+      const timer = setTimeout(() => {
+        setDelayedLoading(false);
+      }, 100);
+      return () => clearTimeout(timer);
+    }
+  }, [loading]);
 
   return (
     <section className="py-10 relative -mt-5">
@@ -200,13 +227,13 @@ const AllProducts = ({ searchParams }) => {
           </div>
         </div>
         <div>
-          {loading ? (
+          {loading || delayedLoading ? (
             <div className="flex justify-center py-10">
               <Spin size="large" />
             </div>
-          ) : filteredProducts?.length > 0 ? (
+          ) : paginatedProducts?.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap gap-5 xl:gap-0 xl:gap-y-5">
-              {filteredProducts?.map((product) => (
+              {paginatedProducts?.map((product) => (
                 <ProductCard key={product?._id} item={product} />
               ))}
             </div>
@@ -215,16 +242,17 @@ const AllProducts = ({ searchParams }) => {
               No products found.
             </p>
           )}
-          <Pagination
-            className="flex justify-end items-center !mt-10"
-            total={filteredProducts?.length}
-            current={currentPage}
-            onChange={handlePageChange}
-            pageSize={pageSize}
-            showSizeChanger
-            pageSizeOptions={paginationNumbers}
-            simple
-          />
+
+          <div className="flex justify-end pt-10">
+            <Pagination
+              current={currentPage}
+              total={filteredProducts.length}
+              pageSize={pageSize}
+              showSizeChanger
+              pageSizeOptions={["10", "20", "50", "100"]}
+              onChange={handlePageChange}
+            />
+          </div>
         </div>
       </div>
       <Modal
@@ -235,30 +263,6 @@ const AllProducts = ({ searchParams }) => {
       >
         <div className="w-full p-4">
           <h2 className="mb-4 text-lg font-semibold">Filter Products</h2>
-          <div className="mb-6 border p-5 rounded-xl max-h-[500px] overflow-y-auto">
-            <label className="block mb-2 font-semibold">Brands</label>
-            <Checkbox.Group
-              options={activeBrands?.map((brand) => ({
-                label: brand.name,
-                value: brand.name,
-              }))}
-              value={selectedBrands}
-              onChange={handleBrandChange}
-              className="flex flex-col gap-2"
-            />
-          </div>
-          <div className="mb-6 border p-5 rounded-xl max-h-[500px] overflow-y-auto">
-            <label className="block mb-2 font-semibold">Categories</label>
-            <Checkbox.Group
-              options={activeCategories?.map((category) => ({
-                label: category.name,
-                value: category.name,
-              }))}
-              value={selectedCategories}
-              onChange={handleCategoryChange}
-              className="flex flex-col gap-2"
-            />
-          </div>
           <div className="mb-6">
             <label className="block mb-2 font-semibold">Price Range</label>
             <Slider

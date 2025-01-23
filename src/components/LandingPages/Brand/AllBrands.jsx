@@ -17,12 +17,15 @@ const AllBrands = () => {
     (item) => item?.status !== "Inactive"
   );
 
-  const brandsWithProducts = activeBrands?.map((brand) => ({
-    ...brand,
-    products: activeProducts?.filter(
+  const brandsWithProducts = activeBrands?.map((brand) => {
+    const brandProducts = activeProducts?.filter(
       (product) => product?.brand?._id === brand?._id
-    ),
-  }));
+    );
+    return {
+      ...brand,
+      products: brandProducts,
+    };
+  });
 
   const alphabets = Array.from({ length: 26 }, (_, i) =>
     String.fromCharCode(65 + i)
@@ -53,11 +56,11 @@ const AllBrands = () => {
 
       <div>
         {alphabets.map((alphabet) => {
-          const brands = brandsWithProducts?.filter((brand) =>
+          const filteredBrands = brandsWithProducts?.filter((brand) =>
             brand?.name?.startsWith(alphabet)
           );
 
-          if (activeBrands?.length === 0) return null;
+          if (!filteredBrands || filteredBrands.length === 0) return null;
 
           return (
             <div
@@ -69,14 +72,17 @@ const AllBrands = () => {
                 {alphabet}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {brands.map((brand) => (
+                {filteredBrands?.map((brand) => (
                   <Link
-                    href={`/product?filter=${brand?.name}`}
+                    href={`/products?filter=${brand?.name}`}
                     key={brand._id}
                     className="p-4 border rounded-xl flex items-center gap-5"
                   >
                     <Image
-                      src={brand.attachment}
+                      src={
+                        brand.attachment ??
+                        "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
+                      }
                       alt={brand.name}
                       width={100}
                       height={100}
@@ -84,7 +90,7 @@ const AllBrands = () => {
                     />
                     <div>
                       <h3 className="text-xl font-medium mb-2">{brand.name}</h3>
-                      <div>{brand.products?.length} Products</div>
+                      <div>{brand.products?.length || 0} Products</div>
                     </div>
                   </Link>
                 ))}
