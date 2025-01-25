@@ -44,6 +44,7 @@ const WrappedAntDConfig = ({ children }) => {
         dispatch(logout());
       }
     }
+    setLoading(true);
 
     if (data?.results) {
       const websiteName = data?.results?.name || "Viscart";
@@ -63,24 +64,13 @@ const WrappedAntDConfig = ({ children }) => {
         secondaryColor
       );
     }
+    setLoading(false);
   }, [data, dispatch, token]);
 
   useEffect(() => {
     const websiteName = data?.results?.name || "Viscart";
     document.title = websiteName;
   }, [data, router]);
-
-  useEffect(() => {
-    const handleImageLoad = () => setLoading(false);
-
-    const primaryImage = new Image();
-    primaryImage.src = data?.results?.logo;
-    primaryImage.onload = handleImageLoad;
-
-    return () => {
-      primaryImage.onload = null;
-    };
-  }, [data]);
 
   if (loading || isFetching || slider?.results?.length === 0) {
     return (
