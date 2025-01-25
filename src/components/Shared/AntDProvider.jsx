@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ConfigProvider } from "antd";
 import { Provider, useDispatch, useSelector } from "react-redux";
 import { PersistGate } from "redux-persist/integration/react";
@@ -11,6 +11,8 @@ import { logout, useCurrentToken } from "@/redux/services/auth/authSlice";
 import { jwtDecode } from "jwt-decode";
 import { Toaster } from "sonner";
 import { usePathname } from "next/navigation";
+import LoadingAnimation from "./LoadingAnimation";
+import { useGetAllSlidersQuery } from "@/redux/services/slider/sliderApi";
 
 const AntDProvider = ({ children }) => {
   return (
@@ -28,6 +30,9 @@ const WrappedAntDConfig = ({ children }) => {
   const token = useSelector(useCurrentToken);
   const { data } = useGetAllGlobalSettingQuery();
   const { primaryColor } = useSelector(getColors);
+  const [loading, setLoading] = useState(true);
+
+  const { data: slider, isFetching } = useGetAllSlidersQuery();
 
   useEffect(() => {
     if (token) {
@@ -64,6 +69,26 @@ const WrappedAntDConfig = ({ children }) => {
     const websiteName = data?.results?.name || "Viscart";
     document.title = websiteName;
   }, [data, router]);
+
+  useEffect(() => {
+    const handleImageLoad = () => setLoading(false);
+
+    const primaryImage = new Image();
+    primaryImage.src = data?.results?.logo;
+    primaryImage.onload = handleImageLoad;
+
+    return () => {
+      primaryImage.onload = null;
+    };
+  }, [data]);
+
+  if (loading || isFetching || slider?.results?.length === 0) {
+    return (
+      <section className="h-screen flex items-center justify-center">
+        <LoadingAnimation />
+      </section>
+    );
+  }
 
   return (
     <ConfigProvider

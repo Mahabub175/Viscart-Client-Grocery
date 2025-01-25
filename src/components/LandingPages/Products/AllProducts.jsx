@@ -201,7 +201,7 @@ const AllProducts = ({ searchParams }) => {
     if (!loading) {
       const timer = setTimeout(() => {
         setDelayedLoading(false);
-      }, 100);
+      }, 500);
       return () => clearTimeout(timer);
     }
   }, [loading]);

@@ -1,18 +1,9 @@
 import { useGetAllCategoriesQuery } from "@/redux/services/category/categoryApi";
 import Link from "next/link";
-import { useState } from "react";
+import { Popover } from "antd";
 
 const CategoryNavigation = () => {
   const { data: categories } = useGetAllCategoriesQuery();
-  const [hoveredParent, setHoveredParent] = useState(null);
-
-  const handleMouseEnter = (parentCategory) => {
-    setHoveredParent(parentCategory._id);
-  };
-
-  const handleMouseLeave = () => {
-    setHoveredParent(null);
-  };
 
   const renderCategoriesInColumns = (parentCategory) => {
     const categoriesToDisplay = parentCategory.categories || [];
@@ -39,12 +30,12 @@ const CategoryNavigation = () => {
             >
               {category.name}
             </Link>
-            <div className="mt-2 text-sm text-gray-600">
+            <div className="my-2 text-sm text-gray-600">
               {category.subcategories?.map((subCategory) => (
                 <Link
                   key={subCategory._id}
                   href={`/products?filter=${subCategory.name}`}
-                  className="block text-gray-800 hover:text-black hover:font-medium"
+                  className="block text-gray-800 hover:text-primary mb-1"
                 >
                   {subCategory.name}
                 </Link>
@@ -60,27 +51,19 @@ const CategoryNavigation = () => {
     categories?.results
       ?.filter((item) => item.level === "parentCategory")
       .map((parentCategory) => (
-        <div
+        <Popover
           key={parentCategory._id}
-          onMouseEnter={() => handleMouseEnter(parentCategory)}
-          onMouseLeave={handleMouseLeave}
-          className="relative cursor-pointer"
+          content={renderCategoriesInColumns(parentCategory)}
+          placement="bottom"
+          overlayClassName="shadow-lg rounded-lg"
         >
-          <Link href={`/products?filter=${parentCategory?.name}`} className="">
-            <span
-              className={`hover:text-primary border-b-2 border-transparent hover:border-primary duration-300 ${
-                hoveredParent === parentCategory._id && "text-primary"
-              }`}
-            >
-              {parentCategory.name}
-            </span>
+          <Link
+            href={`/products?filter=${parentCategory?.name}`}
+            className="hover:text-primary border-b-2 border-transparent hover:border-primary duration-300"
+          >
+            {parentCategory.name}
           </Link>
-          {hoveredParent === parentCategory._id && (
-            <div className="absolute -left-52 top-3 mt-2 py-10 px-4 bg-white shadow-lg rounded-lg lg:w-[700px] z-10">
-              {renderCategoriesInColumns(parentCategory)}
-            </div>
-          )}
-        </div>
+        </Popover>
       ));
 
   return (

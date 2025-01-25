@@ -35,7 +35,7 @@ const Banner = () => {
           delay: 3000,
           disableOnInteraction: false,
         }}
-        className="max-h-[700px]"
+        className="max-h-[500px]"
       >
         {activeSliders?.map((item) => {
           return (
