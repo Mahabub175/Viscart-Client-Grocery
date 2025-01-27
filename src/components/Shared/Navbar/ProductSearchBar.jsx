@@ -17,15 +17,18 @@ const ProductSearchBar = ({ products, globalData, isMobile }) => {
       return;
     }
 
-    const results = products?.results?.filter(
-      (product) =>
-        product?.name?.toLowerCase().includes(value.toLowerCase()) ||
-        product?.category?.name?.toLowerCase().includes(value.toLowerCase())
-    );
+    const results =
+      Array.isArray(products?.results) &&
+      products?.results
+        ?.filter(
+          (product) =>
+            product?.name?.toLowerCase().includes(value.toLowerCase()) ||
+            product?.category?.name?.toLowerCase().includes(value.toLowerCase())
+        )
+        .slice(0, 15);
 
-    setFilteredOptions(results);
+    setFilteredOptions(results || []);
   };
-
   const handleBlur = () => {
     setTimeout(() => setIsFocused(false), 150);
   };
@@ -54,14 +57,17 @@ const ProductSearchBar = ({ products, globalData, isMobile }) => {
         {/* Search Results */}
         {isFocused && searchValue && filteredOptions.length > 0 && (
           <div className="absolute z-10 bg-white border border-gray-300 rounded-lg shadow-lg w-full mt-2 max-h-[25rem] lg:max-h-[35rem] overflow-y-auto">
-            {filteredOptions.slice(0, 10).map((product) => (
+            {filteredOptions?.map((product) => (
               <Link
                 key={product.slug}
                 href={`/products/${product?.slug}`}
                 className="flex items-center gap-4 hover:text-primary duration-300 p-4 border-b border-b-gray-200"
               >
                 <Image
-                  src={formatImagePath(product?.mainImage)}
+                  src={
+                    formatImagePath(product?.mainImage) ??
+                    "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
+                  }
                   alt="product"
                   width={80}
                   height={50}
@@ -89,7 +95,7 @@ const ProductSearchBar = ({ products, globalData, isMobile }) => {
               </Link>
             ))}
 
-            {filteredOptions.length > 10 && (
+            {filteredOptions.length >= 10 && (
               <Link
                 href="/products"
                 className="block text-center text-primary py-2 hover:bg-gray-100"
@@ -100,7 +106,7 @@ const ProductSearchBar = ({ products, globalData, isMobile }) => {
           </div>
         )}
 
-        {isFocused && searchValue && filteredOptions.length === 0 && (
+        {isFocused && searchValue && filteredOptions?.length === 0 && (
           <div className="absolute z-10 bg-white border border-gray-300 rounded-lg shadow-lg w-full mt-2 p-4 text-gray-500">
             No products found
           </div>

@@ -14,13 +14,32 @@ const RelatedProducts = ({ singleProduct }) => {
   const { data: productData } = useGetAllProductsQuery();
 
   const activeProducts = productData?.results
-    ?.filter(
-      (item) =>
-        item?.status !== "Inactive" &&
-        item?.name !== singleProduct?.name &&
-        (item?.category?.name === singleProduct?.category?.name ||
-          item?.generic?.name === singleProduct?.generic?.name)
-    )
+    ?.filter((item) => {
+      if (!item?.category?.name || !singleProduct?.category?.name) {
+        return false;
+      }
+
+      if (item?.status === "Inactive" || item?.name === singleProduct?.name) {
+        return false;
+      }
+
+      const itemCategory = item?.category?.name?.toLowerCase().trim();
+      const singleCategory = singleProduct?.category?.name
+        ?.toLowerCase()
+        .trim();
+
+      const itemGeneric = item?.generic?.name
+        ? item?.generic?.name?.toLowerCase().trim()
+        : null;
+      const singleGeneric = singleProduct?.generic?.name
+        ? singleProduct?.generic?.name?.toLowerCase().trim()
+        : null;
+
+      return (
+        itemCategory === singleCategory ||
+        (itemGeneric && itemGeneric === singleGeneric)
+      );
+    })
     ?.slice(0, 20);
 
   return (
