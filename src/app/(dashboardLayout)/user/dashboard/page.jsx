@@ -32,7 +32,7 @@ const UserDashboard = () => {
           icon={TbBrandAirtable}
           title="Carts"
           data={dashboardData?.carts}
-          href={"/user/orders/carts"}
+          href={"/user/orders/cart"}
         />
         <DashboardCards
           icon={TbBrandAirtable}

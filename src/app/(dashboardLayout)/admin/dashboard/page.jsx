@@ -58,7 +58,7 @@ const AdminDashboard = () => {
           icon={TbBrandAirtable}
           title="Carts"
           data={dashboardData?.results?.carts}
-          href={"/admin/orders/carts"}
+          href={"/admin/orders/cart"}
         />
         <DashboardCards
           icon={TbBrandAirtable}
