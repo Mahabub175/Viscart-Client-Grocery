@@ -9,14 +9,13 @@ import { useDeviceId } from "@/redux/services/device/deviceSlice";
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 import { useGetAllProductsQuery } from "@/redux/services/product/productApi";
 import { useGetSingleWishlistByUserQuery } from "@/redux/services/wishlist/wishlistApi";
-import { formatImagePath } from "@/utilities/lib/formatImagePath";
 import { UserOutlined } from "@ant-design/icons";
-import { AutoComplete, Avatar, Button, Drawer, Popover } from "antd";
+import { Avatar, Button, Drawer, Popover } from "antd";
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { FaHeart, FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
+import { FaHeart, FaShoppingCart, FaUser } from "react-icons/fa";
 import { FaCodeCompare } from "react-icons/fa6";
 import { GiCancel } from "react-icons/gi";
 import { IoMdArrowDropdown } from "react-icons/io";
@@ -24,12 +23,12 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import DrawerCart from "../Product/DrawerCart";
 import CategoryNavigation from "./CategoryNavigation";
+import ProductSearchBar from "./ProductSearchBar";
 
 const LandingHeader = () => {
   const pathname = usePathname();
 
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [options, setOptions] = useState([]);
   const dispatch = useDispatch();
   const user = useSelector(useCurrentUser);
   const deviceId = useSelector(useDeviceId);
@@ -115,49 +114,6 @@ const LandingHeader = () => {
     </div>
   );
 
-  const handleSearch = (value) => {
-    if (!value) {
-      setOptions([]);
-      return;
-    }
-
-    const filteredOptions = products?.results?.filter(
-      (product) =>
-        product.name.toLowerCase().includes(value.toLowerCase()) ||
-        product.category.name?.toLowerCase().includes(value.toLowerCase())
-    );
-
-    setOptions(
-      filteredOptions?.map((product) => ({
-        value: product.name,
-        label: (
-          <Link
-            href={`/products/${product?.slug}`}
-            className="flex items-center gap-4 hover:text-primary pb-2 border-b border-b-gray-300"
-          >
-            <Image
-              src={formatImagePath(product?.mainImage)}
-              alt="product"
-              width={80}
-              height={50}
-              className="object-cover rounded-xl"
-            />
-            <div className="ml-2">
-              <p className="text-lg font-medium">{product?.name}</p>
-              <p>
-                Price: {globalData?.results?.currency}{" "}
-                {product?.offerPrice
-                  ? product?.offerPrice
-                  : product?.sellingPrice}
-              </p>
-              <p>Category: {product?.category?.name}</p>
-            </div>
-          </Link>
-        ),
-      })) || []
-    );
-  };
-
   return (
     <header
       className={`fixed bg-white top-0 left-0 w-full lg:shadow-md transition-transform duration-300 z-50 ${
@@ -175,18 +131,11 @@ const LandingHeader = () => {
             />
           </Link>
 
-          <div className="relative w-full hidden lg:block">
-            <AutoComplete
-              options={options}
-              onSearch={handleSearch}
-              placeholder="Search for Products..."
-              size="large"
-              className="w-full"
-            />
-            <div className="absolute right-[1px] top-1/2 -translate-y-1/2 bg-primary p-[9.5px] rounded-r">
-              <FaSearch className="text-white text-xl" />
-            </div>
-          </div>
+          <ProductSearchBar
+            products={products}
+            globalData={globalData}
+            isMobile
+          />
 
           <div className="flex gap-2 items-center text-lg">
             <Link
@@ -276,18 +225,7 @@ const LandingHeader = () => {
             </div>
           </div>
         </div>
-        <div className="relative w-full lg:hidden mt-1">
-          <AutoComplete
-            options={options}
-            onSearch={handleSearch}
-            placeholder="Search for Products..."
-            size="large"
-            className="w-full"
-          />
-          <div className="absolute right-2 top-1/2 -translate-y-1/2">
-            <FaSearch className="text-xl text-primary" />
-          </div>
-        </div>
+        <ProductSearchBar products={products} globalData={globalData} />
       </nav>
 
       <hr className="hidden lg:block" />

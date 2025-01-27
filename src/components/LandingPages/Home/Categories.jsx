@@ -19,24 +19,28 @@ const Categories = () => {
       <div className="grid grid-cols-2 md:flex md:flex-wrap gap-x-5 gap-y-14 justify-center mt-10">
         {activeCategories?.map((item) => (
           <div
-            className="group relative w-[160px] h-[160px] rounded-xl bg-[#E5F3F3] p-3 border-2 border-transparent hover:border-primary duration-300 mx-auto"
             key={item?._id}
+            className="group relative w-[160px] h-[145px] mx-auto rounded-xl"
           >
-            <LinkButton href={`/products?filter=${item?.name}`}>
-              <div className="overflow-hidden w-full h-full rounded-xl">
-                <Image
-                  src={
-                    item?.attachment ??
-                    "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
-                  }
-                  alt={item?.name ?? "demo"}
-                  width={160}
-                  height={160}
-                  className="w-full h-full object-cover rounded-xl"
-                />
-                <h2 className="text-sm font-medium mt-4">{item?.name}</h2>
-              </div>
-            </LinkButton>
+            <div className="bg-[#E5F3F3] rounded-xl p-2 border-2 border-transparent hover:border-primary duration-300">
+              <LinkButton href={`/products?filter=${item?.name}`}>
+                <div className="overflow-hidden w-full h-full rounded-xl">
+                  <Image
+                    src={
+                      item?.attachment ??
+                      "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
+                    }
+                    alt={item?.name ?? "demo"}
+                    width={160}
+                    height={160}
+                    className="w-[120px] h-[120px] object-contain rounded-xl mx-auto"
+                  />
+                </div>
+              </LinkButton>
+            </div>
+            <h2 className="text-sm font-medium text-center mt-2">
+              {item?.name}
+            </h2>
           </div>
         ))}
       </div>

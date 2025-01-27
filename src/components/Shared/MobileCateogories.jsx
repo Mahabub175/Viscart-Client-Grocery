@@ -36,7 +36,7 @@ const MobileCategories = () => {
         ></div>
       )}
 
-      <div className="fixed bottom-[10%] right-1 z-50">
+      <div className="fixed bottom-[15%] right-1 z-50">
         <div
           onClick={toggle}
           className="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center text-xl cursor-pointer"
@@ -45,7 +45,7 @@ const MobileCategories = () => {
         </div>
 
         {isOpen && (
-          <div className="absolute bottom-10 lg:-bottom-10 right-0 lg:right-20 w-[370px] p-4 bg-white shadow-lg rounded-lg text-black z-50">
+          <div className="absolute bottom-8 right-0 lg:right-20 w-[370px] p-4 bg-white shadow-lg rounded-lg text-black z-50">
             <div className="flex justify-between">
               <div></div>
               <button
