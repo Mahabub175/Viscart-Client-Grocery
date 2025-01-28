@@ -19,7 +19,7 @@ const CheckoutDetails = ({
   shippingFee,
   setGrandTotal,
 }) => {
-  const [discountOption, setDiscountOption] = useState("coupon");
+  const [discountOption, setDiscountOption] = useState("");
 
   const { data: globalData } = useGetAllGlobalSettingQuery();
 
@@ -48,6 +48,10 @@ const CheckoutDetails = ({
   }, [deliveryOption, setShippingFee, globalData]);
 
   const handleCode = () => {
+    if (!discountOption) {
+      toast.error("Please select a discount option");
+      return;
+    }
     if (isCouponFetching || isGiftCardFetching) {
       toast.loading("Loading...");
     }

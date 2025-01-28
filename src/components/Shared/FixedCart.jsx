@@ -59,7 +59,7 @@ const FixedCart = () => {
             <GiCancel className="text-xl text-gray-700" />
           </button>
         </div>
-        <DrawerCart data={cartData} />
+        <DrawerCart data={cartData} setDrawer={setIsCartOpen} />
       </Drawer>
     </section>
   );

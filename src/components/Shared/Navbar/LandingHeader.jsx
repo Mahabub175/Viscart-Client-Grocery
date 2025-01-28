@@ -39,9 +39,7 @@ const LandingHeader = () => {
   const { data: wishListData } = useGetSingleWishlistByUserQuery(
     user?._id ?? deviceId
   );
-  const { data: cartData, refetch } = useGetSingleCartByUserQuery(
-    user?._id ?? deviceId
-  );
+  const { data: cartData } = useGetSingleCartByUserQuery(user?._id ?? deviceId);
 
   const { data: globalData } = useGetAllGlobalSettingQuery();
   const { data: products } = useGetAllProductsQuery();
@@ -250,7 +248,7 @@ const LandingHeader = () => {
             <GiCancel className="text-xl text-gray-700" />
           </button>
         </div>
-        <DrawerCart data={cartData} refetch={refetch} />
+        <DrawerCart data={cartData} setDrawer={setIsCartOpen} />
       </Drawer>
     </header>
   );
