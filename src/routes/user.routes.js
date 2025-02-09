@@ -12,6 +12,7 @@ export const userSidebarRoutes = [
   },
   {
     name: "Orders",
+    section: "Order Management",
     icon: BsFillCartFill,
     children: [
       {

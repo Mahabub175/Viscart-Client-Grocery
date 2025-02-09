@@ -27,6 +27,7 @@ export const adminSidebarRoutes = [
   },
   {
     name: "Products",
+    section: "Product Management",
     icon: AiFillProduct,
     children: [
       {
@@ -62,6 +63,7 @@ export const adminSidebarRoutes = [
   },
   {
     name: "Orders",
+    section: "Order Management",
     icon: BsFillCartFill,
     children: [
       {
@@ -79,11 +81,6 @@ export const adminSidebarRoutes = [
       { name: "Coupon", path: "orders/coupon", icon: RiCoupon3Line },
     ],
   },
-  // {
-  //   name: "Offers",
-  //   path: "offer",
-  //   icon: MdLocalOffer,
-  // },
   {
     name: "Reviews",
     path: "review",
@@ -96,6 +93,7 @@ export const adminSidebarRoutes = [
   },
   {
     name: "User",
+    section: "User Management",
     path: "user",
     icon: FaUser,
   },

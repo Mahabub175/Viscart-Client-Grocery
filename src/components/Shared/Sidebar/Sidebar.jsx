@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Layout, Menu } from "antd";
+import { Button, Input, Layout, Menu } from "antd";
 import { useState } from "react";
 import { TbArrowBadgeRight } from "react-icons/tb";
 import { usePathname } from "next/navigation";
@@ -10,42 +10,40 @@ import { userSidebarRoutes } from "@/routes/user.routes";
 import { adminSidebarRoutes } from "@/routes/admin.routes";
 import { useSelector } from "react-redux";
 import { useCurrentUser } from "@/redux/services/auth/authSlice";
+import { FaSearch } from "react-icons/fa";
 
 const { Sider } = Layout;
 
 const Sidebar = () => {
   const user = useSelector(useCurrentUser);
-
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
 
-  let routes;
+  const routes =
+    user?.role === "admin"
+      ? adminSidebarRoutes
+      : user?.role === "user"
+      ? userSidebarRoutes
+      : [];
 
-  switch (user?.role) {
-    case "admin":
-      routes = adminSidebarRoutes;
-      break;
-    case "user":
-      routes = userSidebarRoutes;
-      break;
-  }
+  const fullSidebarItems = sidebarItemsGenerator(routes, pathname, user?.role);
 
-  const sidebarItems = sidebarItemsGenerator(routes, pathname, user?.role);
-
-  const formattedSegment = pathname
-    .split("/")
-    .slice(-1)[0]
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  const filteredSidebarItems =
+    searchTerm.trim() === ""
+      ? fullSidebarItems
+      : fullSidebarItems.filter(
+          (item) =>
+            item?.key?.toLowerCase()?.includes(searchTerm.toLowerCase()) ||
+            item?.children?.some((child) =>
+              child?.key?.toLowerCase()?.includes(searchTerm.toLowerCase())
+            )
+        );
 
   return (
-    <div
-      className="relative bg-white border-r border-gray-200 drop-shadow-primary
-    "
-    >
+    <div className="relative border-r border-gray-200 drop-shadow-primary">
       <Sider
-        className="h-screen top-0"
-        theme="light"
+        className="!h-screen top-0 !bg-[#005555]"
         trigger={null}
         breakpoint="lg"
         collapsedWidth="0"
@@ -53,18 +51,33 @@ const Sidebar = () => {
         onBreakpoint={(broken) => setCollapsed(broken)}
         onCollapse={(collapsedState) => setCollapsed(collapsedState)}
       >
+        <div className="p-3 mt-2">
+          <Input
+            placeholder="Search menu..."
+            prefix={<FaSearch />}
+            allowClear
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="rounded-md text-sm px-2 py-2 !bg-[#A2C8C81A] text-white"
+          />
+        </div>
+
         <Menu
           mode="inline"
-          className="mt-5"
-          items={sidebarItems}
-          defaultSelectedKeys={formattedSegment}
+          className="mt-2"
+          items={searchTerm ? filteredSidebarItems : fullSidebarItems}
+          defaultSelectedKeys={[
+            pathname
+              ?.split("/")
+              ?.slice(-1)?.[0]
+              ?.replace(/-/g, " ")
+              ?.replace(/\b\w/g, (char) => char.toUpperCase()),
+          ]}
         />
       </Sider>
 
       <div className="sidebar-toggle-button">
         <Button
           className="-mr-1 bg-white border border-gray-200 rounded-full text-primary"
-          type="primary"
           icon={
             collapsed ? (
               <TbArrowBadgeRight className="text-2xl" />

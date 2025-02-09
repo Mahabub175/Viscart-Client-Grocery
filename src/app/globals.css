@@ -48,25 +48,44 @@ body {
 }
 .ant-menu-submenu-selected > .ant-menu-submenu-title {
   color: var(--primaryColor) !important;
+  background-color: #eff6ff1a !important;
   font-weight: 700 !important;
 }
 
 .ant-menu-submenu-active > .ant-menu-submenu-title {
+  background-color: #eff6ff1a !important;
+  color: rgb(90, 255, 186) !important;
+}
+
+.ant-menu-submenu:hover > .ant-menu-submenu-title {
+  background-color: #eff6ff1a !important;
+  color: rgb(90, 255, 186) !important;
+}
+.ant-menu-menu:hover > .ant-menu-submenu-title {
+  background-color: #eff6ff1a !important;
+  color: rgb(90, 255, 186) !important;
+}
+
+.ant-menu-item:not(.ant-menu-item-selected):hover {
+  background-color: #eff6ff1a !important;
+  color: rgb(90, 255, 186) !important;
+}
+
+.ant-menu-submenu-title {
   color: #fff !important;
 }
 
+.ant-menu-item {
+  color: #f1f1f1 !important;
+}
+
+.ant-menu {
+  background-color: transparent !important;
+}
 .ant-menu-item-selected {
-  color: #fff !important;
+  background-color: #eff6ff1a !important;
+  color: rgb(90, 255, 186) !important;
 }
-
-.ant-menu-item-active {
-  color: #fff !important;
-}
-
-.custom-menu .ant-menu-item::after {
-  border-bottom: none !important;
-}
-
 .ant-form-item-label {
   font-weight: 700 !important;
 }
