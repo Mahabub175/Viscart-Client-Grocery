@@ -80,7 +80,7 @@ body {
 }
 
 .ant-menu {
-  background-color: transparent !important;
+  background-color: #005555 !important;
 }
 .ant-menu-item-selected {
   background-color: #eff6ff1a !important;

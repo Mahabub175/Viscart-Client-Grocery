@@ -119,8 +119,6 @@ const ProductForm = ({
           loading={isGenericFetching}
           disabled={isGenericFetching}
         />
-      </div>
-      <div className="two-grid">
         <CustomInput label={"Product Weight"} name={"weight"} type={"number"} />
         <CustomSelect
           label={"Product Unit"}
@@ -129,7 +127,13 @@ const ProductForm = ({
           loading={isUnitFetching}
           disabled={isUnitFetching}
         />
+        <CustomInput
+          label={"Product Purchase Point"}
+          name={"point"}
+          type={"number"}
+        />
       </div>
+
       <CustomSelect label={"Product Tags"} name={"tags"} mode={"tags"} />
 
       <div className="two-grid">

@@ -18,12 +18,13 @@ const DashboardLayout = ({ children }) => {
             <Header className="!bg-white border-b-2">
               <Profile />
             </Header>
-            <Layout className="relative">
+            <Layout className="relative h-full">
               <Sidebar />
               <Content
                 style={{
                   padding: 24,
                   minHeight: 280,
+                  background: "white",
                 }}
               >
                 {children}

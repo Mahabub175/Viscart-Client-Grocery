@@ -24,6 +24,7 @@ import { toast } from "sonner";
 import DrawerCart from "../Product/DrawerCart";
 import CategoryNavigation from "./CategoryNavigation";
 import ProductSearchBar from "./ProductSearchBar";
+import logo from "@/assets/images/logo-white.png";
 
 const LandingHeader = () => {
   const pathname = usePathname();
@@ -122,7 +123,7 @@ const LandingHeader = () => {
         <div className="flex justify-between items-center gap-10">
           <Link href={"/"} className="flex flex-[1] lg:flex-none">
             <Image
-              src={globalData?.results?.logo}
+              src={globalData?.results?.logo ?? logo}
               alt="logo"
               width={100}
               height={100}

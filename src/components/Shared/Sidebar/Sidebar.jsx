@@ -11,6 +11,7 @@ import { adminSidebarRoutes } from "@/routes/admin.routes";
 import { useSelector } from "react-redux";
 import { useCurrentUser } from "@/redux/services/auth/authSlice";
 import { FaSearch } from "react-icons/fa";
+import { useGetSingleUserQuery } from "@/redux/services/auth/authApi";
 
 const { Sider } = Layout;
 
@@ -19,9 +20,10 @@ const Sidebar = () => {
   const pathname = usePathname();
   const [collapsed, setCollapsed] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const { data } = useGetSingleUserQuery(user?._id);
 
   const routes =
-    user?.role === "admin"
+    data?.role === "admin"
       ? adminSidebarRoutes
       : user?.role === "user"
       ? userSidebarRoutes
@@ -41,9 +43,9 @@ const Sidebar = () => {
         );
 
   return (
-    <div className="relative border-r border-gray-200 drop-shadow-primary">
+    <div className="relative border-r border-gray-200 drop-shadow-primary !h-screen !bg-[#005555]">
       <Sider
-        className="!h-screen top-0 !bg-[#005555]"
+        className="lg:h-[335vh] xxl:h-[210vh] top-0 !bg-[#005555]"
         trigger={null}
         breakpoint="lg"
         collapsedWidth="0"

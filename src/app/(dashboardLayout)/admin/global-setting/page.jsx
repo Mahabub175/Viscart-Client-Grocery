@@ -133,6 +133,12 @@ const AdminAccountSetting = () => {
             type={"number"}
           />
           <CustomInput
+            name={"pointConversion"}
+            label={"Point Conversion"}
+            required={false}
+            type={"number"}
+          />
+          <CustomInput
             name={"businessAddress"}
             label={"Business Address"}
             required={false}

@@ -86,7 +86,7 @@ const SidebarCategories = () => {
                   parentCategory.attachment ??
                   "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
                 }
-                alt={parentCategory.name}
+                alt={parentCategory?.name ?? "demo"}
                 width={40}
                 height={20}
               />
