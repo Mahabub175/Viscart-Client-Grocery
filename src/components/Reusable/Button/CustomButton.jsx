@@ -1,10 +1,18 @@
 import { Button } from "antd";
 
-export const SubmitButton = ({ loading, text, func, icon, fullWidth }) => {
+export const SubmitButton = ({
+  loading,
+  text,
+  func,
+  icon,
+  fullWidth,
+  disabled,
+}) => {
   return (
     <Button
       htmlType="submit"
       size="large"
+      disabled={disabled}
       type="primary"
       loading={loading}
       icon={icon}

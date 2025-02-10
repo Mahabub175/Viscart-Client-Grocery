@@ -137,6 +137,9 @@ const CartDetails = () => {
           if (values.paymentType === "cod") {
             submittedData.paymentMethod = "cod";
           }
+          if (values.paymentType === "point") {
+            submittedData.paymentMethod = "point";
+          }
 
           const data = new FormData();
           appendToFormData(submittedData, data);
@@ -260,7 +263,14 @@ const CartDetails = () => {
 
               <div className="lg:w-2/6 w-full border-2 border-primary rounded-lg p-5">
                 <CustomForm onSubmit={onSubmit}>
-                  <CheckoutInfo />
+                  <CheckoutInfo
+                    grandTotal={grandTotal}
+                    setGrandTotal={setGrandTotal}
+                    globalData={globalData?.results}
+                    subTotal={subTotal}
+                    shippingFee={shippingFee}
+                    discountAmount={discount}
+                  />
                 </CustomForm>
               </div>
             </div>

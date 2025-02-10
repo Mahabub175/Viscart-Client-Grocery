@@ -1,20 +1,61 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { SubmitButton } from "@/components/Reusable/Button/CustomButton";
 import CustomInput from "@/components/Reusable/Form/CustomInput";
 import CustomSelect from "@/components/Reusable/Form/CustomSelect";
-import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
+import { useGetSingleUserQuery } from "@/redux/services/auth/authApi";
+import { useCurrentUser } from "@/redux/services/auth/authSlice";
 import { Form } from "antd";
+import { useSelector } from "react-redux";
+import { useState, useEffect } from "react";
 
-const CheckoutInfo = () => {
+const CheckoutInfo = ({
+  grandTotal,
+  setGrandTotal,
+  globalData,
+  subTotal,
+  shippingFee,
+  discountAmount,
+}) => {
   const form = Form.useFormInstance();
   const paymentType = Form.useWatch("paymentType", form);
+  const user = useSelector(useCurrentUser);
+  const { data: userData } = useGetSingleUserQuery(user?._id, {
+    skip: !user?._id,
+  });
 
-  const { data: globalData } = useGetAllGlobalSettingQuery();
+  const [remainingAmount, setRemainingAmount] = useState(grandTotal);
+  const [isDisabled, setIsDisabled] = useState(false);
+
+  const userPoints = userData?.point || 0;
+  const pointConversion = globalData?.pointConversion || 1;
+  const pointsAsCurrency = userPoints / pointConversion;
+
+  useEffect(() => {
+    if (paymentType === "point") {
+      if (pointsAsCurrency >= grandTotal) {
+        setGrandTotal(0);
+        setRemainingAmount(0);
+        setIsDisabled(false);
+      } else {
+        setGrandTotal(grandTotal - pointsAsCurrency);
+        setRemainingAmount(grandTotal - pointsAsCurrency);
+        setIsDisabled(true);
+      }
+    } else {
+      setRemainingAmount(subTotal + shippingFee - discountAmount);
+      setGrandTotal(subTotal + shippingFee - discountAmount);
+      setIsDisabled(false);
+    }
+  }, [paymentType, subTotal, discountAmount, shippingFee]);
 
   const paymentOptions = [
     { value: "manual", label: "Manual" },
     { value: "cod", label: "Cash on Delivery" },
-    ...(globalData?.results?.ssl === "Active"
+    ...(globalData?.ssl === "Active"
       ? [{ value: "ssl", label: "SSL Commerz" }]
+      : []),
+    ...(userPoints > 0
+      ? [{ value: "point", label: `Use Points (${userPoints} points)` }]
       : []),
   ];
 
@@ -24,8 +65,8 @@ const CheckoutInfo = () => {
       <CustomInput type="number" name="number" label="Number" required />
       <CustomInput type="textarea" name="address" label="Address" required />
       <CustomSelect
-        name={"paymentType"}
-        label={"Payment Type"}
+        name="paymentType"
+        label="Payment Type"
         options={paymentOptions}
         required
       />
@@ -33,8 +74,8 @@ const CheckoutInfo = () => {
       {paymentType === "manual" && (
         <div>
           <CustomSelect
-            name={"paymentMethod"}
-            label={"Payment Method"}
+            name="paymentMethod"
+            label="Payment Method"
             options={[
               { value: "bkash", label: "Bkash" },
               { value: "nagad", label: "Nagad" },
@@ -52,7 +93,35 @@ const CheckoutInfo = () => {
         </div>
       )}
 
-      <SubmitButton fullWidth text="Order Now" />
+      {paymentType === "point" && (
+        <div className="mb-5">
+          <p>
+            <strong>Available Points:</strong> {userPoints}
+          </p>
+          <p>
+            <strong>Conversion Rate:</strong> {pointConversion} points = 1
+            {globalData?.currency}
+          </p>
+          <p>
+            <strong>Points Value:</strong> {pointsAsCurrency.toFixed(2)}{" "}
+            {globalData?.currency}
+          </p>
+
+          {grandTotal === 0 ? (
+            <p style={{ color: "green" }}>
+              Your order is fully covered by points!
+            </p>
+          ) : (
+            <p style={{ color: "red" }}>
+              You need{" "}
+              <strong>{remainingAmount.toFixed(2) * pointConversion}</strong>{" "}
+              more points complete the purchase.
+            </p>
+          )}
+        </div>
+      )}
+
+      <SubmitButton fullWidth text="Order Now" disabled={isDisabled} />
     </div>
   );
 };

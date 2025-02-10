@@ -10,7 +10,7 @@ const orderApi = baseApi.injectEndpoints({
           body: data,
         };
       },
-      invalidatesTags: ["order"],
+      invalidatesTags: ["order", "user"],
     }),
     getOrders: build.query({
       query: ({ page = 1, limit = 5 }) => ({
@@ -74,7 +74,7 @@ const orderApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: payload.data,
       }),
-      invalidatesTags: ["order"],
+      invalidatesTags: ["order", "user"],
     }),
     deleteOrder: build.mutation({
       query: (id) => ({
