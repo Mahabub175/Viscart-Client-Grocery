@@ -168,7 +168,10 @@ const OrderInvoice = ({ order }) => {
             </p>
             <p>
               <strong>Grand Total:</strong> {data?.results?.currency}{" "}
-              {order?.grandTotal || "0.00"}
+              {order?.grandTotal || "0.00"}{" "}
+              {order?.paymentMethod === "Point" && (
+                <span className="text-green-600">(Paid With Points)</span>
+              )}
             </p>
           </div>
         </div>

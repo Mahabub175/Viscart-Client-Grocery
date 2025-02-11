@@ -139,6 +139,9 @@ const CartDetails = () => {
           }
           if (values.paymentType === "point") {
             submittedData.paymentMethod = "point";
+            submittedData.point =
+              (subTotal + shippingFee - discount) *
+              (globalData?.results?.pointConversion || 1);
           }
 
           const data = new FormData();
