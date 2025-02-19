@@ -5,8 +5,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { DownOutlined, RightOutlined } from "@ant-design/icons";
+import { usePathname, useSearchParams } from "next/navigation";
 
 const SidebarCategories = () => {
+  const pathname = usePathname();
+  const searchParams = useSearchParams();
+
+  const fullPath = `${pathname}?${searchParams.toString()}`;
+  const cleanedQuery = fullPath
+    .replace(/filter=/, "")
+    .replace(/=/, "")
+    .replace(/[+]/g, " ");
+
   const { data: categories } = useGetAllCategoriesQuery();
   const [openKeys, setOpenKeys] = useState([]);
 
@@ -17,24 +27,24 @@ const SidebarCategories = () => {
   };
 
   const renderSubcategories = (subcategories) => {
-    if (!subcategories || subcategories.length === 0) {
-      return <li className="text-gray-500 pl-6">No Subcategories</li>;
-    }
-
     return subcategories.map((subcategory) => (
       <li key={subcategory._id} className="pl-6">
         <Link href={`/products?filter=${subcategory.name}`}>
-          <span className="hover:text-primary">{subcategory.name}</span>
+          <span
+            className={`hover:text-primary duration-300 ${
+              cleanedQuery === `/products?${subcategory.name}`
+                ? "text-primary"
+                : ""
+            }`}
+          >
+            {subcategory.name}
+          </span>
         </Link>
       </li>
     ));
   };
 
   const renderCategories = (categories) => {
-    if (!categories || categories.length === 0) {
-      return <li className="text-gray-500 text-center mt-2">No Categories</li>;
-    }
-
     return categories.map((category) => (
       <Link
         href={`/products?filter=${category?.name}`}
@@ -42,7 +52,9 @@ const SidebarCategories = () => {
         className="mt-3"
       >
         <div
-          className="flex items-center justify-between cursor-pointer hover:text-primary ml-3 my-4 pr-2"
+          className={`flex items-center justify-between cursor-pointer hover:text-primary ml-3 my-4 pr-2 duration-300 ${
+            cleanedQuery === `/products?${category.name}` ? "text-primary" : ""
+          }`}
           onClick={() => toggleOpenKey(category._id)}
         >
           <span>{category.name}</span>
@@ -80,7 +92,13 @@ const SidebarCategories = () => {
             className="flex items-center justify-between cursor-pointer group-hover:text-primary duration-300 border-y py-2 odd:border-b-0"
             onClick={() => toggleOpenKey(parentCategory._id)}
           >
-            <span className="flex items-center gap-4">
+            <span
+              className={`flex items-center gap-4 ${
+                cleanedQuery === `/products?${parentCategory.name}`
+                  ? "text-primary"
+                  : ""
+              }`}
+            >
               <Image
                 src={
                   parentCategory.attachment ??

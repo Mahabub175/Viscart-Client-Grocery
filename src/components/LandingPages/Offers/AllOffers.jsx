@@ -2,16 +2,16 @@
 
 import { useGetAllProductsQuery } from "@/redux/services/product/productApi";
 import ProductCard from "../Home/Products/ProductCard";
-import { Pagination, Spin } from "antd";
-import { useState, useMemo, useEffect } from "react";
+import { Spin } from "antd";
+import { useState, useEffect } from "react";
 
 const AllOffers = () => {
   const { data: productData, isLoading: isFetching } = useGetAllProductsQuery();
 
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(28);
   const [loading, setLoading] = useState(false);
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [visibleProducts, setVisibleProducts] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
 
   useEffect(() => {
     if (!productData?.results) return;
@@ -25,21 +25,37 @@ const AllOffers = () => {
           (item?.offerPrice || item?.offerPrice > 0)
       );
       setFilteredProducts(offers);
+      setVisibleProducts(offers.slice(0, 35));
+      setHasMore(offers.length > 35);
       setLoading(false);
     }, 300);
 
     return () => clearTimeout(timer);
   }, [productData]);
 
-  const paginatedProducts = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return filteredProducts.slice(startIndex, endIndex);
-  }, [filteredProducts, currentPage, pageSize]);
+  const loadMoreProducts = () => {
+    if (filteredProducts.length > visibleProducts.length) {
+      setVisibleProducts((prevVisibleProducts) => {
+        const nextVisibleProducts = [
+          ...prevVisibleProducts,
+          ...filteredProducts.slice(
+            prevVisibleProducts.length,
+            prevVisibleProducts.length + 21
+          ),
+        ];
+        return nextVisibleProducts;
+      });
+    } else {
+      setHasMore(false);
+    }
+  };
 
-  const handlePageChange = (page, size) => {
-    setCurrentPage(page);
-    setPageSize(size);
+  const handleScroll = (e) => {
+    const bottom =
+      e.target.scrollHeight === e.target.scrollTop + e.target.clientHeight;
+    if (bottom && hasMore) {
+      loadMoreProducts();
+    }
   };
 
   return (
@@ -51,24 +67,25 @@ const AllOffers = () => {
         <div className="flex justify-center items-center h-32">
           <Spin size="large" />
         </div>
-      ) : paginatedProducts?.length > 0 ? (
+      ) : visibleProducts?.length > 0 ? (
         <>
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap lg:justify-center lg:items-center gap-5 mt-5 pb-5">
-            {paginatedProducts.map((product) => (
-              <div key={product?._id}>
-                <ProductCard item={product} />
+          <div
+            style={{ maxHeight: "80vh", overflowY: "auto" }}
+            onScroll={handleScroll}
+            className="overflow-auto"
+          >
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap lg:justify-center lg:items-center gap-5 mt-5 pb-5">
+              {visibleProducts?.map((product) => (
+                <div key={product?._id}>
+                  <ProductCard item={product} />
+                </div>
+              ))}
+            </div>
+            {hasMore && !loading && (
+              <div className="text-center py-4">
+                <Spin size="large" />
               </div>
-            ))}
-          </div>
-          <div className="flex justify-end pt-10">
-            <Pagination
-              current={currentPage}
-              total={filteredProducts?.length || 0}
-              pageSize={pageSize}
-              showSizeChanger
-              pageSizeOptions={["10", "20", "50", "100"]}
-              onChange={handlePageChange}
-            />
+            )}
           </div>
         </>
       ) : (

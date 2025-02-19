@@ -3,7 +3,6 @@ import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/glob
 import { formatImagePath } from "@/utilities/lib/formatImagePath";
 import { Modal, Rate } from "antd";
 import Image from "next/image";
-import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import AttributeOptionSelector from "./AttributeOptionSelector";
 
@@ -16,7 +15,6 @@ const QuickProductView = ({
 }) => {
   const [selectedAttributes, setSelectedAttributes] = useState({});
   const [currentVariant, setCurrentVariant] = useState(null);
-  const pathname = usePathname();
   const { data: globalData } = useGetAllGlobalSettingQuery();
 
   const groupedAttributes = item?.variants?.reduce((acc, variant) => {
@@ -69,8 +67,6 @@ const QuickProductView = ({
 
   const currentImage = currentVariant?.images?.length
     ? formatImagePath(currentVariant.images[0])
-    : ["/products", "/compare"].includes(pathname)
-    ? item?.mainImage
     : formatImagePath(item?.mainImage);
 
   return (

@@ -106,6 +106,7 @@ const DrawerCart = ({ data, setDrawer }) => {
                   <Link
                     href={`/products/${item.slug}`}
                     className="text-base font-normal hover:underline hover:text-black"
+                    onClick={() => setDrawer(false)}
                   >
                     <Tooltip placement="top" title={item.productName}>
                       <h2 className="text-md font-semibold">

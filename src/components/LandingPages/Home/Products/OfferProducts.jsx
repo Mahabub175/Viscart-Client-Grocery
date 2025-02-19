@@ -12,7 +12,7 @@ import { Spin } from "antd";
 
 const OfferProducts = () => {
   const swiperRef = useRef();
-  const { data: productData, isLoading: isFetching } = useGetAllProductsQuery();
+  const { data: productData } = useGetAllProductsQuery();
   const [loading, setLoading] = useState(true);
   const [activeProducts, setActiveProducts] = useState([]);
 
@@ -55,7 +55,7 @@ const OfferProducts = () => {
             Show All
           </Link>
         </div>
-        {loading || isFetching ? (
+        {loading ? (
           <div className="flex justify-center items-center h-32">
             <Spin />
           </div>
@@ -76,7 +76,7 @@ const OfferProducts = () => {
             }}
             navigation
             autoplay={{
-              delay: 3000,
+              delay: 2500,
               disableOnInteraction: false,
             }}
             className="mySwiper"

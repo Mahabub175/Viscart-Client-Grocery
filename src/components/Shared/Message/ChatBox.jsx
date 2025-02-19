@@ -44,15 +44,6 @@ const ChatBox = () => {
   const [addMessage] = useAddMessageMutation();
   const [replyMessage] = useReplyMessageMutation();
 
-  // useEffect(() => {
-  //   if (selectedConversation && chatEndRefs.current[selectedConversation?._id]) {
-  //     chatEndRefs.current[selectedConversation._id].scrollIntoView({ behavior: "smooth" });
-  //   } else {
-  //     chatEndRefs.current["single"]?.scrollIntoView({ behavior: "smooth" });
-  //   }
-  // }, [selectedConversation, localUserMessages, localConversations]);
-
-  // Connect to WebSocket and listen for messages
   useEffect(() => {
     if (currentUserRole === "user") {
       socket.emit("joinRoom", { userId: user?._id, deviceId });
@@ -129,7 +120,7 @@ const ChatBox = () => {
   };
 
   return (
-    <div className="flex h-[500px] w-full max-w-4xl mx-auto bg-white border rounded-lg shadow-lg mt-56">
+    <div className="flex h-[500px] w-full max-w-4xl mx-auto bg-white border rounded-lg shadow-lg mt-72">
       {currentUserRole === "admin" && (
         <div className="w-1/3 border-r bg-gray-100 p-2 overflow-y-auto">
           <h3 className="text-lg font-semibold mb-2">Conversations</h3>
@@ -166,7 +157,6 @@ const ChatBox = () => {
           )}
         </div>
       )}
-
       <div className="flex-1 flex flex-col">
         <div className="flex items-center p-4 border-b bg-gray-100">
           <Avatar icon={<UserOutlined />} />

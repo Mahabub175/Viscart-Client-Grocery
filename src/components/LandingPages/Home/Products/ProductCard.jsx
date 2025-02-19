@@ -90,7 +90,7 @@ const ProductCard = ({ item }) => {
     >
       <Tooltip placement="top" title={"Add to Wishlist"}>
         <div
-          className="text-sm absolute top-2 right-2 z-10 lg:text-xl cursor-pointer hover:scale-110 duration-300 text-white p-2"
+          className="text-xs absolute top-2 right-2 z-10 lg:text-xl cursor-pointer hover:scale-110 duration-300 text-white p-1 bg-primary rounded-full"
           onClick={() => addToWishlist(item?._id)}
         >
           <TbHeart />

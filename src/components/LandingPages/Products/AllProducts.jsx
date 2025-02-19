@@ -3,7 +3,7 @@
 import { useGetAllBrandsQuery } from "@/redux/services/brand/brandApi";
 import { useGetAllCategoriesQuery } from "@/redux/services/category/categoryApi";
 import { useGetAllProductsQuery } from "@/redux/services/product/productApi";
-import { Pagination, Slider, Select, Button, Modal, Radio, Spin } from "antd";
+import { Slider, Select, Button, Modal, Radio, Spin } from "antd";
 import { useEffect, useMemo, useState } from "react";
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 import ProductCard from "../Home/Products/ProductCard";
@@ -12,8 +12,6 @@ import { debounce } from "lodash";
 const { Option } = Select;
 
 const AllProducts = ({ searchParams }) => {
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pageSize, setPageSize] = useState(24);
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [priceRange, setPriceRange] = useState([0, 10000]);
@@ -23,8 +21,9 @@ const AllProducts = ({ searchParams }) => {
   const [availability, setAvailability] = useState("inStock");
   const [loading, setLoading] = useState(false);
   const [delayedLoading, setDelayedLoading] = useState(true);
-
   const [filteredProducts, setFilteredProducts] = useState([]);
+  const [visibleProducts, setVisibleProducts] = useState([]);
+  const [hasMore, setHasMore] = useState(true);
 
   const { data: globalData } = useGetAllGlobalSettingQuery();
   const { data: brandData } = useGetAllBrandsQuery();
@@ -143,24 +142,12 @@ const AllProducts = ({ searchParams }) => {
       setFilteredProducts(sorted);
       setLoading(false);
 
-      if (sorting === "PriceLowToHigh") {
-        sorted = sorted.sort((a, b) => {
-          const offerPriceA = a.offerPrice || a.sellingPrice;
-          const offerPriceB = b.offerPrice || b.sellingPrice;
-          return offerPriceA - offerPriceB;
-        });
-      } else if (sorting === "PriceHighToLow") {
-        sorted = sorted.sort((a, b) => {
-          const offerPriceA = a.offerPrice || a.sellingPrice;
-          const offerPriceB = b.offerPrice || b.sellingPrice;
-          return offerPriceB - offerPriceA;
-        });
+      if (sorted.length > 0) {
+        setVisibleProducts(sorted.slice(0, 30));
+        setHasMore(sorted.length > 30);
+      } else {
+        setHasMore(false);
       }
-
-      setTimeout(() => {
-        setFilteredProducts(sorted);
-        setLoading(false);
-      }, 200);
     };
 
     applyFilters();
@@ -174,15 +161,18 @@ const AllProducts = ({ searchParams }) => {
     searchFilter,
   ]);
 
-  const paginatedProducts = useMemo(() => {
-    const startIndex = (currentPage - 1) * pageSize;
-    const endIndex = startIndex + pageSize;
-    return filteredProducts.slice(startIndex, endIndex);
-  }, [filteredProducts, currentPage, pageSize]);
-
-  const handlePageChange = (page, size) => {
-    setCurrentPage(page);
-    setPageSize(size);
+  const loadMoreProducts = () => {
+    if (filteredProducts.length > visibleProducts.length) {
+      setVisibleProducts([
+        ...visibleProducts,
+        ...filteredProducts.slice(
+          visibleProducts.length,
+          visibleProducts.length + 24
+        ),
+      ]);
+    } else {
+      setHasMore(false);
+    }
   };
 
   const handlePriceChange = (value) => {
@@ -226,14 +216,24 @@ const AllProducts = ({ searchParams }) => {
             </Select>
           </div>
         </div>
-        <div>
+        <div
+          className="overflow-y-auto h-screen"
+          onScroll={(e) => {
+            const bottom =
+              e.target.scrollHeight ===
+              e.target.scrollTop + e.target.clientHeight;
+            if (bottom && hasMore) {
+              loadMoreProducts();
+            }
+          }}
+        >
           {loading || delayedLoading ? (
             <div className="flex justify-center py-10">
               <Spin size="large" />
             </div>
-          ) : paginatedProducts?.length > 0 ? (
+          ) : visibleProducts?.length > 0 ? (
             <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap gap-5 xl:gap-0 xl:gap-y-5">
-              {paginatedProducts?.map((product) => (
+              {visibleProducts?.map((product) => (
                 <ProductCard key={product?._id} item={product} />
               ))}
             </div>
@@ -242,17 +242,11 @@ const AllProducts = ({ searchParams }) => {
               No products found.
             </p>
           )}
-
-          <div className="flex justify-end pt-10">
-            <Pagination
-              current={currentPage}
-              total={filteredProducts.length}
-              pageSize={pageSize}
-              showSizeChanger
-              pageSizeOptions={["10", "20", "50", "100"]}
-              onChange={handlePageChange}
-            />
-          </div>
+          {hasMore && !loading && (
+            <div className="text-center py-4">
+              <Spin size="large" />
+            </div>
+          )}
         </div>
       </div>
       <Modal
