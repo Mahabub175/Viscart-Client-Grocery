@@ -60,7 +60,7 @@ const messageApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["message"],
     }),
-    deleteMessage: build.mutation({
+    deleteConversation: build.mutation({
       query: (id) => ({
         url: `/message/${id}/`,
         method: "Delete",
@@ -89,6 +89,6 @@ export const {
   useGetSingleMessageQuery,
   useGetSingleMessageByUserQuery,
   useUpdateMessageMutation,
-  useDeleteMessageMutation,
+  useDeleteConversationMutation,
   useDeleteBulkMessageMutation,
 } = messageApi;

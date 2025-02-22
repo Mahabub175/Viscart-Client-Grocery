@@ -119,7 +119,7 @@ const UserAccountSetting = () => {
         </div>
         <CustomInput name={"name"} label={"Name"} />
         <CustomInput name={"number"} label={"Phone Number"} required={true} />
-        <CustomInput name={"email"} label={"Email"} required={true} />
+        <CustomInput name={"email"} label={"Email"} />
         <CustomInput name={"address"} label={"Address"} type={"textarea"} />
 
         <div className="flex justify-center my-10">

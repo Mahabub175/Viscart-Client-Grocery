@@ -28,7 +28,7 @@ const AllProducts = ({ searchParams }) => {
   const { data: globalData } = useGetAllGlobalSettingQuery();
   const { data: brandData } = useGetAllBrandsQuery();
   const { data: categoryData } = useGetAllCategoriesQuery();
-  const { data: productData } = useGetAllProductsQuery();
+  const { data: productData, isLoading } = useGetAllProductsQuery();
 
   const activeBrands = useMemo(
     () => brandData?.results?.filter((item) => item?.status !== "Inactive"),
@@ -162,7 +162,7 @@ const AllProducts = ({ searchParams }) => {
   ]);
 
   const loadMoreProducts = () => {
-    if (filteredProducts.length > visibleProducts.length) {
+    if (filteredProducts?.length > visibleProducts?.length) {
       setVisibleProducts([
         ...visibleProducts,
         ...filteredProducts.slice(
@@ -219,15 +219,21 @@ const AllProducts = ({ searchParams }) => {
         <div
           className="overflow-y-auto h-screen"
           onScroll={(e) => {
-            const bottom =
-              e.target.scrollHeight ===
-              e.target.scrollTop + e.target.clientHeight;
-            if (bottom && hasMore) {
+            if (
+              e.target.scrollTop + e.target.clientHeight >=
+              e.target.scrollHeight - 100
+            ) {
               loadMoreProducts();
             }
+            // const bottom =
+            //   e.target.scrollHeight ===
+            //   e.target.scrollTop + e.target.clientHeight;
+            // if (bottom && hasMore) {
+            //   loadMoreProducts();
+            // }
           }}
         >
-          {loading || delayedLoading ? (
+          {loading || delayedLoading || isLoading ? (
             <div className="flex justify-center py-10">
               <Spin size="large" />
             </div>

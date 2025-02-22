@@ -36,7 +36,7 @@ const MobileCategories = () => {
         ></div>
       )}
 
-      <div className="fixed bottom-[15%] right-1 z-50">
+      <div className="fixed bottom-[15%] right-1 z-40">
         <div
           onClick={toggle}
           className="bg-primary text-white rounded-full w-10 h-10 flex items-center justify-center text-xl cursor-pointer"
