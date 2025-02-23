@@ -18,8 +18,11 @@ import Image from "next/image";
 import { formatImagePath } from "@/utilities/lib/formatImagePath";
 import { RxCross1 } from "react-icons/rx";
 import { toast } from "sonner";
+import { usePathname } from "next/navigation";
 
 const Messages = ({ setOpen }) => {
+  const pathname = usePathname();
+
   const deviceId = useSelector(useDeviceId);
   const user = useSelector(useCurrentUser);
   const currentUserRole = user?.role === "admin" ? "admin" : "user";
@@ -46,7 +49,7 @@ const Messages = ({ setOpen }) => {
       ? selectedConversation?.deviceId
       : selectedConversation?.userId?._id,
     {
-      skip: selectedConversation?.length < 0,
+      skip: !selectedConversation,
       pollingInterval: 5000,
     }
   );
@@ -144,7 +147,7 @@ const Messages = ({ setOpen }) => {
   };
 
   return (
-    <div className="flex h-[500px] w-full mx-auto bg-white border rounded-lg shadow-lg z-50">
+    <div className="flex h-[500px] w-full max-w-5xl mx-auto bg-white border rounded-lg shadow-lg z-50">
       {currentUserRole === "admin" && (
         <div className="w-1/3 border-r bg-gray-100 p-2 overflow-y-auto">
           <h3 className="text-lg font-semibold mb-2">Conversations</h3>
@@ -224,10 +227,10 @@ const Messages = ({ setOpen }) => {
         </div>
       )}
       <div className="flex-1 flex flex-col">
-        <div className="flex items-center p-4 border-b bg-gray-100 justify-between">
+        <div className="flex items-center px-4 py-2 border-b bg-gray-100 justify-between">
           <div className="flex items-center">
             <Avatar icon={<UserOutlined />} />
-            <span className="ml-2 font-semibold">
+            <span className="ml-2 font-semibold text-sm">
               {selectedConversation
                 ? `Chat with ${
                     selectedConversation?.userId?.name ??
@@ -239,12 +242,14 @@ const Messages = ({ setOpen }) => {
                 : "Chat"}
             </span>
           </div>
-          <div
-            className="hover:text-red-500 duration-300 hover:scale-105"
-            onClick={() => setOpen(false)}
-          >
-            <RxCross1 />
-          </div>
+          {pathname === "/admin/message-platform" ? null : (
+            <div
+              className="hover:text-red-500 duration-300 hover:scale-105"
+              onClick={() => setOpen(false)}
+            >
+              <RxCross1 />
+            </div>
+          )}
         </div>
 
         <div className="flex-1 p-4 overflow-y-auto space-y-2">
@@ -309,7 +314,6 @@ const Messages = ({ setOpen }) => {
             <Input.TextArea
               placeholder="Type a message..."
               value={userMessage}
-              type="textarea"
               onChange={(e) => setUserMessage(e.target.value)}
               onPressEnter={() => sendMessage(null)}
               className="flex-1"

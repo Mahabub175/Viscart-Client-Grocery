@@ -1,5 +1,6 @@
 "use client";
 
+import Messages from "@/components/Shared/Message/Messages";
 import { Tabs } from "antd";
 import Link from "next/link";
 
@@ -7,13 +8,22 @@ const MessagePlatform = () => {
   return (
     <section>
       <div className="text-center text-2xl font-bold mb-10">
-        Alternative Downloads For Different OS
+        ChatBox Or Alternative Downloads For Different OS
       </div>
       <Tabs
         defaultActiveKey="1"
         size="large"
         centered
         items={[
+          {
+            label: <div className="font-semibold text-xl">ChatBox</div>,
+            key: "0",
+            children: (
+              <>
+                <Messages />
+              </>
+            ),
+          },
           {
             label: <div className="font-semibold text-xl">Linux</div>,
             key: "1",

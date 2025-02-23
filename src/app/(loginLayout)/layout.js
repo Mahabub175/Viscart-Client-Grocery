@@ -1,7 +1,7 @@
 import BackToTop from "@/components/Shared/BackToTop";
 import FixedCart from "@/components/Shared/FixedCart";
 import LandingFooter from "@/components/Shared/Footer/LandingFooter";
-import MobileCategories from "@/components/Shared/MobileCateogories";
+import MobileCategories from "@/components/Shared/MobileCategories";
 import BottomNavigation from "@/components/Shared/Navbar/BottomNavigation";
 import LandingHeader from "@/components/Shared/Navbar/LandingHeader";
 

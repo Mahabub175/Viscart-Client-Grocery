@@ -56,7 +56,34 @@ const MobileCategories = () => {
               </button>
             </div>
             <div className="overflow-y-auto h-[400px] xxl:h-[600px] px-2">
-              <div>Brands</div>
+              <div>Categories</div>
+              <div className="flex flex-wrap gap-x-5 gap-y-14 justify-center mt-2">
+                {activeCategories?.map((item) => (
+                  <div
+                    className="group relative w-[60px] h-[60px] rounded-xl bg-[#E5F3F3] p-1 border-2 border-transparent hover:border-primary duration-300"
+                    key={item?._id}
+                  >
+                    <LinkButton href={`/products?filter=${item?.name}`}>
+                      <div className="overflow-hidden w-full h-full rounded-xl">
+                        <Image
+                          src={
+                            item?.attachment ??
+                            "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
+                          }
+                          alt={item?.name ?? "demo"}
+                          width={60}
+                          height={60}
+                          className="object-cover rounded-xl"
+                        />
+                        <h2 className="text-[10px] font-medium mt-4">
+                          {item?.name}
+                        </h2>
+                      </div>
+                    </LinkButton>
+                  </div>
+                ))}
+              </div>
+              <div className="mt-10">Brands</div>
               <div className="flex flex-wrap gap-x-5 gap-y-14 justify-center mt-2">
                 {activeBrands?.map((item) => (
                   <div
@@ -73,33 +100,6 @@ const MobileCategories = () => {
                           alt={item?.name ?? "demo"}
                           width={70}
                           height={70}
-                          className="object-cover rounded-xl"
-                        />
-                        <h2 className="text-[10px] font-medium mt-4">
-                          {item?.name}
-                        </h2>
-                      </div>
-                    </LinkButton>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-10">Categories</div>
-              <div className="flex flex-wrap gap-x-5 gap-y-14 justify-center mt-2 ">
-                {activeCategories?.map((item) => (
-                  <div
-                    className="group relative w-[60px] h-[60px] rounded-xl bg-[#E5F3F3] p-1 border-2 border-transparent hover:border-primary duration-300"
-                    key={item?._id}
-                  >
-                    <LinkButton href={`/products?filter=${item?.name}`}>
-                      <div className="overflow-hidden w-full h-full rounded-xl">
-                        <Image
-                          src={
-                            item?.attachment ??
-                            "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
-                          }
-                          alt={item?.name ?? "demo"}
-                          width={60}
-                          height={60}
                           className="object-cover rounded-xl"
                         />
                         <h2 className="text-[10px] font-medium mt-4">
