@@ -18,6 +18,7 @@ import {
   RiMessage2Fill,
 } from "react-icons/ri";
 import { TbBrandAirtable, TbLayoutDashboardFilled } from "react-icons/tb";
+import { AiFillMedicineBox } from "react-icons/ai";
 
 export const adminSidebarRoutes = [
   {
@@ -85,6 +86,11 @@ export const adminSidebarRoutes = [
     name: "Reviews",
     path: "review",
     icon: MdOutlineReviews,
+  },
+  {
+    name: "Prescription",
+    path: "prescription",
+    icon: AiFillMedicineBox,
   },
   {
     name: "Sliders",

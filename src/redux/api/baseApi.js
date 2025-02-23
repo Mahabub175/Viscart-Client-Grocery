@@ -38,6 +38,7 @@ export const baseApi = createApi({
     "generic",
     "unit",
     "message",
+    "prescription",
   ],
   endpoints: () => ({}),
 });

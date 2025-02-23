@@ -54,8 +54,7 @@ const LandingHeader = () => {
     Dashboard: `/${data?.role}/dashboard`,
     Order: `/${data?.role}/orders/order`,
     Profile: `/${data?.role}/account-setting`,
-    Wishlist: `/${data?.role}/orders/wishlist`,
-    Cart: `/${data?.role}/orders/cart`,
+    Prescription: `/${data?.role}/prescription`,
   };
 
   const [showNavbar, setShowNavbar] = useState(true);
@@ -82,7 +81,7 @@ const LandingHeader = () => {
     <div>
       <div className="rounded-md px-16 py-3">
         <div className="flex flex-col items-start gap-4 text-md">
-          {["Dashboard", "Order", "Profile", "Wishlist", "Cart"].map(
+          {["Dashboard", "Order", "Profile", "Prescription"].map(
             (item, index) => (
               <Link
                 key={index}
