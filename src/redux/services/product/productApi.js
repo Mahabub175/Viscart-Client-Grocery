@@ -54,7 +54,7 @@ const productApi = baseApi.injectEndpoints({
         method: "GET",
       }),
       transformResponse: (response) => {
-        return { results: response.data?.results };
+        return { results: response?.data };
       },
       providesTags: ["product"],
     }),

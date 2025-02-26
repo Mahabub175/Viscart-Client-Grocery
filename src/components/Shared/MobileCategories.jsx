@@ -73,9 +73,9 @@ const MobileCategories = () => {
                           alt={item?.name ?? "demo"}
                           width={60}
                           height={60}
-                          className="object-cover rounded-xl"
+                          className="object-cover rounded-xl w-[50px] h-[50px] mx-auto"
                         />
-                        <h2 className="text-[10px] font-medium mt-4">
+                        <h2 className="text-[10px] font-medium mt-2">
                           {item?.name}
                         </h2>
                       </div>
@@ -98,11 +98,11 @@ const MobileCategories = () => {
                             "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
                           }
                           alt={item?.name ?? "demo"}
-                          width={70}
-                          height={70}
-                          className="object-cover rounded-xl"
+                          width={60}
+                          height={60}
+                          className="object-cover rounded-xl w-[50px] h-[50px] mx-auto"
                         />
-                        <h2 className="text-[10px] font-medium mt-4">
+                        <h2 className="text-[10px] font-medium mt-2">
                           {item?.name}
                         </h2>
                       </div>

@@ -8,6 +8,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 import ProductCard from "../Home/Products/ProductCard";
 import { debounce } from "lodash";
+import RelatedCategories from "./RelatedCategories";
 
 const { Option } = Select;
 
@@ -66,14 +67,12 @@ const AllProducts = ({ searchParams }) => {
 
   useEffect(() => {
     if (searchFilter) {
-      const matchedBrand = activeBrands?.find((brand) =>
-        brand?.name?.includes(searchFilter)
+      const matchedBrand = activeBrands?.find(
+        (brand) => brand?.name === searchParams
       );
 
       const matchedCategory = !matchedBrand
-        ? activeCategories?.find((category) =>
-            category?.name?.includes(searchFilter)
-          )
+        ? activeCategories?.find((category) => category?.name === searchParams)
         : null;
 
       setSelectedBrand(matchedBrand?.name || "");
@@ -82,7 +81,7 @@ const AllProducts = ({ searchParams }) => {
       setSelectedBrand("");
       setSelectedCategory("");
     }
-  }, [searchFilter, activeBrands, activeCategories]);
+  }, [searchFilter, activeBrands, activeCategories, searchParams]);
 
   useEffect(() => {
     const applyFilters = () => {
@@ -95,10 +94,11 @@ const AllProducts = ({ searchParams }) => {
           ? selectedBrand.toLowerCase() === product?.brand?.name?.toLowerCase()
           : true;
 
-        const isCategoryMatch = selectedCategory
-          ? selectedCategory.toLowerCase() ===
-            product?.category?.name?.toLowerCase()
-          : true;
+        const isCategoryMatch =
+          selectedCategory !== ""
+            ? selectedCategory.toLowerCase() ===
+              product?.category?.name?.toLowerCase()
+            : true;
 
         const isSearchMatch = searchFilter
           ? product?.brand?.name?.toLowerCase().includes(searchFilter) ||
@@ -146,6 +146,7 @@ const AllProducts = ({ searchParams }) => {
         setVisibleProducts(sorted.slice(0, 30));
         setHasMore(sorted.length > 30);
       } else {
+        setVisibleProducts([]);
         setHasMore(false);
       }
     };
@@ -216,6 +217,7 @@ const AllProducts = ({ searchParams }) => {
             </Select>
           </div>
         </div>
+        <RelatedCategories searchParam={searchParams} />
         <div
           className="overflow-y-auto h-screen"
           onScroll={(e) => {
@@ -225,12 +227,6 @@ const AllProducts = ({ searchParams }) => {
             ) {
               loadMoreProducts();
             }
-            // const bottom =
-            //   e.target.scrollHeight ===
-            //   e.target.scrollTop + e.target.clientHeight;
-            // if (bottom && hasMore) {
-            //   loadMoreProducts();
-            // }
           }}
         >
           {loading || delayedLoading || isLoading ? (
