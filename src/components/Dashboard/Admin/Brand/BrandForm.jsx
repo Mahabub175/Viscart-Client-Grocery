@@ -1,5 +1,6 @@
 import CustomInput from "@/components/Reusable/Form/CustomInput";
 import FileUploader from "@/components/Reusable/Form/FileUploader";
+import { Checkbox, Form } from "antd";
 
 const BrandForm = ({ attachment }) => {
   return (
@@ -11,6 +12,11 @@ const BrandForm = ({ attachment }) => {
         name="attachment"
         required={true}
       />
+      <Form.Item name={"isFeatured"} valuePropName="checked">
+        <Checkbox className="font-semibold">
+          This Brand Is Featured In Homepage
+        </Checkbox>
+      </Form.Item>
     </>
   );
 };

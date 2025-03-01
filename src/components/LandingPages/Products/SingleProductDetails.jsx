@@ -16,6 +16,7 @@ import RelatedProducts from "./RelatedProducts";
 import LinkButton from "@/components/Shared/LinkButton";
 import RelatedGenericProducts from "./RelatedGenericProduct";
 import { calculateDiscountPercentage } from "@/utilities/lib/discountCalculator";
+import ProductReview from "./ProductReview";
 
 const SingleProductDetails = ({ params }) => {
   const { data: globalData } = useGetAllGlobalSettingQuery();
@@ -365,6 +366,12 @@ const SingleProductDetails = ({ params }) => {
             <RelatedGenericProducts singleProduct={singleProduct} />
           </div>
         </div>
+      </div>
+      <div className="rounded-xl p-5 mb-10 shadow bg-white/80 border new-container">
+        <div className="bg-primary px-10 py-2 text-white font-bold rounded-xl inline-block mx-4">
+          Reviews
+        </div>
+        <ProductReview productId={singleProduct?._id} />
       </div>
       <RelatedProducts singleProduct={singleProduct} />
     </section>

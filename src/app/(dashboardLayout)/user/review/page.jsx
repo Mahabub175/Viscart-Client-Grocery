@@ -1,6 +1,7 @@
 "use client";
 
 import { paginationNumbers } from "@/assets/data/paginationData";
+import ReviewEdit from "@/components/Dashboard/User/Review/ReviewEdit";
 import DeleteModal from "@/components/Reusable/Modal/DeleteModal";
 import { useCurrentUser } from "@/redux/services/auth/authSlice";
 import {
@@ -9,7 +10,7 @@ import {
 } from "@/redux/services/review/reviewApi";
 import { Input, Pagination, Space, Table, Tag, Tooltip } from "antd";
 import { useState } from "react";
-import { FaSearch } from "react-icons/fa";
+import { FaEdit, FaSearch } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
 import { useSelector } from "react-redux";
 
@@ -17,6 +18,7 @@ const AdminReview = () => {
   const user = useSelector(useCurrentUser);
 
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const [itemId, setItemId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
@@ -35,13 +37,7 @@ const AdminReview = () => {
 
   const columns = [
     {
-      title: "User",
-      dataIndex: "user",
-      key: "user",
-      align: "start",
-    },
-    {
-      title: "Product",
+      title: "Products",
       dataIndex: "product",
       key: "product",
       align: "start",
@@ -79,7 +75,18 @@ const AdminReview = () => {
       render: (item) => {
         return (
           <Space size="middle">
-            <Tooltip placement="top" title={"Details"}>
+            <Tooltip placement="top" title={"Edit"}>
+              <button
+                className="bg-green-500 p-2 rounded-xl text-white hover:scale-110 duration-300"
+                onClick={() => {
+                  setItemId(item.key);
+                  setOpenEdit(true);
+                }}
+              >
+                <FaEdit />
+              </button>
+            </Tooltip>
+            <Tooltip placement="top" title={"Delete"}>
               <button
                 onClick={() => {
                   setItemId(item.key);
@@ -98,7 +105,6 @@ const AdminReview = () => {
 
   const tableData = reviews?.map((item) => ({
     key: item._id,
-    user: item?.user?.name,
     product: item?.product?.map((item) => item.name).join(", "),
     rating: item?.rating,
     comment: item?.comment,
@@ -144,6 +150,8 @@ const AdminReview = () => {
         pageSizeOptions={paginationNumbers}
         simple
       />
+
+      <ReviewEdit itemId={itemId} open={openEdit} setOpen={setOpenEdit} />
 
       <DeleteModal
         itemId={itemId}
