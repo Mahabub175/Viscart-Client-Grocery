@@ -98,6 +98,13 @@ const UserAccountSetting = () => {
     setFields(transformDefaultValues(data));
   }, [data]);
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  });
+
   return (
     <section className="w-3/6 mx-auto">
       <CustomForm fields={fields} onSubmit={onSubmit}>

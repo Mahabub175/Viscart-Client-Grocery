@@ -24,6 +24,13 @@ const AdminAccountSetting = () => {
   const user = useSelector(useCurrentUser);
   const { data } = useGetSingleUserQuery(user?._id);
 
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  });
+
   const [updateUser, { isLoading }] = useUpdateUserMutation();
   const [changePassword, { isLoading: isChangePasswordLoading }] =
     useChangePasswordMutation();

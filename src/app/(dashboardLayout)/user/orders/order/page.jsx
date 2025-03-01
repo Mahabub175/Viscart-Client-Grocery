@@ -10,7 +10,7 @@ import { useGetOrdersByUserQuery } from "@/redux/services/order/orderApi";
 import { useAddReviewMutation } from "@/redux/services/review/reviewApi";
 import { appendToFormData } from "@/utilities/lib/appendToFormData";
 import { Button, Form, Input, Modal, Pagination, Rate, Table, Tag } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
@@ -242,6 +242,13 @@ const UserOrders = () => {
     return Object.values(item).some((value) =>
       value?.toString().toLowerCase().includes(searchTerm)
     );
+  });
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
   });
 
   return (

@@ -3,7 +3,10 @@
 import { SubmitButton } from "@/components/Reusable/Button/CustomButton";
 import AttributeOptionSelector from "@/components/Shared/Product/AttributeOptionSelector";
 import { useCurrentUser } from "@/redux/services/auth/authSlice";
-import { useAddCartMutation } from "@/redux/services/cart/cartApi";
+import {
+  useAddCartMutation,
+  useGetSingleCartByUserQuery,
+} from "@/redux/services/cart/cartApi";
 import { useDeviceId } from "@/redux/services/device/deviceSlice";
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 import { useDeleteWishlistMutation } from "@/redux/services/wishlist/wishlistApi";
@@ -33,6 +36,8 @@ const ProductCountCart = ({
   const [addCart, { isLoading }] = useAddCartMutation();
   const [btnText, setBtnText] = useState("");
   const [deleteWishlist] = useDeleteWishlistMutation();
+
+  const { data: cartData } = useGetSingleCartByUserQuery(user?._id ?? deviceId);
 
   const handleCount = (action) => {
     if (action === "increment") {
@@ -197,20 +202,35 @@ const ProductCountCart = ({
               <FaPlus />
             </button>
           </div>
-          <SubmitButton
-            func={() => addToCart("cart")}
-            text={"Add"}
-            icon={<FaCartShopping />}
-            loading={isLoading}
-            fullWidth={fullWidth}
-          />
-          <SubmitButton
-            func={() => addToCart("buy")}
-            text={"Buy Now"}
-            icon={<FaCartShopping />}
-            loading={isLoading}
-            fullWidth={fullWidth}
-          />
+          {cartData?.some((cartItem) => cartItem?.productId === item?._id) ? (
+            <div>
+              <SubmitButton
+                func={() => addToCart("cart")}
+                text={"Already in Cart"}
+                icon={<FaCartShopping />}
+                loading={isLoading}
+                fullWidth={fullWidth}
+              />
+            </div>
+          ) : (
+            <>
+              {" "}
+              <SubmitButton
+                func={() => addToCart("cart")}
+                text={"Add"}
+                icon={<FaCartShopping />}
+                loading={isLoading}
+                fullWidth={fullWidth}
+              />
+              <SubmitButton
+                func={() => addToCart("buy")}
+                text={"Buy Now"}
+                icon={<FaCartShopping />}
+                loading={isLoading}
+                fullWidth={fullWidth}
+              />
+            </>
+          )}
         </>
       ) : (
         <div className="p-2 bg-gradient-to-r from-red-500 to-red-700 text-white rounded font-bold text-xs">

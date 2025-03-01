@@ -1,6 +1,6 @@
 import { Tooltip } from "antd";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import QuickViewHover from "../../Products/QuickViewHover";
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 import { formatImagePath } from "@/utilities/lib/formatImagePath";
@@ -8,13 +8,20 @@ import LinkButton from "@/components/Shared/LinkButton";
 import QuickProductView from "@/components/Shared/Product/QuickProductView";
 import { useSelector } from "react-redux";
 import { useDeviceId } from "@/redux/services/device/deviceSlice";
-import { useAddWishlistMutation } from "@/redux/services/wishlist/wishlistApi";
+import {
+  useAddWishlistMutation,
+  useGetSingleWishlistByUserQuery,
+} from "@/redux/services/wishlist/wishlistApi";
 import { useCurrentUser } from "@/redux/services/auth/authSlice";
 import { toast } from "sonner";
 import { TbHeart } from "react-icons/tb";
-import { useAddCartMutation } from "@/redux/services/cart/cartApi";
+import {
+  useAddCartMutation,
+  useGetSingleCartByUserQuery,
+} from "@/redux/services/cart/cartApi";
 import Link from "next/link";
 import { calculateDiscountPercentage } from "@/utilities/lib/discountCalculator";
+import { IoCheckmark } from "react-icons/io5";
 
 const ProductCard = ({ item }) => {
   const { data: globalData } = useGetAllGlobalSettingQuery();
@@ -25,6 +32,12 @@ const ProductCard = ({ item }) => {
   const [addCart] = useAddCartMutation();
   const [addWishlist] = useAddWishlistMutation();
   const user = useSelector(useCurrentUser);
+
+  const { data: wishlistData } = useGetSingleWishlistByUserQuery(
+    user?._id ?? deviceId
+  );
+
+  const { data: cartData } = useGetSingleCartByUserQuery(user?._id ?? deviceId);
 
   const handleModalClose = () => {
     setIsModalVisible(false);
@@ -82,6 +95,12 @@ const ProductCard = ({ item }) => {
     item?.offerPrice
   );
 
+  const isItemInWishlist = useMemo(() => {
+    return wishlistData?.some(
+      (wishlistItem) => wishlistItem?.product?._id === item?._id
+    );
+  }, [wishlistData, item?._id]);
+
   return (
     <div
       className="relative group w-full lg:w-[200px] mx-auto h-[330px] lg:h-[360px] hover:shadow-xl duration-500 flex flex-col border border-gray-200 bg-white rounded-xl overflow-hidden"
@@ -90,10 +109,10 @@ const ProductCard = ({ item }) => {
     >
       <Tooltip placement="top" title={"Add to Wishlist"}>
         <div
-          className="text-xs absolute top-2 right-2 z-10 lg:text-xl cursor-pointer hover:scale-110 duration-300 text-white p-1 bg-primary rounded-full"
+          className="absolute top-2 right-2 z-10 text-xl cursor-pointer hover:scale-110 duration-300 text-white p-1 bg-primary rounded-full"
           onClick={() => addToWishlist(item?._id)}
         >
-          <TbHeart />
+          {isItemInWishlist ? <IoCheckmark /> : <TbHeart />}
         </div>
       </Tooltip>
       <div className="relative overflow-hidden rounded-t-xl">
@@ -182,13 +201,23 @@ const ProductCard = ({ item }) => {
             )}
           </div>
 
-          <div className="bg-primary border border-primary hover:bg-transparent duration-300 hover:text-primary px-2 lg:px-4 py-2 text-white rounded-xl text-xs lg:text-sm">
+          <div
+            className={`${
+              cartData?.some((cartItem) => cartItem?.productId === item?._id)
+                ? "bg-transparent text-primary hover:bg-primary hover:text-white"
+                : "bg-primary hover:bg-transparent text-white hover:text-primary"
+            } border border-primary duration-300 px-2 lg:px-4 py-2 rounded-xl text-xs lg:text-sm`}
+          >
             {item?.isVariant || item?.variants?.length > 0 ? (
               <LinkButton href={`/products/${item?.slug}`}>
                 <div>Details</div>
               </LinkButton>
             ) : (
-              <button onClick={addToCart}>Add</button>
+              <button onClick={addToCart}>
+                {cartData?.some((cartItem) => cartItem?.productId === item?._id)
+                  ? "Added"
+                  : "Add"}
+              </button>
             )}
           </div>
         </div>

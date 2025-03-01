@@ -13,7 +13,7 @@ import {
   useGetSinglePrescriptionQuery,
 } from "@/redux/services/prescription/prescriptionApi";
 import { Dropdown, Image, Menu, Space, Table, Tag, Tooltip } from "antd";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaEdit } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
@@ -152,6 +152,13 @@ const UserPrescription = () => {
       },
     },
   ];
+
+  useEffect(() => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth",
+    });
+  });
 
   const tableData = prescriptions
     ?.map((item) => ({
