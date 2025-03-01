@@ -13,6 +13,7 @@ import {
   useGetSingleProductQuery,
 } from "@/redux/services/product/productApi";
 import { exportToExcel } from "@/utilities/lib/exportToExcel";
+import { formatImagePath } from "@/utilities/lib/formatImagePath";
 import {
   Dropdown,
   Image,
@@ -264,7 +265,7 @@ const AdminProducts = () => {
     isVariant: item?.isVariant,
     isFeatured: item?.isFeatured,
     variants: item?.variants,
-    attachment: item?.mainImage,
+    attachment: formatImagePath(item?.mainImage),
     status: item?.status,
   }));
 

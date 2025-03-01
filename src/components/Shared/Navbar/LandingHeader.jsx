@@ -25,6 +25,7 @@ import DrawerCart from "../Product/DrawerCart";
 import CategoryNavigation from "./CategoryNavigation";
 import ProductSearchBar from "./ProductSearchBar";
 import logo from "@/assets/images/logo-white.png";
+import scrollToTop from "@/utilities/lib/scrollToTop";
 
 const LandingHeader = () => {
   const pathname = usePathname();
@@ -91,6 +92,7 @@ const LandingHeader = () => {
                     ? "text-primary hover:text-primary"
                     : "text-black hover:text-primary"
                 }`}
+                onClick={scrollToTop}
               >
                 {item}
               </Link>
