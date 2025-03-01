@@ -455,7 +455,7 @@ const Orders = () => {
     grandTotal: item?.grandTotal,
     paymentStatus: item?.paymentStatus,
     deliveryStatus: item?.deliveryStatus,
-    paymentMethod: item?.paymentMethod,
+    paymentMethod: item?.paymentMethod ?? item?.paymentType,
     orderStatus: item?.orderStatus,
   }));
 

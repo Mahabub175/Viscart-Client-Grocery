@@ -113,6 +113,20 @@ const Category = () => {
       render: (item) => <div className="capitalize">{item}</div>,
     },
     {
+      title: "Featured",
+      dataIndex: "isFeatured",
+      key: "isFeatured",
+      align: "center",
+      render: (item) => (
+        <Tag
+          color={item ? "green" : "blue"}
+          className="capitalize font-semibold"
+        >
+          {item ? "Featured" : "Not Featured"}
+        </Tag>
+      ),
+    },
+    {
       title: "Status",
       dataIndex: "status",
       key: "status",
@@ -184,6 +198,7 @@ const Category = () => {
     name: item?.name,
     level: item?.level,
     attachment: item?.attachment,
+    isFeatured: item?.isFeatured,
     status: item?.status,
   }));
 

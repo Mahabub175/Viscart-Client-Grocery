@@ -85,7 +85,7 @@ const DrawerCart = ({ data, setDrawer }) => {
               className="flex flex-col lg:flex-row items-center gap-4 justify-between pb-5 mt-5 first:mt-0 border-b border-gray-300 last:border-b-0"
             >
               <div className="flex items-center gap-4 relative group flex-[3]">
-                <div className="relative">
+                <div className="relative border rounded-xl">
                   <Image
                     src={formatImagePath(item.image)}
                     alt={item.product?.name || "Product Image"}
@@ -93,14 +93,6 @@ const DrawerCart = ({ data, setDrawer }) => {
                     height={128}
                     className="lg:w-[150px] lg:h-32 rounded-xl"
                   />
-                  <div className="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center rounded-xl transition-opacity duration-300">
-                    <button
-                      onClick={() => handleDeleteCart(item._id)}
-                      className="bg-white px-2 py-1 rounded-full"
-                    >
-                      ✕
-                    </button>
-                  </div>
                 </div>
                 <div className="w-full">
                   <Link

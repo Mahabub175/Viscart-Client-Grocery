@@ -184,12 +184,20 @@ const LandingHeader = () => {
                         className="rounded-full w-[35px] h-[35px] border-2 border-primary"
                       />
                     ) : (
-                      <Avatar className="" size={30} icon={<UserOutlined />} />
+                      <Avatar size={30} icon={<UserOutlined />} />
                     )}
-                    <h2 className="font-normal text-sm flex items-center lg:mr-2">
-                      {data?.name ?? "User"}
+                    <div className="font-normal text-sm flex items-center lg:mr-2 lg:gap-1">
+                      <h2>
+                        {data?.name ?? "User"}
+                        <p className="text-xs flex items-center gap-1">
+                          Point:{" "}
+                          <span className="text-primary font-semibold">
+                            {data?.point}
+                          </span>
+                        </p>
+                      </h2>
                       <IoMdArrowDropdown />
-                    </h2>
+                    </div>
                   </Popover>
                 </div>
               </>

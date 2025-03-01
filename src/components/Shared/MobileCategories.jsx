@@ -64,7 +64,10 @@ const MobileCategories = () => {
                     key={item?._id}
                   >
                     <LinkButton href={`/products?filter=${item?.name}`}>
-                      <div className="overflow-hidden w-full h-full rounded-xl">
+                      <div
+                        className="overflow-hidden w-full h-full rounded-xl"
+                        onClick={toggle}
+                      >
                         <Image
                           src={
                             item?.attachment ??
@@ -91,7 +94,10 @@ const MobileCategories = () => {
                     key={item?._id}
                   >
                     <LinkButton href={`/products?filter=${item?.name}`}>
-                      <div className="overflow-hidden w-full h-full rounded-xl">
+                      <div
+                        className="overflow-hidden w-full h-full rounded-xl"
+                        onClick={toggle}
+                      >
                         <Image
                           src={
                             item?.attachment ??
