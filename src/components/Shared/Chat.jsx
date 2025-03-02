@@ -23,7 +23,7 @@ const Chat = () => {
   }, []);
 
   return (
-    <div className="fixed bottom-[10%] right-2 lg:right-7 z-50">
+    <div className="fixed bottom-[10%] lg:bottom-[14%] xl:bottom-[12%] xxl:bottom-[10%] right-2 lg:right-7 z-50">
       <button
         onClick={() => setOpen(!open)}
         className="bg-primary text-white rounded-full w-8 h-8 lg:w-10 lg:h-10 flex items-center justify-center text-2xl cursor-pointer z-50"

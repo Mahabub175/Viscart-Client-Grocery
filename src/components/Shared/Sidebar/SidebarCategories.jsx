@@ -107,6 +107,7 @@ const SidebarCategories = () => {
                 alt={parentCategory?.name ?? "demo"}
                 width={40}
                 height={20}
+                className="w-[40px] h-[40px] rounded object-contain"
               />
               <span>{parentCategory.name}</span>
             </span>
@@ -131,7 +132,7 @@ const SidebarCategories = () => {
   };
 
   return (
-    <aside className="bg-white rounded-lg p-4">
+    <aside className="bg-white rounded-lg p-[25px]">
       <ul className="w-[300px] overflow-y-auto h-[800px] space-y-2 pr-3">
         {renderParentCategories()}
       </ul>

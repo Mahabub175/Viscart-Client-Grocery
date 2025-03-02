@@ -1,35 +1,29 @@
 "use client";
 
 import DeleteModal from "@/components/Reusable/Modal/DeleteModal";
-import DetailsModal from "@/components/Reusable/Modal/DetailsModal";
-import { useDeleteAttributeMutation } from "@/redux/services/attribute/attributeApi";
 import { useCurrentUser } from "@/redux/services/auth/authSlice";
 import {
+  useDeleteCartMutation,
   useGetSingleCartByUserQuery,
-  useGetSingleCartQuery,
 } from "@/redux/services/cart/cartApi";
-import { Dropdown, Input, Menu, Space, Table, Tag, Tooltip } from "antd";
+import { formatImagePath } from "@/utilities/lib/formatImagePath";
+import { Dropdown, Image, Input, Menu, Space, Table, Tooltip } from "antd";
+import Link from "next/link";
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { TbListDetails } from "react-icons/tb";
 import { useSelector } from "react-redux";
 
 const UserCart = () => {
   const user = useSelector(useCurrentUser);
-  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [itemId, setItemId] = useState(null);
   const [search, setSearch] = useState("");
 
   const { data: carts, isFetching } = useGetSingleCartByUserQuery(user?._id);
 
-  const { data: cartData } = useGetSingleCartQuery(itemId, {
-    skip: !itemId,
-  });
-
-  const [deleteAttribute] = useDeleteAttributeMutation();
+  const [deleteCart] = useDeleteCartMutation();
 
   const handleMenuClick = (key, id) => {
     setItemId(id);
@@ -44,10 +38,31 @@ const UserCart = () => {
 
   const columns = [
     {
+      title: "Image",
+      dataIndex: "image",
+      key: "image",
+      align: "start",
+      render: (item) => (
+        <Image
+          src={
+            item ??
+            "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
+          }
+          alt={"product image"}
+          className="!w-12 !h-12 rounded-full"
+        />
+      ),
+    },
+    {
       title: "Product",
       dataIndex: "product",
       key: "product",
       align: "start",
+      render: (item, record) => (
+        <Link href={`/products/${record?.slug}`} target="_blank">
+          {item}
+        </Link>
+      ),
     },
     {
       title: "Quantity",
@@ -55,20 +70,7 @@ const UserCart = () => {
       key: "quantity",
       align: "start",
     },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      align: "center",
-      render: (item) => (
-        <Tag
-          color={item == "Active" ? "green" : "red"}
-          className="capitalize font-semibold"
-        >
-          {item == "Active" ? "Active" : "Inactive"}
-        </Tag>
-      ),
-    },
+
     {
       title: "Action",
       key: "action",
@@ -91,17 +93,6 @@ const UserCart = () => {
 
         return (
           <Space size="middle">
-            <Tooltip placement="top" title={"Details"}>
-              <button
-                onClick={() => {
-                  setItemId(item.key);
-                  setDetailsModalOpen(true);
-                }}
-                className="bg-blue-600 p-2 rounded-xl text-white hover:scale-110 duration-300"
-              >
-                <TbListDetails />
-              </button>
-            </Tooltip>
             <Dropdown overlay={menu} trigger={["click"]} placement="bottom">
               <Tooltip placement="top" title={"More"}>
                 <button className="bg-blue-500 p-2 rounded-xl text-white hover:scale-110 duration-300">
@@ -117,9 +108,10 @@ const UserCart = () => {
 
   const tableData = carts?.map((item) => ({
     key: item._id,
-    product: item?.product?.name,
+    image: formatImagePath(item?.image),
+    slug: item?.slug,
+    product: item?.productName,
     quantity: item?.quantity,
-    status: item?.status,
   }));
 
   const filteredTableData = tableData?.filter((item) => {
@@ -151,19 +143,12 @@ const UserCart = () => {
         loading={isFetching}
       />
 
-      <DetailsModal
-        itemId={itemId}
-        modalOpen={detailsModalOpen}
-        setModalOpen={setDetailsModalOpen}
-        title={"Cart"}
-        details={cartData}
-      />
       <DeleteModal
         itemId={itemId}
         modalOpen={deleteModalOpen}
         setModalOpen={setDeleteModalOpen}
         text={"cart"}
-        func={deleteAttribute}
+        func={deleteCart}
       />
     </div>
   );

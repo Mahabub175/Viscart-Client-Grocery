@@ -20,7 +20,7 @@ import ProductReview from "./ProductReview";
 
 const SingleProductDetails = ({ params }) => {
   const { data: globalData } = useGetAllGlobalSettingQuery();
-  const { data: singleProduct } = useGetSingleProductBySlugQuery(
+  const { data: singleProduct, isFetching } = useGetSingleProductBySlugQuery(
     params?.productId
   );
 
@@ -169,6 +169,14 @@ const SingleProductDetails = ({ params }) => {
     singleProduct?.sellingPrice,
     singleProduct?.offerPrice
   );
+
+  if (isFetching) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
+      </div>
+    );
+  }
 
   return (
     <section className="py-10 -mt-20">
