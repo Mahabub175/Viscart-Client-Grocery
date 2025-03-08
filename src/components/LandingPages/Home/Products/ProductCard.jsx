@@ -157,7 +157,7 @@ const ProductCard = ({ item }) => {
         </div>
         {discountPercentage > 0 && (
           <p className="text-xs font-medium absolute top-2 bg-blue-500 text-white left-2 p-1 rounded-xl">
-            -{discountPercentage}%
+            {discountPercentage}% Off
           </p>
         )}
       </div>
@@ -198,7 +198,7 @@ const ProductCard = ({ item }) => {
               </p>
             )}
           </div>
-          <div className="text-center text-[10px]">
+          <div className="text-center text-[9px]">
             {!item?.stock > 0 ? (
               <div className="text-red-500">(Out Of Stock)</div>
             ) : (
@@ -206,19 +206,32 @@ const ProductCard = ({ item }) => {
             )}
           </div>
 
-          <div
-            className={`${
-              cartData?.some((cartItem) => cartItem?.productId === item?._id)
-                ? "bg-transparent text-primary hover:bg-primary hover:text-white"
-                : "bg-primary hover:bg-transparent text-white hover:text-primary"
-            } border border-primary duration-300 px-2 lg:px-4 py-2 rounded-xl text-xs lg:text-sm`}
-          >
+          <div>
             {item?.isVariant || item?.variants?.length > 0 ? (
-              <LinkButton href={`/products/${item?.slug}`}>
-                <div>Details</div>
-              </LinkButton>
+              <div
+                className={`${
+                  cartData?.some(
+                    (cartItem) => cartItem?.productId === item?._id
+                  )
+                    ? "bg-transparent text-primary hover:bg-primary hover:text-white"
+                    : "bg-primary hover:bg-transparent text-white hover:text-primary"
+                } border border-primary duration-300 px-2 lg:px-4 py-2 rounded-xl text-xs lg:text-sm`}
+              >
+                <LinkButton href={`/products/${item?.slug}`}>
+                  <div>Details</div>
+                </LinkButton>
+              </div>
             ) : (
-              <button onClick={addToCart}>
+              <button
+                onClick={addToCart}
+                className={`${
+                  cartData?.some(
+                    (cartItem) => cartItem?.productId === item?._id
+                  )
+                    ? "bg-transparent text-primary hover:bg-primary hover:text-white"
+                    : "bg-primary hover:bg-transparent text-white hover:text-primary"
+                } border border-primary duration-300 px-2 lg:px-4 py-2 rounded-xl text-xs lg:text-sm`}
+              >
                 {cartData?.some((cartItem) => cartItem?.productId === item?._id)
                   ? "Added"
                   : "Add"}
