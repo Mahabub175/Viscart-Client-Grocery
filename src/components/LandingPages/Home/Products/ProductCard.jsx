@@ -22,6 +22,7 @@ import {
 import Link from "next/link";
 import { calculateDiscountPercentage } from "@/utilities/lib/discountCalculator";
 import { IoCheckmark } from "react-icons/io5";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 const ProductCard = ({ item }) => {
   const { data: globalData } = useGetAllGlobalSettingQuery();
@@ -69,6 +70,7 @@ const ProductCard = ({ item }) => {
     const data = {
       ...(user?._id ? { user: user._id } : { deviceId }),
       product: item?._id,
+      name: item?.name,
       quantity: 1,
       sku: item?.sku,
       price: item?.offerPrice ? item?.offerPrice : item?.sellingPrice,
@@ -80,6 +82,9 @@ const ProductCard = ({ item }) => {
       const res = await addCart(data);
       if (res?.data?.success) {
         toast.success(res.data.message, { id: toastId });
+        sendGTMEvent("add_to_cart", "addToCart", {
+          value: data,
+        });
       }
       if (res?.error) {
         toast.error(res?.error?.data?.errorMessage, { id: toastId });

@@ -10,6 +10,7 @@ import {
 import { useDeviceId } from "@/redux/services/device/deviceSlice";
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 import { useDeleteWishlistMutation } from "@/redux/services/wishlist/wishlistApi";
+import { sendGTMEvent } from "@next/third-parties/google";
 import { Modal } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -142,6 +143,7 @@ const ProductCountCart = ({
     const data = {
       ...(user?._id ? { user: user._id } : { deviceId }),
       product: item?._id,
+      name: item?.name,
       quantity: count,
       sku: currentVariant?.sku ?? item?.sku,
       price: currentVariant?.sellingPrice
@@ -157,6 +159,9 @@ const ProductCountCart = ({
       const res = await addCart(data);
       if (res?.data?.success) {
         toast.success(res.data.message, { id: toastId });
+        sendGTMEvent("add_to_cart", "addToCart", {
+          value: data,
+        });
         if (isWishlist) {
           deleteWishlist(wishlistId);
         }
