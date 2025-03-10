@@ -81,7 +81,10 @@ const QuickProductView = ({
       <div className="flex flex-col items-center justify-center lg:flex-row gap-10 pt-5">
         <div className="w-full">
           <Image
-            src={currentImage}
+            src={
+              currentImage ??
+              "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
+            }
             alt={item?.name}
             width={300}
             height={300}
@@ -115,6 +118,11 @@ const QuickProductView = ({
 
           <div className="flex items-center gap-4 text-textColor font-bold my-2">
             Price:
+            {(item?.offerPrice || item?.offerPrice > 0) && (
+              <p className="text-xs line-through text-black/60">
+                {globalData?.results?.currency + " " + item?.sellingPrice}
+              </p>
+            )}
             <p className="text-primary text-xl">
               {globalData?.results?.currency + " " + currentPrice}
             </p>

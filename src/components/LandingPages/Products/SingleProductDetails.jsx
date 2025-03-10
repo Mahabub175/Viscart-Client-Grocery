@@ -17,6 +17,7 @@ import LinkButton from "@/components/Shared/LinkButton";
 import RelatedGenericProducts from "./RelatedGenericProduct";
 import { calculateDiscountPercentage } from "@/utilities/lib/discountCalculator";
 import ProductReview from "./ProductReview";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 const SingleProductDetails = ({ params }) => {
   const { data: globalData } = useGetAllGlobalSettingQuery();
@@ -55,6 +56,7 @@ const SingleProductDetails = ({ params }) => {
   };
 
   useEffect(() => {
+    sendGTMEvent({ event: "productView", value: singleProduct });
     if (Object.keys(selectedAttributes).length === 0) {
       setCurrentVariant(null);
       setVariantMedia([]);

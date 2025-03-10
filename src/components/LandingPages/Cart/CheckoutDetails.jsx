@@ -82,7 +82,6 @@ const CheckoutDetails = ({
     } else {
       const appliedDiscount =
         discountOption === "coupon" ? couponData : giftCardData;
-      console.log(appliedDiscount);
       setDiscount(appliedDiscount);
       toast.success("Discount applied");
     }

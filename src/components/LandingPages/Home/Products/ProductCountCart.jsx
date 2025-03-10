@@ -2,6 +2,7 @@
 
 import { SubmitButton } from "@/components/Reusable/Button/CustomButton";
 import AttributeOptionSelector from "@/components/Shared/Product/AttributeOptionSelector";
+import { useGetSingleUserQuery } from "@/redux/services/auth/authApi";
 import { useCurrentUser } from "@/redux/services/auth/authSlice";
 import {
   useAddCartMutation,
@@ -37,6 +38,10 @@ const ProductCountCart = ({
   const [addCart, { isLoading }] = useAddCartMutation();
   const [btnText, setBtnText] = useState("");
   const [deleteWishlist] = useDeleteWishlistMutation();
+
+  const { data: userData } = useGetSingleUserQuery(user?._id, {
+    skip: !user?._id,
+  });
 
   const { data: cartData } = useGetSingleCartByUserQuery(user?._id ?? deviceId);
 
@@ -130,6 +135,8 @@ const ProductCountCart = ({
 
   const currentPrice = currentVariant
     ? currentVariant?.sellingPrice
+    : item?.offerPrice && item?.offerPrice > 0
+    ? item?.offerPrice
     : item?.sellingPrice;
 
   const addToCart = async (type) => {
@@ -142,15 +149,17 @@ const ProductCountCart = ({
 
     const data = {
       ...(user?._id ? { user: user._id } : { deviceId }),
+      ...(user?._id && {
+        userName: userData?.name,
+        userNumber: userData?.number,
+        userEmail: userData?.email,
+      }),
       product: item?._id,
       name: item?.name,
+      slug: item?.slug,
       quantity: count,
       sku: currentVariant?.sku ?? item?.sku,
-      price: currentVariant?.sellingPrice
-        ? currentVariant?.sellingPrice
-        : item?.offerPrice
-        ? item?.offerPrice
-        : item?.sellingPrice,
+      price: currentPrice,
     };
 
     const toastId = toast.loading("Adding to cart");
@@ -159,9 +168,7 @@ const ProductCountCart = ({
       const res = await addCart(data);
       if (res?.data?.success) {
         toast.success(res.data.message, { id: toastId });
-        sendGTMEvent("add_to_cart", "addToCart", {
-          value: data,
-        });
+        sendGTMEvent({ event: "addToCart", value: data });
         if (isWishlist) {
           deleteWishlist(wishlistId);
         }

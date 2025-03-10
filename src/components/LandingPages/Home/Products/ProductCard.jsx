@@ -23,6 +23,7 @@ import Link from "next/link";
 import { calculateDiscountPercentage } from "@/utilities/lib/discountCalculator";
 import { IoCheckmark } from "react-icons/io5";
 import { sendGTMEvent } from "@next/third-parties/google";
+import { useGetSingleUserQuery } from "@/redux/services/auth/authApi";
 
 const ProductCard = ({ item }) => {
   const { data: globalData } = useGetAllGlobalSettingQuery();
@@ -30,13 +31,17 @@ const ProductCard = ({ item }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const deviceId = useSelector(useDeviceId);
+  const user = useSelector(useCurrentUser);
   const [addCart] = useAddCartMutation();
   const [addWishlist] = useAddWishlistMutation();
-  const user = useSelector(useCurrentUser);
 
   const { data: wishlistData } = useGetSingleWishlistByUserQuery(
     user?._id ?? deviceId
   );
+
+  const { data: userData } = useGetSingleUserQuery(user?._id, {
+    skip: !user?._id,
+  });
 
   const { data: cartData } = useGetSingleCartByUserQuery(user?._id ?? deviceId);
 
@@ -69,8 +74,14 @@ const ProductCard = ({ item }) => {
   const addToCart = async () => {
     const data = {
       ...(user?._id ? { user: user._id } : { deviceId }),
+      ...(user?._id && {
+        userName: userData?.name,
+        userNumber: userData?.number,
+        userEmail: userData?.email,
+      }),
       product: item?._id,
       name: item?.name,
+      slug: item?.slug,
       quantity: 1,
       sku: item?.sku,
       price: item?.offerPrice ? item?.offerPrice : item?.sellingPrice,
@@ -82,9 +93,7 @@ const ProductCard = ({ item }) => {
       const res = await addCart(data);
       if (res?.data?.success) {
         toast.success(res.data.message, { id: toastId });
-        sendGTMEvent("add_to_cart", "addToCart", {
-          value: data,
-        });
+        sendGTMEvent({ event: "addToCart", value: data });
       }
       if (res?.error) {
         toast.error(res?.error?.data?.errorMessage, { id: toastId });

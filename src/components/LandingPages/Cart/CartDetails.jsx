@@ -3,6 +3,7 @@
 import deleteImage from "@/assets/images/Trash-can.png";
 import CustomForm from "@/components/Reusable/Form/CustomForm";
 import {
+  useGetSingleUserQuery,
   useLoginMutation,
   useSignUpMutation,
 } from "@/redux/services/auth/authApi";
@@ -25,6 +26,7 @@ import CheckoutInfo from "./CheckoutInfo";
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 import { formatImagePath } from "@/utilities/lib/formatImagePath";
 import { useRouter } from "next/navigation";
+import { sendGTMEvent } from "@next/third-parties/google";
 
 const CartDetails = () => {
   const router = useRouter();
@@ -36,6 +38,10 @@ const CartDetails = () => {
   const { data: cartData, isError } = useGetSingleCartByUserQuery(
     user?._id ?? deviceId
   );
+
+  const { data: userData } = useGetSingleUserQuery(user?._id, {
+    skip: !user?._id,
+  });
 
   const [deleteCart] = useDeleteCartMutation();
   const [deleteBulkCart] = useDeleteBulkCartMutation();
@@ -113,6 +119,16 @@ const CartDetails = () => {
             ...values,
             user: signUpResponse?.data?._id ?? user?._id,
             deviceId,
+            ...(user?._id
+              ? {
+                  userName: userData?.name,
+                  userNumber: userData?.number,
+                  userEmail: userData?.email,
+                }
+              : {
+                  userName: values?.name,
+                  userNumber: values?.number,
+                }),
             products: cartData?.map((item) => ({
               product: item?.productId,
               productName:
@@ -124,6 +140,7 @@ const CartDetails = () => {
                       .join(" ")})`
                   : ""),
               quantity: item?.quantity,
+              slug: item?.slug,
               sku: item?.sku,
             })),
             shippingFee,
@@ -153,6 +170,7 @@ const CartDetails = () => {
             if (res?.error) {
               toast.error(res?.error?.data?.errorMessage, { id: toastId });
             } else if (res?.data?.success) {
+              sendGTMEvent({ event: "orderData", value: submittedData });
               if (res?.data?.data?.gatewayUrl) {
                 window.location.href = res?.data?.data?.gatewayUrl;
               }

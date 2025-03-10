@@ -13,8 +13,20 @@ import { useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { MdDelete } from "react-icons/md";
 import { useRouter } from "next/navigation";
+import { sendGTMEvent } from "@next/third-parties/google";
+import { useSelector } from "react-redux";
+import { useDeviceId } from "@/redux/services/device/deviceSlice";
+import { useCurrentUser } from "@/redux/services/auth/authSlice";
+import { useGetSingleUserQuery } from "@/redux/services/auth/authApi";
 
 const DrawerCart = ({ data, setDrawer }) => {
+  const deviceId = useSelector(useDeviceId);
+  const user = useSelector(useCurrentUser);
+
+  const { data: userData } = useGetSingleUserQuery(user?._id, {
+    skip: !user?._id,
+  });
+
   const [counts, setCounts] = useState({});
   const { data: globalData } = useGetAllGlobalSettingQuery();
   const [deleteCart] = useDeleteCartMutation();
@@ -29,6 +41,26 @@ const DrawerCart = ({ data, setDrawer }) => {
 
   useEffect(() => {
     if (data?.length) {
+      const productData = data?.map((item) => {
+        return {
+          id: item._id,
+          productId: item.productId,
+          productName: item.productName,
+          price: item.price,
+          sku: item.sku,
+          slug: item.slug,
+          quantity: item.quantity,
+          image: formatImagePath(item.image),
+          ...(user?._id
+            ? {
+                userName: userData?.name,
+                userNumber: userData?.number,
+                userEmail: userData?.email,
+              }
+            : { deviceId }),
+        };
+      });
+      sendGTMEvent({ event: "cartView", value: productData });
       setCounts(
         data.reduce(
           (acc, item) => ({
@@ -39,7 +71,7 @@ const DrawerCart = ({ data, setDrawer }) => {
         )
       );
     }
-  }, [data]);
+  }, [data, user?._id, userData, deviceId]);
 
   const subtotal = useMemo(() => {
     return data?.reduce((total, item) => {
