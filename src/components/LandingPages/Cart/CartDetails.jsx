@@ -46,16 +46,16 @@ const CartDetails = () => {
   const [deleteCart] = useDeleteCartMutation();
   const [deleteBulkCart] = useDeleteBulkCartMutation();
 
-  const [addOrder] = useAddOrderMutation();
-  const [signUp] = useSignUpMutation();
-  const [login] = useLoginMutation();
+  const [addOrder, { isLoading: isOrderLoading }] = useAddOrderMutation();
+  const [signUp, { isLoading: isSignUpLoading }] = useSignUpMutation();
+  const [login, { isLoading: isLoginLoading }] = useLoginMutation();
 
   const [counts, setCounts] = useState({});
   const [subTotal, setSubTotal] = useState(0);
   const [shippingFee, setShippingFee] = useState(0);
   const [code, setCode] = useState("");
   const [deliveryOption, setDeliveryOption] = useState("insideDhaka");
-  const [discount, setDiscount] = useState(null);
+  const [discount, setDiscount] = useState(0);
   const [grandTotal, setGrandTotal] = useState(0);
 
   useEffect(() => {
@@ -108,7 +108,10 @@ const CartDetails = () => {
           }
         } catch (error) {
           if (error?.data?.errorMessage === "number already exists") {
-            toast.error("Number already exists");
+            toast.error("Number already exists! Please login!", {
+              id: toastId,
+            });
+            return;
           }
         }
       }
@@ -217,7 +220,7 @@ const CartDetails = () => {
                 {cartData?.map((item) => (
                   <div
                     key={item?._id}
-                    className="flex flex-col lg:flex-row items-center gap-4 justify-center pb-5 mt-5 first:mt-0 border-b border-gray-300 last:border-b-0"
+                    className="flex flex-col xxl:flex-row items-center gap-4 justify-center pb-5 mt-5 first:mt-0 border-b border-gray-300 last:border-b-0"
                   >
                     <div className="flex flex-[3] items-center gap-4">
                       <Image
@@ -248,7 +251,7 @@ const CartDetails = () => {
                       <p className="text-primary text-2xl font-bold">
                         {globalData?.results?.currency +
                           " " +
-                          item?.price * counts[item._id]}
+                          (item?.price * counts[item._id]).toFixed(2)}
                       </p>
                     </div>
                     <div
@@ -291,6 +294,9 @@ const CartDetails = () => {
                     subTotal={subTotal}
                     shippingFee={shippingFee}
                     discountAmount={discount}
+                    isOrderLoading={isOrderLoading}
+                    isSignUpLoading={isSignUpLoading}
+                    isLoginLoading={isLoginLoading}
                   />
                 </CustomForm>
               </div>

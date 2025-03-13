@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useState, useEffect } from "react";
 import { Radio, Input, Button } from "antd";
 import { useGetSingleCouponByCodeQuery } from "@/redux/services/coupon/couponAPi";
@@ -20,6 +21,7 @@ const CheckoutDetails = ({
   setGrandTotal,
 }) => {
   const [discountOption, setDiscountOption] = useState("");
+  const [discountAmount, setDiscountAmount] = useState(0);
 
   const { data: globalData } = useGetAllGlobalSettingQuery();
 
@@ -41,13 +43,21 @@ const CheckoutDetails = ({
 
   useEffect(() => {
     if (deliveryOption === "insideDhaka") {
-      setShippingFee(parseInt(globalData?.results?.deliveryChargeInsideDhaka));
+      setShippingFee(
+        parseInt(globalData?.results?.deliveryChargeInsideDhaka) || 0
+      );
     } else if (deliveryOption === "outsideDhaka") {
-      setShippingFee(parseInt(globalData?.results?.deliveryChargeOutsideDhaka));
+      setShippingFee(
+        parseInt(globalData?.results?.deliveryChargeOutsideDhaka) || 0
+      );
     }
   }, [deliveryOption, setShippingFee, globalData]);
 
   const handleCode = () => {
+    if (!code) {
+      toast.error("Please enter a code");
+      return;
+    }
     if (!discountOption) {
       toast.error("Please select a discount option");
       return;
@@ -87,26 +97,37 @@ const CheckoutDetails = ({
     }
   };
 
-  const calculateDiscount = () => {
-    if (!discount) return 0;
-
-    if (!discount.type) {
-      return discount.amount;
+  useEffect(() => {
+    if (!code) {
+      setDiscount(null);
+      setDiscountAmount(0);
     }
-
-    if (discount.type === "fixed") {
-      return discount.amount;
-    } else if (discount.type === "percentage") {
-      return (subTotal * discount.amount) / 100;
-    }
-
-    return 0;
-  };
-
-  const discountAmount = calculateDiscount();
+  }, [code]);
 
   useEffect(() => {
-    setGrandTotal(subTotal + shippingFee - discountAmount);
+    if (!code || !discount) {
+      setDiscountAmount(0);
+      return;
+    }
+
+    let discountValue = Number(discount.amount) || 0;
+    const totalSubTotal = Number(subTotal) || 0;
+
+    if (!discount.type) {
+      setDiscountAmount(discountValue);
+    } else if (discount.type === "fixed") {
+      setDiscountAmount(discountValue);
+    } else if (discount.type === "percentage") {
+      setDiscountAmount((totalSubTotal * discountValue) / 100);
+    } else {
+      setDiscountAmount(0);
+    }
+  }, [subTotal, discount, code, couponData, giftCardData]);
+
+  useEffect(() => {
+    const total =
+      (Number(subTotal) || 0) + (Number(shippingFee) || 0) - discountAmount;
+    setGrandTotal(total);
   }, [subTotal, shippingFee, discountAmount, setGrandTotal]);
 
   return (
@@ -145,7 +166,9 @@ const CheckoutDetails = ({
       <div className="bg-primaryLight p-5 rounded-lg border-2 border-primary space-y-3 font-semibold">
         <div className="flex justify-between items-center gap-20">
           <p>Sub Total</p>
-          <p>{globalData?.results?.currency + " " + subTotal || 0}</p>
+          <p>
+            {globalData?.results?.currency + " " + subTotal?.toFixed(2) || 0}
+          </p>
         </div>
 
         <div className="flex justify-between items-center gap-20">
@@ -155,14 +178,19 @@ const CheckoutDetails = ({
 
         <div className="flex justify-between items-center gap-20">
           <p>Discount</p>
-          <p>{globalData?.results?.currency + " " + discountAmount || 0}</p>
+          <p>
+            {globalData?.results?.currency + " " + discountAmount?.toFixed(2) ||
+              0}
+          </p>
         </div>
 
         <hr className="border border-primary" />
 
         <div className="flex justify-between items-center gap-20">
           <p>Grand Total</p>
-          <p>{globalData?.results?.currency + " " + grandTotal || 0}</p>
+          <p>
+            {globalData?.results?.currency + " " + grandTotal?.toFixed(2) || 0}
+          </p>
         </div>
       </div>
     </>

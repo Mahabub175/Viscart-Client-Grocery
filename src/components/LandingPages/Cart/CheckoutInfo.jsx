@@ -15,6 +15,9 @@ const CheckoutInfo = ({
   subTotal,
   shippingFee,
   discountAmount,
+  isOrderLoading,
+  isSignUpLoading,
+  isLoginLoading,
 }) => {
   const form = Form.useFormInstance();
   const paymentType = Form.useWatch("paymentType", form);
@@ -121,7 +124,14 @@ const CheckoutInfo = ({
         </div>
       )}
 
-      <SubmitButton fullWidth text="Order Now" disabled={isDisabled} />
+      <SubmitButton
+        fullWidth
+        text="Order Now"
+        disabled={
+          isDisabled || isLoginLoading || isOrderLoading || isSignUpLoading
+        }
+        loading={isOrderLoading || isSignUpLoading || isLoginLoading}
+      />
     </div>
   );
 };
