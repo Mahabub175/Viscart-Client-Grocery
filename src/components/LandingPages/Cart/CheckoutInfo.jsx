@@ -36,11 +36,9 @@ const CheckoutInfo = ({
   useEffect(() => {
     if (paymentType === "point") {
       if (pointsAsCurrency >= grandTotal) {
-        setGrandTotal(0);
         setRemainingAmount(0);
         setIsDisabled(false);
       } else {
-        setGrandTotal(grandTotal - pointsAsCurrency);
         setRemainingAmount(grandTotal - pointsAsCurrency);
         setIsDisabled(true);
       }
@@ -49,7 +47,7 @@ const CheckoutInfo = ({
       setGrandTotal(subTotal + shippingFee - discountAmount);
       setIsDisabled(false);
     }
-  }, [paymentType, subTotal, discountAmount, shippingFee]);
+  }, [paymentType, subTotal, discountAmount, shippingFee, grandTotal]);
 
   const paymentOptions = [
     { value: "manual", label: "Manual" },
@@ -114,11 +112,15 @@ const CheckoutInfo = ({
             <p style={{ color: "green" }}>
               Your order is fully covered by points!
             </p>
-          ) : (
+          ) : remainingAmount > 0 ? (
             <p style={{ color: "red" }}>
               You need{" "}
               <strong>{remainingAmount.toFixed(2) * pointConversion}</strong>{" "}
-              more points complete the purchase.
+              more points to complete the purchase.
+            </p>
+          ) : (
+            <p style={{ color: "green" }}>
+              Your order is fully covered by points!
             </p>
           )}
         </div>

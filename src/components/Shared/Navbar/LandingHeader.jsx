@@ -192,7 +192,7 @@ const LandingHeader = () => {
                         <p className="text-xs flex items-center gap-1">
                           Point:{" "}
                           <span className="text-primary font-semibold">
-                            {data?.point}
+                            {data?.point?.toFixed(2)}
                           </span>
                         </p>
                       </h2>

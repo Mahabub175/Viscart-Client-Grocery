@@ -48,7 +48,7 @@ const UserDashboard = () => {
           <p>Hello,</p>
           <p className="text-base lg:text-4xl font-medium">{data?.name}</p>
           <p className="text-base font-medium mt-2">
-            Total Points: {data?.point}
+            Total Points: {data?.point?.toFixed(2)}
           </p>
         </div>
       </div>
