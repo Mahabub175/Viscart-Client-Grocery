@@ -292,15 +292,15 @@ const Orders = () => {
         let text;
 
         switch (item) {
-          case "SUCCESS":
+          case "success":
             color = "green";
             text = "Success";
             break;
-          case "PENDING":
+          case "pending":
             color = "orange";
             text = "Pending";
             break;
-          case "FAILED":
+          case "failed":
             color = "red";
             text = "Failed";
             break;
@@ -452,7 +452,7 @@ const Orders = () => {
     subTotal: item?.subTotal,
     shippingFee: item?.shippingFee,
     discount: item?.discount ?? 0,
-    grandTotal: item?.grandTotal,
+    grandTotal: item?.grandTotal?.toFixed(2),
     paymentStatus: item?.paymentStatus,
     deliveryStatus: item?.deliveryStatus,
     paymentMethod: item?.paymentMethod ?? item?.paymentType,
@@ -479,17 +479,17 @@ const Orders = () => {
       const res = await updateOrder(updatedData);
 
       if (res.data.success) {
-        toast.success("Order Status Updated", { id: toastId });
+        toast.success("Payment Status Updated", { id: toastId });
         setPaymentModalOpen(false);
         setOrderStatusModal(false);
       } else {
-        toast.error("An error occurred while updating the Order Status.", {
+        toast.error("An error occurred while updating the Payment Status.", {
           id: toastId,
         });
       }
     } catch (error) {
-      console.error("Error updating Brand:", error);
-      toast.error("An error occurred while updating the Order Status.", {
+      console.error("Error updating Payment:", error);
+      toast.error("An error occurred while updating the Payment Status.", {
         id: toastId,
       });
     }
@@ -581,9 +581,9 @@ const Orders = () => {
             name={"paymentStatus"}
             label={"Payment Status"}
             options={[
-              { label: "Pending", value: "PENDING" },
-              { label: "Success", value: "SUCCESS" },
-              { label: "Failed", value: "FAILED" },
+              { label: "Pending", value: "pending" },
+              { label: "Success", value: "success" },
+              { label: "Failed", value: "failed" },
             ]}
           />
           <SubmitButton fullWidth text={"Update"} loading={isLoading} />
