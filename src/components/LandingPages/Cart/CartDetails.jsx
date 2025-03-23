@@ -80,6 +80,7 @@ const CartDetails = () => {
   const onSubmit = async (values) => {
     const toastId = toast.loading("Creating Order...");
     let signUpResponse;
+    let loginResponse;
 
     try {
       if (!user) {
@@ -97,7 +98,7 @@ const CartDetails = () => {
             password: values?.number,
           };
 
-          const loginResponse = await login(loginData).unwrap();
+          loginResponse = await login(loginData).unwrap();
           if (loginResponse.success) {
             dispatch(
               setUser({
@@ -114,7 +115,7 @@ const CartDetails = () => {
                 defaultPassword: values?.number,
               };
 
-              const loginResponse = await login(loginData).unwrap();
+              loginResponse = await login(loginData).unwrap();
               if (loginResponse.success) {
                 dispatch(
                   setUser({
@@ -128,7 +129,6 @@ const CartDetails = () => {
                 id: toastId,
               });
             }
-            return;
           }
         }
       }
@@ -167,8 +167,8 @@ const CartDetails = () => {
             discount,
             deliveryOption,
             code,
-            grandTotal,
-            subTotal,
+            subTotal: parseFloat(subTotal?.toFixed(2)),
+            grandTotal: Number(grandTotal?.toFixed(2)),
           };
 
           if (values.paymentType === "cod") {
@@ -213,7 +213,7 @@ const CartDetails = () => {
         }
       }, 2000);
     } catch (error) {
-      toast.error("Error in order creation process!");
+      toast.error("Error in order creation process!", { id: toastId });
     }
   };
 
