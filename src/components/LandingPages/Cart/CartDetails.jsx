@@ -108,9 +108,26 @@ const CartDetails = () => {
           }
         } catch (error) {
           if (error?.data?.errorMessage === "number already exists") {
-            toast.error("Number already exists! Please login!", {
-              id: toastId,
-            });
+            try {
+              const loginData = {
+                emailNumber: values?.number,
+                defaultPassword: values?.number,
+              };
+
+              const loginResponse = await login(loginData).unwrap();
+              if (loginResponse.success) {
+                dispatch(
+                  setUser({
+                    user: loginResponse.data.user,
+                    token: loginResponse.data.token,
+                  })
+                );
+              }
+            } catch (loginError) {
+              toast.error("Failed to login. Please try again!", {
+                id: toastId,
+              });
+            }
             return;
           }
         }
