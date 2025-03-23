@@ -14,7 +14,7 @@ const RelatedCategories = ({ searchParam }) => {
 
   return (
     <div>
-      <div className="new-container relative">
+      <div className="new-container relative mb-16">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap justify-center items-center gap-10">
           {filteredData?.level === "parentCategory" &&
             filteredData?.categories?.map((item) => (
@@ -101,7 +101,7 @@ export default RelatedCategories;
 
 //   return (
 //     <div>
-//       <div className="new-container relative">
+//       <div className="new-container relative mb-16">
 //         <Swiper
 //           onBeforeInit={(swiper) => {
 //             swiperRef.current = swiper;

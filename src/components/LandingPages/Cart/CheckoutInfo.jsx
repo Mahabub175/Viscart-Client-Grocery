@@ -29,7 +29,7 @@ const CheckoutInfo = ({
   const [remainingAmount, setRemainingAmount] = useState(grandTotal);
   const [isDisabled, setIsDisabled] = useState(false);
 
-  const userPoints = userData?.point || 0;
+  const userPoints = userData?.point?.toFixed(2) || 0;
   const pointConversion = globalData?.pointConversion || 1;
   const pointsAsCurrency = userPoints / pointConversion;
 
