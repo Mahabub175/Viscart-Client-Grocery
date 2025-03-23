@@ -93,15 +93,15 @@ const UserOrders = () => {
         let text;
 
         switch (item) {
-          case "SUCCESS":
+          case "success":
             color = "green";
             text = "Success";
             break;
-          case "PENDING":
+          case "pending":
             color = "orange";
             text = "Pending";
             break;
-          case "FAILED":
+          case "failed":
             color = "red";
             text = "Failed";
             break;

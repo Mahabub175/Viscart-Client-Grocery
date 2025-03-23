@@ -77,143 +77,146 @@ const CartDetails = () => {
     toast.success("Product removed from cart");
   };
 
-  const onSubmit = async (values) => {
-    const toastId = toast.loading("Creating Order...");
-    let signUpResponse;
-    let loginResponse;
-
+  const handleUserAuth = async (values) => {
     try {
-      if (!user) {
-        const signUpData = {
-          name: values?.name,
-          number: values?.number,
-          password: values?.number,
+      if (user) return user?._id;
+
+      const signUpData = {
+        name: values?.name,
+        number: values?.number,
+        password: values?.number,
+      };
+
+      try {
+        const signUpResponse = await signUp(signUpData).unwrap();
+        const loginData = {
+          emailNumber: values?.number,
+          defaultPassword: values?.number,
         };
 
-        try {
-          signUpResponse = await signUp(signUpData).unwrap();
+        const loginResponse = await login(loginData).unwrap();
+        if (loginResponse.success) {
+          dispatch(
+            setUser({
+              user: loginResponse.data.user,
+              token: loginResponse.data.token,
+            })
+          );
+        }
+        return signUpResponse?.data?._id;
+      } catch (error) {
+        if (error?.data?.errorMessage === "number already exists") {
+          try {
+            const loginData = {
+              emailNumber: values?.number,
+              defaultPassword: values?.number,
+            };
 
-          const loginData = {
-            emailNumber: values?.number,
-            password: values?.number,
-          };
-
-          loginResponse = await login(loginData).unwrap();
-          if (loginResponse.success) {
-            dispatch(
-              setUser({
-                user: loginResponse.data.user,
-                token: loginResponse.data.token,
-              })
-            );
-          }
-        } catch (error) {
-          if (error?.data?.errorMessage === "number already exists") {
-            try {
-              const loginData = {
-                emailNumber: values?.number,
-                defaultPassword: values?.number,
-              };
-
-              loginResponse = await login(loginData).unwrap();
-              if (loginResponse.success) {
-                dispatch(
-                  setUser({
-                    user: loginResponse.data.user,
-                    token: loginResponse.data.token,
-                  })
-                );
-              }
-            } catch (loginError) {
-              toast.error("Failed to login. Please try again!", {
-                id: toastId,
-              });
+            const loginResponse = await login(loginData).unwrap();
+            if (loginResponse.success) {
+              dispatch(
+                setUser({
+                  user: loginResponse.data.user,
+                  token: loginResponse.data.token,
+                })
+              );
+              return loginResponse.data.user._id;
             }
+          } catch (loginError) {
+            toast.error("Failed to login. Please try again!");
           }
+        } else {
+          toast.error("Sign-up failed. Please try again!");
         }
       }
-
-      setTimeout(async () => {
-        try {
-          const submittedData = {
-            ...values,
-            user: signUpResponse?.data?._id ?? user?._id,
-            deviceId,
-            ...(user?._id
-              ? {
-                  userName: userData?.name,
-                  userNumber: userData?.number,
-                  userEmail: userData?.email,
-                }
-              : {
-                  userName: values?.name,
-                  userNumber: values?.number,
-                }),
-            products: cartData?.map((item) => ({
-              product: item?.productId,
-              productName:
-                item?.productName +
-                (item?.variant &&
-                item?.variant?.attributeCombination?.length > 0
-                  ? ` (${item?.variant?.attributeCombination
-                      ?.map((combination) => combination?.name)
-                      .join(" ")})`
-                  : ""),
-              quantity: item?.quantity,
-              slug: item?.slug,
-              sku: item?.sku,
-            })),
-            shippingFee,
-            discount,
-            deliveryOption,
-            code,
-            subTotal: parseFloat(subTotal?.toFixed(2)),
-            grandTotal: Number(grandTotal?.toFixed(2)),
-          };
-
-          if (values.paymentType === "cod") {
-            submittedData.paymentMethod = "cod";
-          }
-          if (values.paymentType === "point") {
-            submittedData.paymentMethod = "point";
-            submittedData.point =
-              (subTotal + shippingFee - discount) *
-              (globalData?.results?.pointConversion || 1);
-          }
-
-          const data = new FormData();
-          appendToFormData(submittedData, data);
-
-          try {
-            const res = await addOrder(data);
-
-            if (res?.error) {
-              toast.error(res?.error?.data?.errorMessage, { id: toastId });
-            } else if (res?.data?.success) {
-              sendGTMEvent({ event: "orderData", value: submittedData });
-              if (res?.data?.data?.gatewayUrl) {
-                window.location.href = res?.data?.data?.gatewayUrl;
-              }
-              toast.success(res.data.message, { id: toastId });
-              const cartIds = cartData?.map((item) => item._id);
-              await deleteBulkCart(cartIds);
-              router.push("/success");
-            }
-          } catch (error) {
-            toast.error("Something went wrong while creating Order!", {
-              id: toastId,
-            });
-            console.error("Error creating Order:", error);
-          }
-        } catch (error) {
-          toast.error("Something went wrong while creating Order!", {
-            id: toastId,
-          });
-          console.error("Error preparing Order data:", error);
-        }
-      }, 2000);
     } catch (error) {
-      toast.error("Error in order creation process!", { id: toastId });
+      toast.error("Authentication process failed!");
+    }
+    return null;
+  };
+
+  const onSubmit = async (values) => {
+    const toastId = toast.loading("Creating Order...");
+
+    try {
+      const userId = await handleUserAuth(values);
+
+      if (!userId) {
+        toast.error("User authentication failed!", { id: toastId });
+        return;
+      }
+
+      const submittedData = {
+        ...values,
+        user: userId,
+        deviceId,
+        ...(userId === user?._id
+          ? {
+              userName: userData?.name,
+              userNumber: userData?.number,
+              userEmail: userData?.email,
+            }
+          : {
+              userName: values?.name,
+              userNumber: values?.number,
+            }),
+        products: cartData?.map((item) => ({
+          product: item?.productId,
+          productName:
+            item?.productName +
+            (item?.variant?.attributeCombination?.length > 0
+              ? ` (${item?.variant?.attributeCombination
+                  ?.map((combination) => combination?.name)
+                  .join(" ")})`
+              : ""),
+          quantity: item?.quantity,
+          slug: item?.slug,
+          sku: item?.sku,
+        })),
+        shippingFee,
+        discount,
+        deliveryOption,
+        code,
+        subTotal: parseFloat(subTotal?.toFixed(2)),
+        grandTotal: Number(grandTotal?.toFixed(2)),
+      };
+
+      if (values.paymentType === "cod") {
+        submittedData.paymentMethod = "cod";
+      }
+      if (values.paymentType === "point") {
+        submittedData.paymentMethod = "point";
+        submittedData.point =
+          (subTotal + shippingFee - discount) *
+          (globalData?.results?.pointConversion || 1);
+      }
+
+      const data = new FormData();
+      appendToFormData(submittedData, data);
+
+      const res = await addOrder(data);
+
+      if (res?.error) {
+        toast.error(res?.error?.data?.errorMessage, { id: toastId });
+      } else if (res?.data?.success) {
+        sendGTMEvent({ event: "orderData", value: submittedData });
+
+        if (res?.data?.data?.gatewayUrl) {
+          window.location.href = res?.data?.data?.gatewayUrl;
+        }
+
+        toast.success(res.data.message, { id: toastId });
+
+        const cartIds = cartData?.map((item) => item._id);
+        await deleteBulkCart(cartIds);
+
+        router.push("/success");
+      }
+    } catch (error) {
+      toast.error("Something went wrong while creating Order!", {
+        id: toastId,
+      });
+      console.error("Error creating Order:", error, { id: toastId });
     }
   };
 
