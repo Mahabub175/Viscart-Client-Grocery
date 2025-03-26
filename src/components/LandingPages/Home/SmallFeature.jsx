@@ -11,7 +11,13 @@ const SmallFeature = () => {
             key={i}
             className="flex items-center gap-2 justify-center bg-white rounded-xl p-5"
           >
-            <Image src={item?.image} alt={item?.name} width={60} height={60} />
+            <Image
+              src={item?.image}
+              alt={item?.name}
+              width={60}
+              height={60}
+              priority
+            />
             <div>
               <h3 className="text-base font-bold mb-1">{item?.name}</h3>
               <p className="text-textColor text-sm">{item?.feature}</p>

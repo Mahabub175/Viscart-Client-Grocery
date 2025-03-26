@@ -39,6 +39,7 @@ const Categories = () => {
                       width={160}
                       height={160}
                       className="w-[120px] h-[120px] object-contain rounded-xl mx-auto"
+                      priority
                     />
                   </div>
                 </LinkButton>

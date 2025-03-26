@@ -37,6 +37,7 @@ const RelatedGenericProducts = ({ singleProduct }) => {
                 height={60}
                 width={60}
                 className="border p-2 rounded-xl"
+                priority
               />
               <div>
                 <LinkButton href={`/products/${item?.slug}`}>

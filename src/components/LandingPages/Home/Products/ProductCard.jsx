@@ -155,6 +155,7 @@ const ProductCard = ({ item }) => {
               width={200}
               height={220}
               className="rounded-t-xl w-full lg:w-[200px] h-[160px] lg:h-[220px] group-hover:scale-110 duration-500"
+              priority
             />
           )}
         </Link>

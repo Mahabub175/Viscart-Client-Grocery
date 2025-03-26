@@ -69,6 +69,7 @@ const Wishlist = () => {
                       src={deleteImage}
                       alt="delete image"
                       className="w-8 h-8 mx-auto hover:cursor-pointer hover:scale-110 duration-500"
+                      priority
                     />
                   </div>
                 </div>

@@ -249,6 +249,7 @@ const CartDetails = () => {
                         width={128}
                         height={128}
                         className="w-28 h-28 rounded-xl border-2 border-primary"
+                        priority
                       />
                       <div>
                         <Link

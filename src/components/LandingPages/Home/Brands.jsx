@@ -67,6 +67,7 @@ const Brands = () => {
                       width={240}
                       height={240}
                       className="bg-white shadow-xl border-2 border-transparent hover:border-primary duration-500 lg:w-[220px] h-[220px] rounded-3xl mx-auto object-cover"
+                      priority
                     />
                   </LinkButton>
                 </SwiperSlide>

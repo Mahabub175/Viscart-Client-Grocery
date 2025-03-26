@@ -84,7 +84,7 @@ const ProductCountCart = ({
 
   const [currentVariant, setCurrentVariant] = useState(
     previousSelectedVariant ||
-      item?.variants.find((variant) =>
+      item?.variants?.find((variant) =>
         Object.entries(selectedAttributes).every(
           ([attrName, selectedValue]) => {
             return variant.attributeCombination.some(

@@ -209,6 +209,7 @@ const SingleProductDetails = ({ params }) => {
                           onMouseEnter={handleMouseEnter}
                           onMouseLeave={handleMouseLeave}
                           onMouseMove={handleMouseMove}
+                          priority
                         />
                       </div>
 
@@ -240,6 +241,7 @@ const SingleProductDetails = ({ params }) => {
                           height={450}
                           width={450}
                           className="mx-auto rounded-xl"
+                          priority
                         />
                       </Zoom>
                     </div>
@@ -274,6 +276,7 @@ const SingleProductDetails = ({ params }) => {
                             height={80}
                             width={80}
                             className="object-cover rounded-xl xl:w-[75px] xxl:w-[80px]"
+                            priority
                           />
                         </div>
                       </>

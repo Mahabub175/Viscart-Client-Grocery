@@ -87,6 +87,7 @@ const AllBrands = () => {
                       width={100}
                       height={100}
                       className="object-cover rounded-full border border-primary"
+                      priority
                     />
                     <div>
                       <h3 className="text-xl font-medium mb-2">{brand.name}</h3>

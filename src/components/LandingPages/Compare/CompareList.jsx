@@ -117,6 +117,7 @@ const CompareList = () => {
                       width={128}
                       height={128}
                       className="w-32 h-32 rounded-xl border-2 border-primary"
+                      priority
                     />
                     <LinkButton
                       href={`/products/${item?.slug}`}

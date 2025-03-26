@@ -167,6 +167,7 @@ const SinglePageCart = ({ params }) => {
                     height={400}
                     width={400}
                     className="mx-auto rounded-xl"
+                    priority
                   />
                 </Zoom>
               ) : (
