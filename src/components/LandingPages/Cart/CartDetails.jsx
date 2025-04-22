@@ -176,6 +176,7 @@ const CartDetails = () => {
         shippingFee,
         discount,
         deliveryOption,
+        paymentType: values?.paymentMethod,
         code,
         subTotal: parseFloat(subTotal?.toFixed(2)),
         grandTotal: Number(grandTotal?.toFixed(2)),

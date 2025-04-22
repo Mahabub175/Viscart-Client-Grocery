@@ -14,19 +14,15 @@ const DashboardLayout = ({ children }) => {
     <Provider store={store}>
       <PersistGate persistor={persistor}>
         <PrivateRoute>
-          <Layout>
-            <Header className="!bg-white border-b-2">
+          <Layout className="relative">
+            <Header className="!bg-white border-b-2 fixed top-0 z-50 w-full">
               <Profile />
             </Header>
-            <Layout className="relative h-full">
-              <Sidebar />
-              <Content
-                style={{
-                  padding: 24,
-                  minHeight: 280,
-                  background: "white",
-                }}
-              >
+            <Layout className="relative h-full pt-10">
+              <div className="fixed top-16 z-50">
+                <Sidebar />
+              </div>
+              <Content className="p-5 lg:pl-56 xl:pl-60 xxl:pl-56 pt-10">
                 {children}
               </Content>
             </Layout>

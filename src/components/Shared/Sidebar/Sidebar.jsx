@@ -43,9 +43,9 @@ const Sidebar = () => {
         );
 
   return (
-    <div className="relative border-r border-gray-200 drop-shadow-primary !h-screen !bg-[#005555]">
+    <div className="relative border-r border-gray-200 drop-shadow-primary !h-screen">
       <Sider
-        className="lg:h-[335vh] xxl:h-[210vh] top-0 !bg-[#005555]"
+        className="lg:h-[335vh] xxl:h-[210vh] top-0 !bg-white"
         trigger={null}
         breakpoint="lg"
         collapsedWidth="0"
@@ -59,7 +59,7 @@ const Sidebar = () => {
             prefix={<FaSearch />}
             allowClear
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="rounded-md text-sm px-2 py-2 !bg-[#A2C8C81A] text-white"
+            className="rounded-md text-sm px-2 py-2 !bg-[#A2C8C81A]"
           />
         </div>
 

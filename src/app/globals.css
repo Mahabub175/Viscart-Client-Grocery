@@ -43,7 +43,7 @@ body {
   border: 1px solid var(--primaryColor) !important;
 }
 
-.ant-menu-item-selected {
+/* .ant-menu-item-selected {
   color: var(--primaryColor) !important;
 }
 .ant-menu-submenu-selected > .ant-menu-submenu-title {
@@ -85,7 +85,25 @@ body {
 .ant-menu-item-selected {
   background-color: #eff6ff1a !important;
   color: rgb(90, 255, 186) !important;
+} */
+
+.ant-menu-submenu-selected > .ant-menu-submenu-title {
+  color: var(--primaryColor) !important;
+  border-color: var(--primaryColor) !important;
 }
+
+.ant-menu-submenu-active > .ant-menu-submenu-title {
+  color: var(--primaryColor) !important;
+}
+
+.ant-menu-submenu-active > .ant-menu-submenu-title:hover {
+  color: #fff !important;
+}
+
+.ant-menu-menu:hover > .ant-menu-submenu-title {
+  color: #fff !important;
+}
+
 .ant-form-item-label {
   font-weight: 700 !important;
 }

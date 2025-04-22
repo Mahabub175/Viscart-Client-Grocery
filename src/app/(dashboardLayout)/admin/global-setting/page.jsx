@@ -14,8 +14,16 @@ import { compressImage } from "@/utilities/lib/compressImage";
 import { transformDefaultValues } from "@/utilities/lib/transformedDefaultValues";
 import { ColorPicker, Divider, Form } from "antd";
 import { currencies } from "currencies.json";
+import dynamic from "next/dynamic";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+const DynamicEditor = dynamic(
+  () => import("@/components/Reusable/Form/CustomTextEditor"),
+  {
+    ssr: false,
+  }
+);
 
 const AdminAccountSetting = () => {
   const [fields, setFields] = useState([]);
@@ -26,8 +34,24 @@ const AdminAccountSetting = () => {
   const onSubmit = async (values) => {
     const toastId = toast.loading("Updating Global Setting...");
     try {
+      const manualPayments = [];
+      const payments = Object.entries(values).filter(([key]) =>
+        key.startsWith("manualPayments[")
+      );
+
+      payments.forEach(([key, value]) => {
+        const match = key.match(/manualPayments\[(\d+)\]\.(\w+)/);
+        if (match) {
+          const index = Number(match[1]);
+          const field = match[2];
+          if (!manualPayments[index]) manualPayments[index] = {};
+          manualPayments[index][field] = value;
+        }
+      });
+
       const submittedData = {
         ...values,
+        manualPayments,
       };
 
       if (typeof values?.primaryColor === "object") {
@@ -45,6 +69,7 @@ const AdminAccountSetting = () => {
           values.favicon[0].originFileObj
         );
       }
+
       const updatedUserData = new FormData();
       appendToFormData(submittedData, updatedUserData);
 
@@ -69,7 +94,28 @@ const AdminAccountSetting = () => {
   };
 
   useEffect(() => {
-    setFields(transformDefaultValues(data?.results));
+    const manualPaymentsFields =
+      data?.results?.manualPayments
+        ?.map((item, i) => [
+          {
+            name: `manualPayments[${i}].name`,
+            value: item?.name ?? "",
+            errors: "",
+          },
+          {
+            name: `manualPayments[${i}].description`,
+            value: item?.description ?? "",
+            errors: "",
+          },
+          {
+            name: `manualPayments[${i}].status`,
+            value: item?.status ?? "",
+            errors: "",
+          },
+        ])
+        ?.flat() || [];
+
+    setFields(transformDefaultValues(data?.results, [...manualPaymentsFields]));
   }, [data]);
 
   const currenciesOptions = currencies.map(({ name, symbol, code }) => {
@@ -77,7 +123,7 @@ const AdminAccountSetting = () => {
   });
 
   return (
-    <section className="w-4/6 mx-auto">
+    <section className="lg:w-4/6 mx-auto">
       <Divider orientation="left" orientationMargin={0}>
         Global Settings
       </Divider>
@@ -87,8 +133,8 @@ const AdminAccountSetting = () => {
           name={"description"}
           type={"textarea"}
           label={"Website Description"}
-          required={false}
         />
+        <CustomInput name={"announcement"} label={"Website Announcement"} />
         <FileUploader
           defaultValue={data?.results?.logo}
           label="Website Logo"
@@ -105,100 +151,77 @@ const AdminAccountSetting = () => {
           <CustomInput
             name={"deliveryChargeInsideDhaka"}
             label={"Delivery Charge Inside Dhaka"}
-            required={false}
             type={"number"}
           />
           <CustomInput
             name={"deliveryChargeOutsideDhaka"}
             label={"Delivery Charge Outside Dhaka"}
-            required={false}
             type={"number"}
-          />
-          <CustomInput
-            name={"deliveryApiKey"}
-            label={"Delivery API Key"}
-            required={false}
-            type={"password"}
-          />
-          <CustomInput
-            name={"deliverySecretKey"}
-            label={"Delivery Secret Key"}
-            required={false}
-            type={"password"}
           />
           <CustomInput
             name={"businessNumber"}
             label={"Business Number"}
-            required={false}
             type={"number"}
           />
-          <CustomInput
-            name={"pointConversion"}
-            label={"Point Conversion"}
-            required={false}
-            type={"number"}
-          />
-          <CustomInput
-            name={"businessAddress"}
-            label={"Business Address"}
-            required={false}
-          />
-          <CustomInput
-            name={"businessLocation"}
-            label={"Business Location"}
-            required={false}
-          />
-          <CustomInput
-            name={"businessSlogan"}
-            label={"Business Slogan"}
-            required={false}
-          />
+          <CustomInput name={"businessLocation"} label={"Business Location"} />
+          <CustomInput name={"businessSlogan"} label={"Business Slogan"} />
+          <CustomInput name={"complaintLink"} label={"Complaint From Link"} />
           <CustomInput
             name={"businessFacebook"}
             label={"Business Facebook URL"}
-            required={false}
+          />
+          <CustomInput
+            name={"messengerUsername"}
+            label={"Messenger Username"}
           />
           <CustomInput
             name={"businessTwitter"}
             label={"Business Twitter URL"}
-            required={false}
           />
           <CustomInput
             name={"businessInstagram"}
             label={"Business Instagram URL"}
-            required={false}
           />
           <CustomInput
             name={"businessLinkedin"}
             label={"Business Linkedin URL"}
-            required={false}
           />
           <CustomInput
             name={"businessYoutube"}
             label={"Business Youtube URL"}
-            required={false}
           />
-          <CustomInput
-            name={"businessEmail"}
-            label={"Business Email"}
-            required={false}
-          />
+          <CustomInput name={"businessEmail"} label={"Business Email"} />
           <CustomInput
             name={"businessWhatsapp"}
             label={"Business Whatsapp Number"}
-            required={false}
             type={"number"}
           />
           <CustomInput
             name={"businessWorkHours"}
             label={"Business Work Hours"}
-            required={false}
+          />
+          <CustomInput
+            name={"bkashMessage"}
+            type={"textarea"}
+            label={"Business Bkash Message"}
+          />
+          <CustomInput
+            name={"codMessage"}
+            type={"textarea"}
+            label={"Business COD Message"}
           />
           <CustomSelect
-            name={"currency"}
-            label={"Global Currency"}
-            options={currenciesOptions}
-            required={true}
+            name={"bank"}
+            label={"Bank Status"}
+            options={[
+              { value: "Active", label: "Active" },
+              { value: "Inactive", label: "Inactive" },
+            ]}
+          />
+          <CustomInput
+            name={"bankMessage"}
+            type={"textarea"}
+            label={"Business Bank Message"}
           />
 
           <CustomSelect
@@ -209,6 +232,22 @@ const AdminAccountSetting = () => {
               { value: "Inactive", label: "Inactive" },
             ]}
           />
+          <CustomSelect
+            name={"bkash"}
+            label={"Bkash Status"}
+            options={[
+              { value: "Active", label: "Active" },
+              { value: "Inactive", label: "Inactive" },
+            ]}
+          />
+
+          <CustomSelect
+            name={"currency"}
+            label={"Global Currency"}
+            options={currenciesOptions}
+            required={true}
+          />
+
           <Form.Item
             name="primaryColor"
             label="Website Primary Color"
@@ -224,6 +263,66 @@ const AdminAccountSetting = () => {
             <ColorPicker showText />
           </Form.Item>
         </div>
+        {data?.results?.manualPayments?.map((item, i) => (
+          <div key={i}>
+            <div className="two-grid">
+              <CustomInput
+                name={`manualPayments[${i}].name`}
+                label={`Manual Payment ${i + 1} Name`}
+              />
+
+              <CustomSelect
+                name={`manualPayments[${i}].status`}
+                label={`Manual Payment ${i + 1} Status`}
+                options={[
+                  { value: "Active", label: "Active" },
+                  { value: "Inactive", label: "Inactive" },
+                ]}
+              />
+            </div>
+            <Form.Item
+              label={`Manual Payment ${i + 1} Description`}
+              name={`manualPayments[${i}].description`}
+            >
+              <DynamicEditor />
+            </Form.Item>
+          </div>
+        ))}
+
+        <Form.Item label={"About Us"} name={"aboutUs"} required>
+          <DynamicEditor />
+        </Form.Item>
+        <Form.Item
+          label={"Terms & Condition"}
+          name={"termsAndConditions"}
+          required
+        >
+          <DynamicEditor />
+        </Form.Item>
+        <Form.Item label={"Business Address Details"} name={"businessAddress"}>
+          <DynamicEditor />
+        </Form.Item>
+        <Form.Item label={"Privacy Policy"} name={"privacyPolicy"}>
+          <DynamicEditor />
+        </Form.Item>
+        <Form.Item label={"Delivery Policy"} name={"delivery"}>
+          <DynamicEditor />
+        </Form.Item>
+        <Form.Item label={"Pickup Point"} name={"pickupPoint"}>
+          <DynamicEditor />
+        </Form.Item>
+        <Form.Item label={"Payment Terms"} name={"paymentTerms"}>
+          <DynamicEditor />
+        </Form.Item>
+        <Form.Item label={"EMI Information"} name={"emiInformation"}>
+          <DynamicEditor />
+        </Form.Item>
+        <Form.Item label={"Warranty Terms"} name={"warrantyTerms"}>
+          <DynamicEditor />
+        </Form.Item>
+        <Form.Item label={"Refund & Return"} name={"refundAndReturn"}>
+          <DynamicEditor />
+        </Form.Item>
 
         <div className="flex justify-center my-10">
           <SubmitButton text={"Save"} loading={isLoading} fullWidth={true} />

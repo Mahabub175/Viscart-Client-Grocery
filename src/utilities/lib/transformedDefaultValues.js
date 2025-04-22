@@ -5,7 +5,6 @@ const excludedKeys = [];
 
 export const transformDefaultValues = (defaultValue, selectedData) => {
   if (!defaultValue) return [];
-
   const fields = [];
 
   const selectedDataMap = (
@@ -15,60 +14,92 @@ export const transformDefaultValues = (defaultValue, selectedData) => {
     return acc;
   }, {});
 
-  for (const key in defaultValue) {
-    if (defaultValue.hasOwnProperty(key)) {
-      let value = defaultValue[key];
+  const processValue = (key, value) => {
+    if (value === "true") return true;
+    if (value === "false") return false;
 
-      if (selectedDataMap[key] !== undefined) {
-        value = selectedDataMap[key];
+    if (
+      key.includes("publishedAt") ||
+      key.includes("expiredDate") ||
+      key.includes("startDate") ||
+      key.includes("endDate")
+    ) {
+      const parsedDate = dayjs(value, "YYYY-MM-DD");
+      return parsedDate.isValid() ? parsedDate : null;
+    }
+
+    if (Array.isArray(value) && typeof value[0] === "number") {
+      return value;
+    }
+
+    if (Array.isArray(value)) {
+      if (key === "images") {
+        return value.map((url, index) => ({
+          url: formatImagePath(url),
+          uid: `__AUTO__${Date.now()}_${index}__`,
+        }));
       } else {
-        if (value === "true") {
-          value = true;
-        } else if (
-          key.includes("expiredDate") ||
-          key.includes("startDate") ||
-          key.includes("endDate")
-        ) {
-          value = dayjs(value, "YYYY-MM-DD");
-          if (!value.isValid()) {
-            value = null;
-          }
-        } else if (value === "false") {
-          value = false;
-        } else if (Array.isArray(value) && typeof value[0] === "number") {
+        return value.length > 0 ? value[0] : null;
+      }
+    }
+
+    if (
+      typeof value === "string" &&
+      value.startsWith("http") &&
+      [
+        "logo",
+        "attachment",
+        "image",
+        "favicon",
+        "storeImage",
+        "mainImage",
+        "images",
+        "popUpImage",
+      ].some((substring) => key.includes(substring)) &&
+      !excludedKeys.includes(key)
+    ) {
+      return [{ url: value }];
+    }
+
+    return value;
+  };
+
+  for (const key in defaultValue) {
+    if (!defaultValue.hasOwnProperty(key)) continue;
+
+    const value = defaultValue[key];
+
+    if (Array.isArray(value) && typeof value[0] === "object") {
+      value.forEach((item, index) => {
+        for (const nestedKey in item) {
+          const fieldName = `${key}[${index}].${nestedKey}`;
+          const fieldValue =
+            selectedDataMap[fieldName] !== undefined
+              ? selectedDataMap[fieldName]
+              : processValue(nestedKey, item[nestedKey]);
+
           fields.push({
-            name: key,
-            value: value,
+            name: fieldName,
+            value: fieldValue,
             errors: "",
           });
-          continue;
-        } else if (Array.isArray(value)) {
-          if (key === "images" && Array.isArray(value)) {
-            value = value.map((url, index) => ({
-              url: formatImagePath(url),
-              uid: `__AUTO__${Date.now()}_${index}__`,
-            }));
-          } else {
-            value = value.length > 0 ? value[0] : null;
-          }
-        } else if (
-          typeof value === "string" &&
-          value.startsWith("http") &&
-          !excludedKeys.includes(key)
-        ) {
-          value = [{ url: value }];
         }
-      }
+      });
+    } else {
+      const fieldValue =
+        selectedDataMap[key] !== undefined
+          ? selectedDataMap[key]
+          : processValue(key, value);
 
       fields.push({
         name: key,
-        value: value,
+        value: fieldValue,
         errors: "",
       });
     }
   }
 
-  // Add selected data fields that are not in the default value
+  // Include any additional fields from selectedData not already present
   if (Array.isArray(selectedData)) {
     selectedData.forEach((data) => {
       if (!fields.some((field) => field.name === data.name)) {

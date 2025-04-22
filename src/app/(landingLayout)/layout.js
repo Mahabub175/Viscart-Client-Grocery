@@ -1,6 +1,6 @@
 import BackToTop from "@/components/Shared/BackToTop";
-import Chat from "@/components/Shared/Chat";
 import FixedCart from "@/components/Shared/FixedCart";
+import FloatingContact from "@/components/Shared/FloatingContact";
 import LandingFooter from "@/components/Shared/Footer/LandingFooter";
 import MobileCategories from "@/components/Shared/MobileCategories";
 import BottomNavigation from "@/components/Shared/Navbar/BottomNavigation";
@@ -22,7 +22,7 @@ const LandingLayout = ({ children }) => {
         </div>
       </div>
       <FixedCart />
-      <Chat />
+      <FloatingContact />
       <BackToTop />
       <MobileCategories />
       <BottomNavigation />
