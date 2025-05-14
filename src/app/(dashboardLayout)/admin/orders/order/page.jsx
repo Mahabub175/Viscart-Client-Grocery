@@ -392,8 +392,7 @@ const Orders = () => {
           className="capitalize font-semibold cursor-pointer"
           type=""
           onClick={() => handleAutoDelivery(record)}
-          // disabled={record.trackingCode}
-          disabled
+          disabled={record.trackingCode}
         >
           Auto Delivery
         </Button>
