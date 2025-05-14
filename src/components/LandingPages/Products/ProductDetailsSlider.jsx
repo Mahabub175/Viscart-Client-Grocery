@@ -11,23 +11,20 @@ const ProductDetailsSlider = ({ allMedia }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
   return (
-    <div className="w-full max-w-md md:max-w-lg lg:max-w-xl mx-auto">
+    <div className="w-full max-w-md md:max-w-lg">
       <Swiper
         spaceBetween={10}
         navigation
         thumbs={{ swiper: thumbsSwiper }}
         modules={[Navigation, Thumbs]}
-        className="w-full h-[350px] md:h-[400px]"
+        className="w-full h-full"
       >
         {allMedia.map((media, index) => (
-          <SwiperSlide key={index} className="flex justify-center items-center">
+          <SwiperSlide key={index} className="relative w-full h-full">
             <AntdImage
               src={media}
               alt={`Product image ${index}`}
-              width={575}
-              height={400}
-              className="rounded-xl mx-auto h-[350px] lg:h-full object-cover"
-              priority
+              className="object-contain rounded-xl"
             />
           </SwiperSlide>
         ))}
@@ -43,7 +40,7 @@ const ProductDetailsSlider = ({ allMedia }) => {
         }}
         watchSlidesProgress
         modules={[Thumbs]}
-        className="mt-4 w-full border-2 rounded-lg overflow-x-auto"
+        className="mt-4 border-2 rounded-lg overflow-x-auto"
       >
         {allMedia?.map((media, index) => (
           <SwiperSlide
