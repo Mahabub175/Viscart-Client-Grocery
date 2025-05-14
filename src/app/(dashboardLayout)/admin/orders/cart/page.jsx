@@ -37,12 +37,12 @@ const Cart = () => {
     setPageSize(size);
   };
 
-  const { data: wishlists, isFetching } = useGetCartsQuery({
+  const { data: carts, isFetching } = useGetCartsQuery({
     page: currentPage,
     limit: pageSize,
   });
 
-  const { data: wishlistData } = useGetSingleCartQuery(itemId, {
+  const { data: cartData } = useGetSingleCartQuery(itemId, {
     skip: !itemId,
   });
 
@@ -132,7 +132,7 @@ const Cart = () => {
     },
   ];
 
-  const tableData = wishlists?.results?.map((item) => ({
+  const tableData = carts?.results?.map((item) => ({
     key: item._id,
     user: item?.user?.name ?? "N/A",
     product: item?.product?.name,
@@ -147,6 +147,20 @@ const Cart = () => {
       value?.toString().toLowerCase().includes(searchTerm)
     );
   });
+
+  const transformedData = {
+    sku: cartData?.sku,
+    price: cartData?.price,
+    quantity: cartData?.quantity,
+    weight: cartData?.weight,
+    product: {
+      name: cartData?.product?.name,
+      sku: cartData?.product?.sku,
+    },
+    ...(cartData?.user
+      ? { user: cartData.user }
+      : { deviceId: cartData.deviceId }),
+  };
 
   return (
     <div className="px-5">
@@ -170,7 +184,7 @@ const Cart = () => {
 
       <Pagination
         className="flex justify-end items-center !mt-10"
-        total={wishlists?.meta?.totalCount}
+        total={carts?.meta?.totalCount}
         current={currentPage}
         onChange={handlePageChange}
         pageSize={pageSize}
@@ -184,7 +198,7 @@ const Cart = () => {
         modalOpen={detailsModalOpen}
         setModalOpen={setDetailsModalOpen}
         title={"Cart"}
-        details={wishlistData}
+        details={transformedData}
       />
       <DeleteModal
         itemId={itemId}

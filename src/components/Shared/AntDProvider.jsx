@@ -11,7 +11,6 @@ import { logout, useCurrentToken } from "@/redux/services/auth/authSlice";
 import { jwtDecode } from "jwt-decode";
 import { Toaster } from "sonner";
 import { usePathname } from "next/navigation";
-import LoadingAnimation from "./LoadingAnimation";
 import { useGetAllSlidersQuery } from "@/redux/services/slider/sliderApi";
 import { useGetAllCategoriesQuery } from "../../redux/services/category/categoryApi";
 
@@ -82,7 +81,7 @@ const WrappedAntDConfig = ({ children }) => {
 
   useEffect(() => {
     const websiteName = data?.results?.name || "Viscart";
-    const favicon = data?.results?.favicon || "Viscart";
+    const favicon = data?.results?.favicon;
     document.title = websiteName;
 
     let link = document.querySelector("link[rel~='icon']");
@@ -101,7 +100,7 @@ const WrappedAntDConfig = ({ children }) => {
   ) {
     return (
       <section className="h-screen flex items-center justify-center">
-        <LoadingAnimation />
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary"></div>
       </section>
     );
   }

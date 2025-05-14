@@ -6,18 +6,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { logout, useCurrentUser } from "@/redux/services/auth/authSlice";
 import { toast } from "sonner";
 import { useGetSingleUserQuery } from "@/redux/services/auth/authApi";
-import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
-import logo from "@/assets/images/logo-white.png";
 
 const Profile = () => {
   const dispatch = useDispatch();
   const user = useSelector(useCurrentUser);
-  const { data: globalData } = useGetAllGlobalSettingQuery();
   const { data } = useGetSingleUserQuery(user?._id);
 
   const handleLogout = () => {
     dispatch(logout());
-    toast.success("Logged out successfully!", { duration: 2000 });
+    toast.success("Logged out successfully!");
   };
 
   const content = (
@@ -37,9 +34,9 @@ const Profile = () => {
           )}
           <div className="flex flex-col text-center font-normal">
             <div className="text-xl font-bold">
-              <span className="mr-1">{data?.name ?? ""}</span>
+              <span className="mr-1">{data?.name ?? "User"}</span>
             </div>
-            <span className={`text-base`}>{data?.email}</span>
+            <span className={`text-base`}>{data?.number}</span>
           </div>
         </div>
       </div>
@@ -64,22 +61,21 @@ const Profile = () => {
     </div>
   );
   return (
-    <div className="flex justify-between items-center mt-2 pb-2">
-      <div className="flex items-center -ml-10 lg:-ml-6">
-        <Link href={"/"}>
-          <Image
-            src={globalData?.results?.logo ?? logo}
-            alt="logo"
-            height={40}
-            width={200}
-            className="w-full h-12"
-          />
+    <div className="flex justify-between items-center pt-2 pb-2 bg-white px-10 border-b">
+      <div className="flex items-center -ml-8 lg:-ml-5">
+        <Link
+          href={"/"}
+          className="text-black hover:text-white hover:bg-primary border border-primary font-semibold text-sm transition-all duration-300 ease-in-out bg-transparent rounded p-2"
+        >
+          <span className="mr-2">🏠</span>
+          Return Home
         </Link>
       </div>
+
       <Popover
         placement="bottomLeft"
         content={content}
-        className="cursor-pointer bg-primary"
+        className="cursor-pointer bg-primary -mr-9 lg:-mr-6"
       >
         {data?.profile_image ? (
           <Image

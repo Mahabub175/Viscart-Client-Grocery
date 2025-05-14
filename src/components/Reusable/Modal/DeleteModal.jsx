@@ -40,7 +40,7 @@ const DeleteModal = ({ modalOpen, setModalOpen, itemId, func, text }) => {
         <h2 className="text-center text-2xl font-bold">
           Are your sure you want to permanently delete this {text}?
         </h2>
-        <div className="lg:flex mt-10 gap-6 items-center justify-center">
+        <div className="flex mt-10 gap-6 items-center justify-center">
           <Button
             onClick={() => setModalOpen(false)}
             type="text"

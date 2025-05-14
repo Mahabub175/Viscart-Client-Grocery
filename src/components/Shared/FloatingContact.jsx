@@ -43,9 +43,9 @@ const FloatingContact = () => {
   }, []);
 
   return (
-    <div className="relative">
+    <div className="relative hidden lg:block">
       <div
-        className="fixed bottom-[24%] lg:bottom-[14%] xxl:bottom-[10%] right-2 lg:right-7 z-50 cursor-pointer"
+        className="fixed bottom-[15%] lg:bottom-[14%] xxl:bottom-[10%] right-2 lg:right-7 z-50 cursor-pointer"
         onClick={handleContactClick}
         ref={contactButtonRef}
       >
@@ -69,7 +69,7 @@ const FloatingContact = () => {
       </div>
       {isContactOpen && (
         <div
-          className="fixed bottom-[32%] xxl:bottom-[16%] right-1 lg:right-6 z-50 flex flex-col space-y-2"
+          className="fixed bottom-[22%] xxl:bottom-[16%] right-6 z-50 flex flex-col space-y-2"
           ref={contactContainerRef}
         >
           <motion.a

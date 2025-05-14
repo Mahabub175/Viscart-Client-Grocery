@@ -137,6 +137,9 @@ const OrderInvoice = ({ order }) => {
                   <th className="border border-gray-300 p-2 text-left">
                     Quantity
                   </th>
+                  <th className="border border-gray-300 p-2 text-left">
+                    Weight
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -144,7 +147,13 @@ const OrderInvoice = ({ order }) => {
                   <tr key={index}>
                     <td className="border border-gray-300 p-2">{product}</td>
                     <td className="border border-gray-300 p-2">
-                      {order?.quantity.split(" , ")[index]}
+                      {order?.quantity?.split(" , ")[index]}
+                    </td>
+                    <td className="border border-gray-300 p-2">
+                      {order?.weight?.split(" , ")[index] &&
+                      order?.weight?.split(" , ")[index] !== "0"
+                        ? `${order?.weight?.split(" , ")[index]} kg`
+                        : ""}
                     </td>
                   </tr>
                 ))}
@@ -163,15 +172,16 @@ const OrderInvoice = ({ order }) => {
               {order?.shippingFee || "0.00"}
             </p>
             <p>
+              <strong>Extra Charge:</strong> {data?.results?.currency}{" "}
+              {order?.extraCharge || "0.00"}
+            </p>
+            <p>
               <strong>Discount:</strong> -{data?.results?.currency}{" "}
               {order?.discount || "0.00"}
             </p>
             <p>
               <strong>Grand Total:</strong> {data?.results?.currency}{" "}
-              {order?.grandTotal || "0.00"}{" "}
-              {order?.paymentMethod === "Point" && (
-                <span className="text-green-600">(Paid With Points)</span>
-              )}
+              {order?.grandTotal || "0.00"}
             </p>
           </div>
         </div>

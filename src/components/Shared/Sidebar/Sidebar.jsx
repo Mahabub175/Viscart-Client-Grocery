@@ -43,9 +43,9 @@ const Sidebar = () => {
         );
 
   return (
-    <div className="relative border-r border-gray-200 drop-shadow-primary !h-screen">
+    <div className="relative border-r border-gray-200 drop-shadow-primary">
       <Sider
-        className="lg:h-[335vh] xxl:h-[210vh] top-0 !bg-white"
+        className="!bg-white overflow-y-auto h-[calc(100vh-56px)]"
         trigger={null}
         breakpoint="lg"
         collapsedWidth="0"

@@ -1,16 +1,16 @@
 import { AiFillProduct } from "react-icons/ai";
 import { BiCategoryAlt } from "react-icons/bi";
 import { BsFillCartCheckFill, BsFillCartFill } from "react-icons/bs";
-import { CiBoxList, CiGift, CiImport } from "react-icons/ci";
-import { FaUser, FaImage } from "react-icons/fa";
-import { FaCartFlatbed, FaCartPlus } from "react-icons/fa6";
+import { CiGift } from "react-icons/ci";
+import { FaUser, FaImage, FaPager, FaRegImage } from "react-icons/fa";
+import { FaCartFlatbed, FaCartPlus, FaImages } from "react-icons/fa6";
 import { IoSettingsSharp } from "react-icons/io5";
 import {
   MdAddShoppingCart,
   MdOutlineAcUnit,
-  MdOutlineBrandingWatermark,
   MdOutlineMergeType,
   MdOutlineReviews,
+  MdOutlineBrandingWatermark,
 } from "react-icons/md";
 import {
   RiCoupon3Line,
@@ -18,7 +18,6 @@ import {
   RiMessage2Fill,
 } from "react-icons/ri";
 import { TbBrandAirtable, TbLayoutDashboardFilled } from "react-icons/tb";
-import { AiFillMedicineBox } from "react-icons/ai";
 
 export const adminSidebarRoutes = [
   {
@@ -28,7 +27,6 @@ export const adminSidebarRoutes = [
   },
   {
     name: "Products",
-    section: "Product Management",
     icon: AiFillProduct,
     children: [
       {
@@ -48,23 +46,12 @@ export const adminSidebarRoutes = [
         path: "products/generic",
         icon: MdOutlineBrandingWatermark,
       },
-      {
-        name: "Unit",
-        path: "products/unit",
-        icon: CiBoxList,
-      },
       { name: "Category", path: "products/category", icon: BiCategoryAlt },
-      {
-        name: "Import Product",
-        path: "products/import-product",
-        icon: CiImport,
-      },
       { name: "Product", path: "products/product", icon: MdAddShoppingCart },
     ],
   },
   {
     name: "Orders",
-    section: "Order Management",
     icon: BsFillCartFill,
     children: [
       {
@@ -83,14 +70,19 @@ export const adminSidebarRoutes = [
     ],
   },
   {
+    name: "Blog",
+    path: "blog",
+    icon: FaPager,
+  },
+  {
+    name: "Gallery",
+    path: "gallery",
+    icon: FaImages,
+  },
+  {
     name: "Reviews",
     path: "review",
     icon: MdOutlineReviews,
-  },
-  {
-    name: "Prescription",
-    path: "prescription",
-    icon: AiFillMedicineBox,
   },
   {
     name: "Sliders",
@@ -98,8 +90,12 @@ export const adminSidebarRoutes = [
     icon: FaImage,
   },
   {
+    name: "Popup Setting",
+    path: "popup-setting",
+    icon: FaRegImage,
+  },
+  {
     name: "User",
-    section: "User Management",
     path: "user",
     icon: FaUser,
   },

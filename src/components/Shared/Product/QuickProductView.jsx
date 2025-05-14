@@ -81,10 +81,7 @@ const QuickProductView = ({
       <div className="flex flex-col items-center justify-center lg:flex-row gap-10 pt-5">
         <div className="w-full">
           <Image
-            src={
-              currentImage ??
-              "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
-            }
+            src={currentImage}
             alt={item?.name}
             width={300}
             height={300}
@@ -100,14 +97,30 @@ const QuickProductView = ({
           </div>
           <p>{item?.details}</p>
 
+          <p className="font-bold my-2 text-textColor">
+            Category: {item?.category?.name}
+          </p>
+
           {item?.brand && (
             <p className="font-bold my-2 text-textColor">
               Brand: {item?.brand?.name}
             </p>
           )}
-          <p className="font-bold my-2 text-textColor">
-            Category: {item?.category?.name}
-          </p>
+          {item?.generic && (
+            <p className="font-bold my-2 text-textColor">
+              Generic: {item?.generic?.name}
+            </p>
+          )}
+          {item?.productModel && (
+            <div className="font-bold my-2 text-textColor">
+              Model: {item?.productModel}
+            </div>
+          )}
+          {(item?.weight || item?.weight > 0) && (
+            <div className="font-bold my-2 text-textColor">
+              Weight: {item?.weight} {item?.unit}
+            </div>
+          )}
 
           <AttributeOptionSelector
             groupedAttributes={groupedAttributes}
@@ -117,15 +130,21 @@ const QuickProductView = ({
           />
 
           <div className="flex items-center gap-4 text-textColor font-bold my-2">
-            Price:
-            {(item?.offerPrice || item?.offerPrice > 0) && (
-              <p className="text-xs line-through text-black/60">
+            Price:{" "}
+            {item?.offerPrice && (
+              <p className="text-base line-through text-red-500">
                 {globalData?.results?.currency + " " + item?.sellingPrice}
               </p>
             )}
-            <p className="text-primary text-xl">
-              {globalData?.results?.currency + " " + currentPrice}
-            </p>
+            {item?.offerPrice ? (
+              <p className="text-primary text-xl">
+                {globalData?.results?.currency + " " + item?.offerPrice}
+              </p>
+            ) : (
+              <p className="text-primary text-xl">
+                {globalData?.results?.currency + " " + currentPrice}
+              </p>
+            )}
           </div>
 
           <hr />

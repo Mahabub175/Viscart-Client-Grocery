@@ -120,24 +120,11 @@ const AdminDonation = () => {
       align: "center",
     },
     {
-      title: "Number",
-      dataIndex: "number",
-      key: "number",
-      align: "center",
-    },
-    {
       title: "Email",
       dataIndex: "email",
       key: "email",
       align: "center",
     },
-    {
-      title: "Point",
-      dataIndex: "point",
-      key: "point",
-      align: "center",
-    },
-
     {
       title: "Registration Date",
       dataIndex: "createdAt",
@@ -225,10 +212,8 @@ const AdminDonation = () => {
   const tableData = users?.results?.map((item) => ({
     key: item._id,
     name: item.name ?? "N/A",
-    number: item.number ?? "N/A",
     email: item?.email ?? "N/A",
     role: item?.role,
-    point: item?.point ?? "N/A",
     createdAt: moment(item.createdAt).format("Do MMM, YYYY"),
     status: item?.status,
   }));

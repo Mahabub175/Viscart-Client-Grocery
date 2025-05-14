@@ -2,11 +2,6 @@
 
 import deleteImage from "@/assets/images/Trash-can.png";
 import CustomForm from "@/components/Reusable/Form/CustomForm";
-import {
-  useGetSingleUserQuery,
-  useLoginMutation,
-  useSignUpMutation,
-} from "@/redux/services/auth/authApi";
 import { setUser, useCurrentUser } from "@/redux/services/auth/authSlice";
 import {
   useDeleteBulkCartMutation,
@@ -14,49 +9,56 @@ import {
   useGetSingleCartByUserQuery,
 } from "@/redux/services/cart/cartApi";
 import { useDeviceId } from "@/redux/services/device/deviceSlice";
+import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 import { useAddOrderMutation } from "@/redux/services/order/orderApi";
 import { appendToFormData } from "@/utilities/lib/appendToFormData";
+import { formatImagePath } from "@/utilities/lib/formatImagePath";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
 import CheckoutDetails from "./CheckoutDetails";
 import CheckoutInfo from "./CheckoutInfo";
-import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
-import { formatImagePath } from "@/utilities/lib/formatImagePath";
-import { useRouter } from "next/navigation";
+import {
+  useLoginMutation,
+  useSignUpMutation,
+} from "@/redux/services/auth/authApi";
 import { sendGTMEvent } from "@next/third-parties/google";
+import useGetURL from "@/utilities/hooks/useGetURL";
+import { useAddServerTrackingMutation } from "@/redux/services/serverTracking/serverTrackingApi";
 
 const CartDetails = () => {
   const router = useRouter();
   const user = useSelector(useCurrentUser);
-  const deviceId = useSelector(useDeviceId);
   const dispatch = useDispatch();
+  const deviceId = useSelector(useDeviceId);
   const { data: globalData } = useGetAllGlobalSettingQuery();
 
   const { data: cartData, isError } = useGetSingleCartByUserQuery(
     user?._id ?? deviceId
   );
 
-  const { data: userData } = useGetSingleUserQuery(user?._id, {
-    skip: !user?._id,
-  });
-
   const [deleteCart] = useDeleteCartMutation();
   const [deleteBulkCart] = useDeleteBulkCartMutation();
 
-  const [addOrder, { isLoading: isOrderLoading }] = useAddOrderMutation();
-  const [signUp, { isLoading: isSignUpLoading }] = useSignUpMutation();
-  const [login, { isLoading: isLoginLoading }] = useLoginMutation();
+  const [login, { isLoading: loginLoading }] = useLoginMutation();
+  const [signUp, { isLoading: signUpLoading }] = useSignUpMutation();
+
+  const [addOrder, { isLoading }] = useAddOrderMutation();
 
   const [counts, setCounts] = useState({});
+  const [weight, setWeight] = useState({});
   const [subTotal, setSubTotal] = useState(0);
   const [shippingFee, setShippingFee] = useState(0);
   const [code, setCode] = useState("");
   const [deliveryOption, setDeliveryOption] = useState("insideDhaka");
-  const [discount, setDiscount] = useState(0);
+  const [discount, setDiscount] = useState(null);
   const [grandTotal, setGrandTotal] = useState(0);
+
+  const url = useGetURL();
+  const [addServerTracking] = useAddServerTrackingMutation();
 
   useEffect(() => {
     if (cartData) {
@@ -69,8 +71,30 @@ const CartDetails = () => {
           {}
         )
       );
+
+      setWeight(
+        cartData?.reduce(
+          (acc, item) => ({
+            ...acc,
+            [item._id]: Number(item.weight) || 0,
+          }),
+          {}
+        )
+      );
     }
   }, [cartData]);
+
+  const extraCharge = cartData?.map(
+    (item) =>
+      item?.weight ||
+      0 * globalData?.results?.pricePerWeight * (counts[item._id] || 1)
+  );
+
+  const totalCharge = Math.max(
+    extraCharge?.reduce((total, charge) => total + charge, 0) -
+      globalData?.results?.pricePerWeight,
+    0
+  );
 
   const handleDelete = (itemId) => {
     deleteCart(itemId);
@@ -150,33 +174,24 @@ const CartDetails = () => {
         ...values,
         user: userId,
         deviceId,
-        ...(userId === user?._id
-          ? {
-              userName: userData?.name,
-              userNumber: userData?.number,
-              userEmail: userData?.email,
-            }
-          : {
-              userName: values?.name,
-              userNumber: values?.number,
-            }),
         products: cartData?.map((item) => ({
           product: item?.productId,
           productName:
             item?.productName +
-            (item?.variant?.attributeCombination?.length > 0
+            (item?.variant && item?.variant?.attributeCombination?.length > 0
               ? ` (${item?.variant?.attributeCombination
                   ?.map((combination) => combination?.name)
                   .join(" ")})`
               : ""),
           quantity: item?.quantity,
-          slug: item?.slug,
+          weight: item?.weight,
           sku: item?.sku,
         })),
         shippingFee,
+        extraFee: totalCharge,
+        paymentType: values?.paymentMethod,
         discount,
         deliveryOption,
-        paymentType: values?.paymentMethod,
         code,
         subTotal: parseFloat(subTotal?.toFixed(2)),
         grandTotal: Number(grandTotal?.toFixed(2)),
@@ -184,7 +199,15 @@ const CartDetails = () => {
 
       if (values.paymentType === "cod") {
         submittedData.paymentMethod = "cod";
+        submittedData.paymentType = "COD";
       }
+      if (
+        typeof values.paymentMethod === "string" &&
+        values.paymentMethod.startsWith("manual")
+      ) {
+        submittedData.paymentMethod = "manual";
+      }
+
       if (values.paymentType === "point") {
         submittedData.paymentMethod = "point";
         submittedData.point =
@@ -200,7 +223,15 @@ const CartDetails = () => {
       if (res?.error) {
         toast.error(res?.error?.data?.errorMessage, { id: toastId });
       } else if (res?.data?.success) {
-        sendGTMEvent({ event: "orderData", value: submittedData });
+        sendGTMEvent({ event: "Purchase", value: submittedData });
+        const data = {
+          event: "Purchase",
+          data: {
+            ...submittedData,
+            event_source_url: url,
+          },
+        };
+        await addServerTracking(data);
 
         if (res?.data?.data?.gatewayUrl) {
           window.location.href = res?.data?.data?.gatewayUrl;
@@ -222,7 +253,7 @@ const CartDetails = () => {
   };
 
   return (
-    <section className="container mx-auto px-5 lg:py-10 relative">
+    <section className="container mx-auto px-5 lg:py-10 relative rounded-lg mb-10">
       <h2 className="font-normal text-2xl">Order List</h2>
       <div>
         {cartData?.length === 0 || !cartData || isError ? (
@@ -237,11 +268,11 @@ const CartDetails = () => {
               {cartData?.length} Items
             </h2>
             <div className="flex flex-col lg:flex-row items-start gap-4 justify-between my-10">
-              <div className="w-full lg:w-3/6 border-2 border-primary rounded-lg p-5 lg:sticky top-10">
+              <div className="lg:w-3/6 border-2 border-primary rounded-lg p-5 lg:sticky top-10 w-full">
                 {cartData?.map((item) => (
                   <div
                     key={item?._id}
-                    className="flex flex-col xxl:flex-row items-center gap-4 justify-center pb-5 mt-5 first:mt-0 border-b border-gray-300 last:border-b-0"
+                    className="flex flex-col xl:flex-row items-center gap-4 justify-center pb-5 mt-5 first:mt-0 border-b border-gray-300 last:border-b-0"
                   >
                     <div className="flex flex-[3] items-center gap-4">
                       <Image
@@ -250,7 +281,6 @@ const CartDetails = () => {
                         width={128}
                         height={128}
                         className="w-28 h-28 rounded-xl border-2 border-primary"
-                        priority
                       />
                       <div>
                         <Link
@@ -266,6 +296,13 @@ const CartDetails = () => {
                         <div className="mt-2 font-semibold">
                           Quantity: {counts[item._id]}
                         </div>
+                        {item?.weight > 0 ? (
+                          <div className="mt-2 font-semibold">
+                            Weight:{" "}
+                            {(weight[item._id] * counts[item._id]).toFixed(1)}{" "}
+                            KG
+                          </div>
+                        ) : null}
                       </div>
                     </div>
 
@@ -273,7 +310,7 @@ const CartDetails = () => {
                       <p className="text-primary text-2xl font-bold">
                         {globalData?.results?.currency +
                           " " +
-                          (item?.price * counts[item._id]).toFixed(2)}
+                          item?.price * counts[item._id]}
                       </p>
                     </div>
                     <div
@@ -304,6 +341,7 @@ const CartDetails = () => {
                   shippingFee={shippingFee}
                   setShippingFee={setShippingFee}
                   setGrandTotal={setGrandTotal}
+                  totalCharge={totalCharge}
                 />
               </div>
 
@@ -316,9 +354,7 @@ const CartDetails = () => {
                     subTotal={subTotal}
                     shippingFee={shippingFee}
                     discountAmount={discount}
-                    isOrderLoading={isOrderLoading}
-                    isSignUpLoading={isSignUpLoading}
-                    isLoginLoading={isLoginLoading}
+                    isLoading={isLoading || loginLoading || signUpLoading}
                   />
                 </CustomForm>
               </div>

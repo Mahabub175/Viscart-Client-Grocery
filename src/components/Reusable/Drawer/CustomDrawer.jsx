@@ -9,8 +9,7 @@ const CustomDrawer = ({ setOpen, open, children, title, placement }) => {
       onClose={() => setOpen(false)}
       open={open}
       keyboard={true}
-      destroyOnClose={true}
-      closeIcon={<GiCancel className="text-xl text-gray-700" />}
+      destroyOnClose
     >
       <div className="mb-10 flex items-center gap-4">
         <button

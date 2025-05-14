@@ -16,6 +16,7 @@ export default async function sitemap() {
 
 async function getRoutes() {
   try {
+    // Fetch product data
     const productResponse = await fetch(`${base_url}/product/`);
     const products = await productResponse.json();
 
@@ -25,6 +26,16 @@ async function getRoutes() {
         date: dayjs(product?.updatedAt).format("YYYY-MM-DD"),
       })) || [];
 
+    // Fetch blog data
+    const blogResponse = await fetch(`${base_url}/blog/`);
+    const blogs = await blogResponse.json();
+
+    const blogRoutes =
+      blogs?.data?.results?.map((blog) => ({
+        url: `/blogs/${blog.slug}`,
+        date: dayjs(blog?.updatedAt).format("YYYY-MM-DD"),
+      })) || [];
+
     const staticRoutes = [
       { url: "/wishlist", date: dayjs().format("YYYY-MM-DD") },
       { url: "/compare", date: dayjs().format("YYYY-MM-DD") },
@@ -32,7 +43,7 @@ async function getRoutes() {
       { url: "/offers", date: dayjs().format("YYYY-MM-DD") },
     ];
 
-    return [...productRoutes, ...staticRoutes];
+    return [...productRoutes, ...blogRoutes, ...staticRoutes];
   } catch (error) {
     console.error("Error fetching routes for sitemap:", error);
     return [];
@@ -41,6 +52,7 @@ async function getRoutes() {
 
 export async function generateStaticParams() {
   try {
+    // Fetch product params
     const resProducts = await fetch(`${base_url}/product/`);
     const products = await resProducts.json();
 
@@ -49,7 +61,16 @@ export async function generateStaticParams() {
         __metadata_id__: [product.slug],
       })) || [];
 
-    return productParams;
+    // Fetch blog params
+    const resBlogs = await fetch(`${base_url}/blog/`);
+    const blogs = await resBlogs.json();
+
+    const blogParams =
+      blogs?.data?.results?.map((blog) => ({
+        __metadata_id__: [blog.slug],
+      })) || [];
+
+    return [...productParams, ...blogParams];
   } catch (error) {
     console.error("Error generating static params:", error);
     return [];

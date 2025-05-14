@@ -10,6 +10,7 @@ module.exports = {
       colors: {
         primary: "var(--primaryColor)",
         primaryLight: "var(--secondaryColor)",
+        navyBlue: "#00235B",
         orange: "#F97316",
         danger: "#FB564B",
         textColor: "#4D4D4D",

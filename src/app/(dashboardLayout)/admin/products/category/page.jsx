@@ -12,16 +12,7 @@ import {
   useGetCategoriesQuery,
   useGetSingleCategoryQuery,
 } from "@/redux/services/category/categoryApi";
-import {
-  Dropdown,
-  Image,
-  Menu,
-  Pagination,
-  Space,
-  Table,
-  Tag,
-  Tooltip,
-} from "antd";
+import { Dropdown, Menu, Pagination, Space, Table, Tag, Tooltip } from "antd";
 import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaEdit } from "react-icons/fa";
@@ -83,23 +74,6 @@ const Category = () => {
 
   const columns = [
     {
-      title: "Category Image",
-      dataIndex: "attachment",
-      key: "attachment",
-      align: "start",
-      width: "200px",
-      render: (item) => (
-        <Image
-          src={
-            item ??
-            "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
-          }
-          alt={"category image"}
-          className="!w-12 !h-12 rounded-full"
-        />
-      ),
-    },
-    {
       title: "Category Name",
       dataIndex: "name",
       key: "name",
@@ -111,20 +85,6 @@ const Category = () => {
       key: "level",
       align: "start",
       render: (item) => <div className="capitalize">{item}</div>,
-    },
-    {
-      title: "Featured",
-      dataIndex: "isFeatured",
-      key: "isFeatured",
-      align: "center",
-      render: (item) => (
-        <Tag
-          color={item ? "green" : "blue"}
-          className="capitalize font-semibold"
-        >
-          {item ? "Featured" : "Not Featured"}
-        </Tag>
-      ),
     },
     {
       title: "Status",
@@ -197,8 +157,6 @@ const Category = () => {
     key: item._id,
     name: item?.name,
     level: item?.level,
-    attachment: item?.attachment,
-    isFeatured: item?.isFeatured,
     status: item?.status,
   }));
 

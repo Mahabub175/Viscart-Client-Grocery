@@ -11,7 +11,6 @@ import { useCallback, useRef, useState } from "react";
 const ProductCreate = ({ open, setOpen }) => {
   const [addProduct, { isLoading }] = useAddProductMutation();
   const [content, setContent] = useState("");
-  const [video, setVideo] = useState(null);
 
   const variantProductRef = useRef(null);
 
@@ -19,15 +18,12 @@ const ProductCreate = ({ open, setOpen }) => {
     variantProductRef.current = submitFunction;
   }, []);
 
-  const onChange = (fileList) => {
-    setVideo(fileList);
-  };
-
   const onSubmit = async (values) => {
     if (values?.sellingPrice < values?.offerPrice) {
       toast.error("Selling Price must be greater than Offer Price");
       return;
     }
+
     const variantData = variantProductRef.current
       ? variantProductRef.current()
       : null;
@@ -54,9 +50,6 @@ const ProductCreate = ({ open, setOpen }) => {
           values.mainImage[0].originFileObj
         );
       }
-      if (video) {
-        submittedData.video = await video?.[0]?.originFileObj;
-      }
 
       const data = new FormData();
 
@@ -82,7 +75,6 @@ const ProductCreate = ({ open, setOpen }) => {
           handleVariantProduct={handleVariantProduct}
           content={content}
           setContent={setContent}
-          onChange={onChange}
         />
 
         <FormButton setOpen={setOpen} loading={isLoading} />

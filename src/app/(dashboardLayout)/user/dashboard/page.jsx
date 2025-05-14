@@ -1,15 +1,20 @@
 "use client";
 
 import DashboardCards from "@/components/Dashboard/DashboardCards";
+import LogOutButton from "@/components/Dashboard/LogOutButton";
+import { useGetSingleUserQuery } from "@/redux/services/auth/authApi";
 import { useCurrentUser } from "@/redux/services/auth/authSlice";
 import { useGetSingleUserDashboardQuery } from "@/redux/services/dashboard/dashboardApi";
-import { useEffect } from "react";
-import { TbBrandAirtable } from "react-icons/tb";
-import { useSelector } from "react-redux";
 import { UserOutlined } from "@ant-design/icons";
 import { Avatar } from "antd";
 import Image from "next/image";
-import { useGetSingleUserQuery } from "@/redux/services/auth/authApi";
+import { useEffect } from "react";
+import { TbBrandAirtable } from "react-icons/tb";
+import { useSelector } from "react-redux";
+
+import review from "@/assets/images/review.png";
+import settings2 from "@/assets/images/settings2.png";
+import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 
 const UserDashboard = () => {
   useEffect(() => {
@@ -20,9 +25,12 @@ const UserDashboard = () => {
   });
 
   const user = useSelector(useCurrentUser);
+
   const { data } = useGetSingleUserQuery(user?._id);
 
   const { data: dashboardData } = useGetSingleUserDashboardQuery(user?._id);
+
+  const { data: globalData } = useGetAllGlobalSettingQuery();
 
   return (
     <section>
@@ -47,30 +55,39 @@ const UserDashboard = () => {
         <div>
           <p>Hello,</p>
           <p className="text-base lg:text-4xl font-medium">{data?.name}</p>
-          <p className="text-base font-medium mt-2">
-            Total Points: {data?.point?.toFixed(2)}
-          </p>
+          {globalData?.results?.usePointSystem && (
+            <p className="text-base font-medium mt-2">
+              Total Points: {data?.point?.toFixed(2)}
+            </p>
+          )}
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-10">
+      <div className="grid grid-cols-2 xl:grid-cols-3 gap-10">
         <DashboardCards
           icon={TbBrandAirtable}
           title="Wishlists"
-          data={dashboardData?.wishlists}
-          href={"/user/orders/wishlist"}
+          data={dashboardData?.wishlists || 0}
+          href={"/wishlist"}
         />
         <DashboardCards
           icon={TbBrandAirtable}
           title="Carts"
-          data={dashboardData?.carts}
-          href={"/user/orders/cart"}
+          data={dashboardData?.cart || 0}
+          href={"/cart"}
         />
         <DashboardCards
           icon={TbBrandAirtable}
           title="Orders"
-          data={dashboardData?.orders}
+          data={dashboardData?.orders || 0}
           href={"/user/orders/order"}
         />
+        <DashboardCards image={review} title="Reviews" href={"/user/review"} />
+        <DashboardCards
+          image={settings2}
+          title="Account Setting"
+          href={"/user/account-setting"}
+        />
+        <LogOutButton />
       </div>
     </section>
   );

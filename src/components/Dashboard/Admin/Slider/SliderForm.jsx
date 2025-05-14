@@ -1,6 +1,7 @@
 import { useGetAllCategoriesQuery } from "@/redux/services/category/categoryApi";
 import FileUploader from "@/components/Reusable/Form/FileUploader";
 import CustomSelect from "@/components/Reusable/Form/CustomSelect";
+import { Checkbox, Form } from "antd";
 import CustomInput from "@/components/Reusable/Form/CustomInput";
 
 const SliderForm = ({ attachment }) => {
@@ -16,13 +17,11 @@ const SliderForm = ({ attachment }) => {
 
   return (
     <>
-      <CustomInput name="name" label="Banner Text" />
-      <CustomInput name="buttonText" label="Button Text" />
+      <CustomInput label={"Link"} name={"name"} />
       <CustomSelect
         label="Category"
         name="category"
         options={categoryOptions}
-        required
         loading={isCategoryFetching}
         disabled={isCategoryFetching}
       />
@@ -32,6 +31,11 @@ const SliderForm = ({ attachment }) => {
         name="attachment"
         required={true}
       />
+      <Form.Item name={"bottomBanner"} valuePropName="checked">
+        <Checkbox className="font-semibold">
+          This Photo Will Be Show as Single Banner
+        </Checkbox>
+      </Form.Item>
     </>
   );
 };

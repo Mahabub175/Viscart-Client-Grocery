@@ -3,7 +3,6 @@ import { FaCartFlatbed, FaCartPlus } from "react-icons/fa6";
 import { MdOutlineReviews } from "react-icons/md";
 import { RiUserSettingsFill } from "react-icons/ri";
 import { TbLayoutDashboardFilled } from "react-icons/tb";
-import { AiFillMedicineBox } from "react-icons/ai";
 
 export const userSidebarRoutes = [
   {
@@ -13,7 +12,6 @@ export const userSidebarRoutes = [
   },
   {
     name: "Orders",
-    section: "Order Management",
     icon: BsFillCartFill,
     children: [
       {
@@ -33,11 +31,6 @@ export const userSidebarRoutes = [
     name: "Reviews",
     path: "review",
     icon: MdOutlineReviews,
-  },
-  {
-    name: "Prescription",
-    path: "prescription",
-    icon: AiFillMedicineBox,
   },
   {
     name: "Account Setting",

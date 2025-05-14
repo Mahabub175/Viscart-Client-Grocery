@@ -2,7 +2,7 @@
 
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 import Image from "next/image";
-import logo from "@/assets/images/kome-logo.png";
+import logo from "@/assets/images/logo.png";
 
 const LoadingAnimation = () => {
   const { data: globalData } = useGetAllGlobalSettingQuery();

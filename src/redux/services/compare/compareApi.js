@@ -64,6 +64,14 @@ const compareApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: ["compare"],
     }),
+    deleteCompareProduct: build.mutation({
+      query: (payload) => ({
+        url: `/compare/delete-product/${payload.id}/`,
+        method: "PATCH",
+        body: payload.data,
+      }),
+      invalidatesTags: ["compare"],
+    }),
     deleteCompare: build.mutation({
       query: (id) => ({
         url: `/compare/${id}/`,
@@ -94,5 +102,6 @@ export const {
   useGetSingleCompareByUserQuery,
   useUpdateCompareMutation,
   useDeleteCompareMutation,
+  useDeleteCompareProductMutation,
   useDeleteBulkCompareMutation,
 } = compareApi;

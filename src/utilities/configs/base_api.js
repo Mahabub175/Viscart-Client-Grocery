@@ -1,5 +1,4 @@
 export const base_url = "https://groceryapi.moonsgallerysystem.com/api/v1";
-export const base_url_client = "https://grocery.moonsgallerysystem.com";
 export const base_url_image = "https://groceryapi.moonsgallerysystem.com/";
 // export const base_url = "http://localhost:5000/api/v1";
 // export const base_url_image = "http://localhost:5000/";

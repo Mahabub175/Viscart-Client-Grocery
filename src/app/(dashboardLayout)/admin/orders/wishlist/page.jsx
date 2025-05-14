@@ -148,6 +148,16 @@ const Wishlist = () => {
     );
   });
 
+  const transformedData = {
+    product: {
+      name: wishlistData?.product?.name,
+      sku: wishlistData?.product?.sku,
+    },
+    ...(wishlistData?.user
+      ? { user: wishlistData.user }
+      : { deviceId: wishlistData.deviceId }),
+  };
+
   return (
     <div className="px-5">
       <div className="flex justify-between">
@@ -184,7 +194,7 @@ const Wishlist = () => {
         modalOpen={detailsModalOpen}
         setModalOpen={setDetailsModalOpen}
         title={"Wishlist"}
-        details={wishlistData}
+        details={transformedData}
       />
       <DeleteModal
         itemId={itemId}

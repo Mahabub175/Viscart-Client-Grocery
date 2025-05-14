@@ -5,7 +5,7 @@ const brandApi = baseApi.injectEndpoints({
     addBrand: build.mutation({
       query: (data) => {
         return {
-          url: "brand/",
+          url: "/brand/",
           method: "POST",
           body: data,
         };

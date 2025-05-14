@@ -24,7 +24,7 @@ import { toast } from "sonner";
 import DrawerCart from "../Product/DrawerCart";
 import CategoryNavigation from "./CategoryNavigation";
 import ProductSearchBar from "./ProductSearchBar";
-import logo from "@/assets/images/kome-logo.png";
+import logo from "@/assets/images/logo.png";
 
 const LandingHeader = () => {
   const pathname = usePathname();
@@ -189,12 +189,14 @@ const LandingHeader = () => {
                     <div className="font-normal text-sm flex items-center lg:mr-2 lg:gap-1">
                       <h2>
                         {data?.name ?? "User"}
-                        <p className="text-xs flex items-center gap-1">
-                          Point:{" "}
-                          <span className="text-primary font-semibold">
-                            {data?.point?.toFixed(2)}
-                          </span>
-                        </p>
+                        {globalData?.results?.usePointSystem && (
+                          <p className="text-xs flex items-center gap-1">
+                            Point:{" "}
+                            <span className="text-primary font-semibold">
+                              {data?.point?.toFixed(2)}
+                            </span>
+                          </p>
+                        )}
                       </h2>
                       <IoMdArrowDropdown />
                     </div>

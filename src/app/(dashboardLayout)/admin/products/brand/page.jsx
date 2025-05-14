@@ -105,20 +105,6 @@ const Brand = () => {
       align: "start",
     },
     {
-      title: "Featured",
-      dataIndex: "isFeatured",
-      key: "isFeatured",
-      align: "center",
-      render: (item) => (
-        <Tag
-          color={item ? "green" : "blue"}
-          className="capitalize font-semibold"
-        >
-          {item ? "Featured" : "Not Featured"}
-        </Tag>
-      ),
-    },
-    {
       title: "Status",
       dataIndex: "status",
       key: "status",
@@ -189,7 +175,6 @@ const Brand = () => {
     key: item._id,
     name: item?.name,
     attachment: item?.attachment,
-    isFeatured: item?.isFeatured,
     status: item?.status,
   }));
 

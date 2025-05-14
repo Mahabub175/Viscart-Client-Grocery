@@ -12,7 +12,6 @@ import {
   useGetProductsQuery,
   useGetSingleProductQuery,
 } from "@/redux/services/product/productApi";
-import { exportToExcel } from "@/utilities/lib/exportToExcel";
 import { formatImagePath } from "@/utilities/lib/formatImagePath";
 import {
   Dropdown,
@@ -107,7 +106,7 @@ const AdminProducts = () => {
       key: "name",
       align: "start",
       render: (item, record) => (
-        <Link href={`/products/cart/${record?.slug}`} target="_blank">
+        <Link href={`/products/${record?.slug}`} target="_blank">
           {item}
         </Link>
       ),
@@ -127,16 +126,16 @@ const AdminProducts = () => {
       render: (item) => <div>{item ? item : "N/A"}</div>,
     },
     {
-      title: "Selling Price",
-      dataIndex: "sellingPrice",
-      key: "sellingPrice",
+      title: "Buying Price",
+      dataIndex: "buyingPrice",
+      key: "buyingPrice",
       align: "start",
       render: (item) => <div>{item ? item : "N/A"}</div>,
     },
     {
-      title: "Offer Price",
-      dataIndex: "offerPrice",
-      key: "offerPrice",
+      title: "Selling Price",
+      dataIndex: "sellingPrice",
+      key: "sellingPrice",
       align: "start",
       render: (item) => <div>{item ? item : "N/A"}</div>,
     },
@@ -259,7 +258,6 @@ const AdminProducts = () => {
     brand: item?.brand?.name,
     category: item?.category?.name,
     buyingPrice: item?.buyingPrice,
-    offerPrice: item?.offerPrice,
     sellingPrice: item?.sellingPrice,
     stock: item?.stock,
     isVariant: item?.isVariant,
@@ -268,24 +266,6 @@ const AdminProducts = () => {
     attachment: formatImagePath(item?.mainImage),
     status: item?.status,
   }));
-
-  const exportData = products?.results?.map((item) => ({
-    name: item?.name,
-    sku: item?.sku,
-    slug: item?.slug,
-    brand: item?.brand?.name,
-    category: item?.category?.name,
-    generic: item?.generic?.name,
-    buyingPrice: item?.buyingPrice,
-    offerPrice: item?.offerPrice,
-    sellingPrice: item?.sellingPrice,
-    stock: item?.stock,
-    mainImage: item?.mainImage,
-  }));
-
-  const handleExport = () => {
-    exportToExcel(exportData, "Products.xlsx");
-  };
 
   return (
     <div className="lg:px-5">
@@ -299,7 +279,6 @@ const AdminProducts = () => {
         setOpenSearch={setOpenSearch}
         deleteBulk={deleteBulkProduct}
         setSelectedRowKeys={setSelectedRowKeys}
-        handleExport={handleExport}
       />
 
       <Table

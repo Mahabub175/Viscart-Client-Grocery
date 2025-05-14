@@ -9,27 +9,17 @@ import { useDispatch } from "react-redux";
 import { useLoginMutation } from "@/redux/services/auth/authApi";
 import { toast } from "sonner";
 import { setUser } from "@/redux/services/auth/authSlice";
-import { Checkbox, Form } from "antd";
-import { useEffect, useState } from "react";
+import ForgotPassword from "./ForgotPassword";
+import LoginWithOtp from "./LoginWithOtp";
+import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 
 const LoginForm = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const [fields, setFields] = useState([]);
-  const [isAdmin, setIsAdmin] = useState(false);
+
+  const { data: globalData } = useGetAllGlobalSettingQuery();
 
   const [login, { isLoading }] = useLoginMutation();
-
-  useEffect(() => {
-    if (isAdmin) {
-      setFields([
-        { name: "emailNumber", value: "01700000000", error: "" },
-        { name: "password", value: "123456", error: "" },
-      ]);
-    } else {
-      setFields([]);
-    }
-  }, [isAdmin]);
 
   const onSubmit = async (values) => {
     const toastId = toast.loading("Logging in...");
@@ -48,7 +38,36 @@ const LoginForm = () => {
 
   return (
     <div className="lg:w-[450px] mt-6">
-      <CustomForm fields={fields} onSubmit={onSubmit}>
+      <div className="mb-4 text-center">
+        <button
+          type="button"
+          onClick={async () => {
+            const toastId = toast.loading("Logging in as Admin...");
+            try {
+              const res = await login({
+                emailNumber: "01700000000",
+                password: "123456",
+              }).unwrap();
+              if (res.success) {
+                dispatch(
+                  setUser({ user: res.data.user, token: res.data.token })
+                );
+                toast.success("Logged in as Admin Successfully!", {
+                  id: toastId,
+                });
+                router.push("/");
+              }
+            } catch (error) {
+              toast.error("Admin login failed!", { id: toastId });
+            }
+          }}
+          className="px-4 py-2 rounded-md font-medium transition-all duration-200 bg-primary text-white hover:bg-gray-700"
+        >
+          Sign in as Admin
+        </button>
+      </div>
+
+      <CustomForm onSubmit={onSubmit}>
         <CustomInput
           label={"Phone Number"}
           name={"emailNumber"}
@@ -61,21 +80,21 @@ const LoginForm = () => {
           type={"password"}
           required={true}
         />
-        <Form.Item name="isAdmin" valuePropName="checked">
-          <Checkbox
-            checked={isAdmin}
-            onChange={(e) => setIsAdmin(e.target.checked)}
-          >
-            Sign in as Admin
-          </Checkbox>
-        </Form.Item>
+        {globalData?.results?.useSms && (
+          <>
+            <LoginWithOtp />
+            <ForgotPassword />
+          </>
+        )}
         <SubmitButton text={"Log In"} loading={isLoading} fullWidth={true} />
       </CustomForm>
+
       <div className="flex items-center my-6">
         <div className="border w-full h-0"></div>
         <span className="font-bold">Or</span>
         <div className="border w-full h-0"></div>
       </div>
+
       <div className="text-center">
         <span>Don’t have an account?</span>
         <Link href={"/sign-up"} className="font-bold text-primary text-lg">

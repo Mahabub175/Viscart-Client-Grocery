@@ -27,7 +27,7 @@ import {
   Tag,
   Tooltip,
 } from "antd";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { FaSearch } from "react-icons/fa";
 import { IoIosRefresh } from "react-icons/io";
@@ -192,6 +192,12 @@ const Orders = () => {
       align: "center",
     },
     {
+      title: "Weight",
+      dataIndex: "weight",
+      key: "weight",
+      align: "center",
+    },
+    {
       title: "Sub Total",
       dataIndex: "subTotal",
       key: "subTotal",
@@ -202,6 +208,7 @@ const Orders = () => {
       dataIndex: "shippingFee",
       key: "shippingFee",
       align: "center",
+      render: (item) => <div className="w-[100px]">{item}</div>,
     },
     {
       title: "Discount",
@@ -258,6 +265,7 @@ const Orders = () => {
           case "failed to deliver":
             color = "red";
             text = "Failed To Deliver";
+            break;
           case "returned":
             color = "red";
             text = "Returned";
@@ -292,15 +300,15 @@ const Orders = () => {
         let text;
 
         switch (item) {
-          case "success":
+          case "SUCCESS":
             color = "green";
             text = "Success";
             break;
-          case "pending":
+          case "PENDING":
             color = "orange";
             text = "Pending";
             break;
-          case "failed":
+          case "FAILED":
             color = "red";
             text = "Failed";
             break;
@@ -382,9 +390,10 @@ const Orders = () => {
       render: (_, record) => (
         <Button
           className="capitalize font-semibold cursor-pointer"
-          type="primary"
+          type=""
           onClick={() => handleAutoDelivery(record)}
-          disabled={record.trackingCode}
+          // disabled={record.trackingCode}
+          disabled
         >
           Auto Delivery
         </Button>
@@ -436,28 +445,32 @@ const Orders = () => {
     },
   ];
 
-  const tableData = userOrders?.results?.map((item) => ({
-    key: item._id,
-    orderId: item.orderId,
-    tranId: item.tranId ?? "N/A",
-    trackingCode: item.trackingCode,
-    name: item?.name,
-    email: item?.email,
-    number: item?.number,
-    address: item?.address,
-    products: item?.products
-      ?.map((product) => product?.productName)
-      .join(" , "),
-    quantity: item?.products?.map((product) => product?.quantity).join(" , "),
-    subTotal: item?.subTotal,
-    shippingFee: item?.shippingFee,
-    discount: item?.discount ?? 0,
-    grandTotal: item?.grandTotal?.toFixed(2),
-    paymentStatus: item?.paymentStatus,
-    deliveryStatus: item?.deliveryStatus,
-    paymentMethod: item?.paymentMethod ?? item?.paymentType,
-    orderStatus: item?.orderStatus,
-  }));
+  const tableData = userOrders?.results?.map((item) => {
+    return {
+      key: item._id,
+      orderId: item.orderId,
+      tranId: item.tranId ?? "N/A",
+      trackingCode: item.trackingCode,
+      name: item?.name,
+      email: item?.email,
+      number: item?.number,
+      address: item?.address,
+      products: item?.products
+        ?.map((product) => product?.productName)
+        .join(" , "),
+      quantity: item?.products?.map((product) => product?.quantity).join(" , "),
+      subTotal: item?.subTotal,
+      shippingFee: item?.shippingFee + item?.extraFee,
+      discount: item?.discount ?? 0,
+      weight: item?.products?.map((product) => product?.weight).join(" , "),
+      grandTotal: item?.grandTotal,
+      paymentStatus: item?.paymentStatus,
+      deliveryStatus: item?.deliveryStatus,
+      paymentMethod: item?.paymentMethod,
+      orderStatus: item?.orderStatus,
+      extraCharge: item?.extraFee || 0,
+    };
+  });
 
   const filteredTableData = tableData?.filter((item) => {
     if (!search) return true;
@@ -479,28 +492,21 @@ const Orders = () => {
       const res = await updateOrder(updatedData);
 
       if (res.data.success) {
-        toast.success("Payment Status Updated", { id: toastId });
+        toast.success("Order Status Updated", { id: toastId });
         setPaymentModalOpen(false);
         setOrderStatusModal(false);
       } else {
-        toast.error("An error occurred while updating the Payment Status.", {
+        toast.error("An error occurred while updating the Order Status.", {
           id: toastId,
         });
       }
     } catch (error) {
-      console.error("Error updating Payment:", error);
-      toast.error("An error occurred while updating the Payment Status.", {
+      console.error("Error updating Brand:", error);
+      toast.error("An error occurred while updating the Order Status.", {
         id: toastId,
       });
     }
   };
-
-  useEffect(() => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
-  });
 
   return (
     <div className="px-5">
@@ -581,9 +587,9 @@ const Orders = () => {
             name={"paymentStatus"}
             label={"Payment Status"}
             options={[
-              { label: "Pending", value: "pending" },
-              { label: "Success", value: "success" },
-              { label: "Failed", value: "failed" },
+              { label: "Pending", value: "PENDING" },
+              { label: "Success", value: "SUCCESS" },
+              { label: "Failed", value: "FAILED" },
             ]}
           />
           <SubmitButton fullWidth text={"Update"} loading={isLoading} />

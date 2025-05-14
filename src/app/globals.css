@@ -9,6 +9,10 @@
   }
 }
 
+body {
+  background-color: #f5f5f5;
+}
+
 ::-webkit-scrollbar {
   width: 6px;
   border-radius: 50%;
@@ -27,9 +31,6 @@
   height: 3px;
 }
 
-body {
-}
-
 .ant-btn-primary {
   background-color: var(--primaryColor) !important;
 
@@ -42,50 +43,6 @@ body {
 .ant-btn-default {
   border: 1px solid var(--primaryColor) !important;
 }
-
-/* .ant-menu-item-selected {
-  color: var(--primaryColor) !important;
-}
-.ant-menu-submenu-selected > .ant-menu-submenu-title {
-  color: var(--primaryColor) !important;
-  background-color: #eff6ff1a !important;
-  font-weight: 700 !important;
-}
-
-.ant-menu-submenu-active > .ant-menu-submenu-title {
-  background-color: #eff6ff1a !important;
-  color: rgb(90, 255, 186) !important;
-}
-
-.ant-menu-submenu:hover > .ant-menu-submenu-title {
-  background-color: #eff6ff1a !important;
-  color: rgb(90, 255, 186) !important;
-}
-.ant-menu-menu:hover > .ant-menu-submenu-title {
-  background-color: #eff6ff1a !important;
-  color: rgb(90, 255, 186) !important;
-}
-
-.ant-menu-item:not(.ant-menu-item-selected):hover {
-  background-color: #eff6ff1a !important;
-  color: rgb(90, 255, 186) !important;
-}
-
-.ant-menu-submenu-title {
-  color: #fff !important;
-}
-
-.ant-menu-item {
-  color: #f1f1f1 !important;
-}
-
-.ant-menu {
-  background-color: #005555 !important;
-}
-.ant-menu-item-selected {
-  background-color: #eff6ff1a !important;
-  color: rgb(90, 255, 186) !important;
-} */
 
 .ant-menu-submenu-selected > .ant-menu-submenu-title {
   color: var(--primaryColor) !important;
@@ -102,6 +59,27 @@ body {
 
 .ant-menu-menu:hover > .ant-menu-submenu-title {
   color: #fff !important;
+}
+
+.breadcrumb-custom {
+  color: #000 !important;
+}
+
+.breadcrumb-custom .ant-breadcrumb-separator {
+  color: #000 !important;
+}
+
+.breadcrumb-link {
+  color: #000 !important;
+  text-decoration: none;
+}
+
+.breadcrumb-link:hover {
+  text-decoration: underline;
+}
+
+.custom-menu .ant-menu-item::after {
+  border-bottom: none !important;
 }
 
 .ant-form-item-label {
@@ -130,7 +108,7 @@ body {
   @apply grid grid-cols-1 lg:grid-cols-3 gap-4;
 }
 .my-container {
-  @apply container mx-auto;
+  @apply container mx-auto px-5;
 }
 
 .new-container {
@@ -143,4 +121,8 @@ body {
 .swiper-pagination-bullet-active {
   background-color: var(--primaryColor) !important;
   transform: scale(2);
+}
+
+.swiper-slide-thumb-active img {
+  border-color: var(--primaryColor) !important;
 }

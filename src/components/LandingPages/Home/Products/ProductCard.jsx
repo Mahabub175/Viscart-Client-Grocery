@@ -184,9 +184,9 @@ const ProductCard = ({ item }) => {
             </Tooltip>
           </LinkButton>
         </div>
-        {item?.weight && item?.unit && (
+        {item?.weight && item?.weight > 0 && (
           <p className="text-xs text-black/60 mt-1">
-            {item?.weight} {item?.unit?.name}
+            {item?.weight} {"KG"}
           </p>
         )}
       </div>

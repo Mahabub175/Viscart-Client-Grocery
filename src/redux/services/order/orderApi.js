@@ -10,7 +10,7 @@ const orderApi = baseApi.injectEndpoints({
           body: data,
         };
       },
-      invalidatesTags: ["order", "user"],
+      invalidatesTags: ["order", "dashboard"],
     }),
     getOrders: build.query({
       query: ({ page = 1, limit = 5 }) => ({
@@ -26,8 +26,8 @@ const orderApi = baseApi.injectEndpoints({
       providesTags: ["order"],
     }),
     getOrdersByUser: build.query({
-      query: ({ page = 1, limit = 5, id }) => ({
-        url: `/order/user/${id}?page=${page}&limit=${limit}`,
+      query: ({ id }) => ({
+        url: `/order/user/${id}/`,
         method: "GET",
       }),
       transformResponse: (response) => {
@@ -74,7 +74,7 @@ const orderApi = baseApi.injectEndpoints({
         method: "PATCH",
         body: payload.data,
       }),
-      invalidatesTags: ["order", "user"],
+      invalidatesTags: ["order"],
     }),
     deleteOrder: build.mutation({
       query: (id) => ({

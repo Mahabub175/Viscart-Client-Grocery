@@ -6,6 +6,8 @@ import { useGetSingleGiftCardByCodeQuery } from "@/redux/services/giftCard/giftC
 import { toast } from "sonner";
 import moment from "moment";
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
+import Link from "next/link";
+import { FaInfoCircle } from "react-icons/fa";
 
 const CheckoutDetails = ({
   subTotal,
@@ -19,6 +21,7 @@ const CheckoutDetails = ({
   setShippingFee,
   shippingFee,
   setGrandTotal,
+  totalCharge,
 }) => {
   const [discountOption, setDiscountOption] = useState("");
   const [discountAmount, setDiscountAmount] = useState(0);
@@ -126,9 +129,12 @@ const CheckoutDetails = ({
 
   useEffect(() => {
     const total =
-      (Number(subTotal) || 0) + (Number(shippingFee) || 0) - discountAmount;
+      (Number(subTotal) || 0) +
+      (Number(totalCharge) || 0) +
+      (Number(shippingFee) || 0) -
+      discountAmount;
     setGrandTotal(total);
-  }, [subTotal, shippingFee, discountAmount, setGrandTotal]);
+  }, [subTotal, shippingFee, discountAmount, setGrandTotal, totalCharge]);
 
   return (
     <>
@@ -164,33 +170,41 @@ const CheckoutDetails = ({
       </div>
 
       <div className="bg-primaryLight p-5 rounded-lg border-2 border-primary space-y-3 font-semibold">
-        <div className="flex justify-between items-center gap-20">
+        <Link
+          href={"/delivery"}
+          className="text-white rounded px-2 py-2 flex items-center gap-2 justify-center hover:underline font-medium bg-primary lg:w-4/6 mx-auto text-sm"
+        >
+          Shipping Fee Details
+          <FaInfoCircle />
+        </Link>
+        <div className="flex justify-between items-center">
           <p>Sub Total</p>
+          <p>{globalData?.results?.currency + " " + subTotal || 0}</p>
+        </div>
+
+        <div className="flex justify-between items-center">
+          <div>
+            <p>
+              <span>Shipping Fee </span>
+            </p>
+          </div>
           <p>
-            {globalData?.results?.currency + " " + subTotal?.toFixed(2) || 0}
+            {globalData?.results?.currency +
+              " " +
+              (shippingFee + totalCharge) || 0}
           </p>
         </div>
 
-        <div className="flex justify-between items-center gap-20">
-          <p>Shipping Fee</p>
-          <p>{globalData?.results?.currency + " " + shippingFee || 0}</p>
-        </div>
-
-        <div className="flex justify-between items-center gap-20">
+        <div className="flex justify-between items-center">
           <p>Discount</p>
-          <p>
-            {globalData?.results?.currency + " " + discountAmount?.toFixed(2) ||
-              0}
-          </p>
+          <p>{globalData?.results?.currency + " " + discountAmount || 0}</p>
         </div>
 
         <hr className="border border-primary" />
 
-        <div className="flex justify-between items-center gap-20">
+        <div className="flex justify-between items-center">
           <p>Grand Total</p>
-          <p>
-            {globalData?.results?.currency + " " + grandTotal?.toFixed(2) || 0}
-          </p>
+          <p>{globalData?.results?.currency + " " + grandTotal || 0}</p>
         </div>
       </div>
     </>

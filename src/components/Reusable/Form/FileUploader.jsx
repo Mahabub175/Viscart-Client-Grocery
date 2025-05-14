@@ -113,11 +113,9 @@ const FileUploader = ({
                 background: "none",
               }}
               type="button"
-              className={`flex flex-col items-center justify-center group-hover:text-primary duration-500 ${
-                small ? "w-1/3 mx-auto" : "w-full"
-              }`}
+              className="w-full flex flex-col items-center justify-center group-hover:text-primary duration-500"
             >
-              <p className={` ${small ? "text-xl" : "ant-upload-drag-icon"}`}>
+              <p className="ant-upload-drag-icon">
                 <UploadOutlined />
               </p>
               {!small && (

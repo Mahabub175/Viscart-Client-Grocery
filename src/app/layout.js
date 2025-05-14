@@ -16,16 +16,8 @@ const RootLayout = ({ children }) => {
   return (
     <html lang="en">
       <SEOHead />
-      <GoogleTagManager gtmId="GTM-KRWZQK5K" />
+      <GoogleTagManager gtmId="GTM-5LDJJ32D" />
       <body className={interFont.className}>
-        <noscript>
-          <iframe
-            src="https://www.googletagmanager.com/ns.html?id=GTM-KRWZQK5K"
-            height="0"
-            width="0"
-            style={{ display: "none", visibility: "hidden" }}
-          ></iframe>
-        </noscript>
         <AntDProvider>
           <AntdRegistry>{children}</AntdRegistry>
         </AntDProvider>

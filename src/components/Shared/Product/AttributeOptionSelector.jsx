@@ -15,7 +15,7 @@ const AttributeOptionSelector = ({
     <>
       {groupedAttributes &&
         Object.entries(groupedAttributes).map(([attributeName, options]) => (
-          <div key={attributeName} className="flex flex-col gap-2 my-2">
+          <div key={attributeName} className="flex items-center gap-2 my-2">
             <span className="font-bold">{attributeName}:</span>
             <div className="flex flex-wrap items-center gap-2">
               {options.map((option) => {

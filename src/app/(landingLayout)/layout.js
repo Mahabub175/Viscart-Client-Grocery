@@ -11,8 +11,8 @@ const LandingLayout = ({ children }) => {
   return (
     <>
       <LandingHeader />
-      <div className="mt-28 md:mt-[6.4rem] lg:mt-[10rem] xxl:mt-[9.5rem] flex items-start relative">
-        <div className="sticky top-5 z-10 w-[300px] hidden lg:block">
+      <div className="mt-28 md:mt-[6.4rem] lg:mt-[10rem] xxl:mt-[10rem] flex items-start relative">
+        <div className="sticky top-5 z-10 w-[320px] hidden lg:block">
           <SidebarCategories />
         </div>
 

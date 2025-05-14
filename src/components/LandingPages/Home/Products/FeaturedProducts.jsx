@@ -1,8 +1,10 @@
 "use client";
 
 import { useGetAllProductsQuery } from "@/redux/services/product/productApi";
+import "swiper/css";
+import "swiper/css/navigation";
+import "swiper/css/pagination";
 import ProductCard from "./ProductCard";
-import Link from "next/link";
 
 const FeaturedProducts = () => {
   const { data: productData } = useGetAllProductsQuery();
@@ -12,20 +14,12 @@ const FeaturedProducts = () => {
     ?.slice(0, 12);
 
   return (
-    <section className="my-container relative mt-10">
-      <div className="flex items-center justify-between mb-5">
-        <h2 className="text-lg lg:text-3xl font-medium text-center lg:text-start">
-          Top Selling Products
-        </h2>
-        <Link
-          href={`/products`}
-          className="text-black border-b border-primary font-semibold"
-        >
-          Show All
-        </Link>
-      </div>
+    <section className="my-container relative border p-2 rounded-xl mt-10">
+      <h2 className="my-5 lg:my-10 text-2xl lg:text-3xl font-medium text-center ">
+        Featured Products
+      </h2>
       {activeProducts?.length > 0 ? (
-        <div className="mt-5 grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap gap-10">
+        <div className="mt-5 grid grid-cols-2 md:flex md:flex-wrap justify-center items-start gap-5 xxl:gap-10">
           {activeProducts?.map((product) => (
             <div key={product?._id}>
               <ProductCard item={product} />

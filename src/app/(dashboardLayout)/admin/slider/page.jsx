@@ -99,6 +99,12 @@ const Slider = () => {
       ),
     },
     {
+      title: "Link",
+      dataIndex: "link",
+      key: "link",
+      align: "start",
+    },
+    {
       title: "Category Name",
       dataIndex: "category",
       key: "category",
@@ -173,7 +179,8 @@ const Slider = () => {
 
   const tableData = sliders?.results?.map((item) => ({
     key: item._id,
-    category: item?.category?.name,
+    category: item?.category?.name ?? "N/A",
+    link: item?.name ?? "N/A",
     attachment: item?.attachment,
     status: item?.status,
   }));

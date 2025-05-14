@@ -36,7 +36,7 @@ const NewsletterBanner = () => {
         <h3 className="text-3xl font-bold mb-2">Newsletter</h3>
         <p>Subscribe to get updates about our products.</p>
       </div>
-      <div className="px-10 space-y-3 py-10">
+      <div className="lg:px-10 space-y-3 pb-5 lg:py-10">
         <Form
           onFinish={onSubmit}
           className="flex items-center lg:w-[450px] relative gap-2"

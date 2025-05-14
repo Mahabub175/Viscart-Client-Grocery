@@ -2,10 +2,10 @@ import { SubmitButton } from "@/components/Reusable/Button/CustomButton";
 import CustomForm from "@/components/Reusable/Form/CustomForm";
 import CustomInput from "@/components/Reusable/Form/CustomInput";
 import {
-  useGetSingleReviewQuery,
-  useUpdateReviewMutation,
-} from "@/redux/services/review/reviewApi";
-import { appendToFormData } from "@/utilities/lib/appendToFormData";
+  useGetSingleProductReviewQuery,
+  useUpdateProductReviewMutation,
+} from "@/redux/services/product/productApi";
+
 import { transformDefaultValues } from "@/utilities/lib/transformedDefaultValues";
 import { Form, Modal, Rate } from "antd";
 import { useEffect, useState } from "react";
@@ -15,11 +15,9 @@ const ReviewEdit = ({ open, setOpen, itemId }) => {
   const [fields, setFields] = useState([]);
 
   const { data: reviewData, isFetching: isReviewFetching } =
-    useGetSingleReviewQuery(itemId, {
-      skip: !itemId,
-    });
+    useGetSingleProductReviewQuery(itemId, { skip: !itemId });
 
-  const [updateReview, { isLoading }] = useUpdateReviewMutation();
+  const [updateProductReview, { isLoading }] = useUpdateProductReviewMutation();
 
   const onSubmit = async (values) => {
     const toastId = toast.loading("Updating Review...");
@@ -28,15 +26,13 @@ const ReviewEdit = ({ open, setOpen, itemId }) => {
         ...values,
       };
 
-      const updatedReviewData = new FormData();
-      appendToFormData(submittedData, updatedReviewData);
-
       const updatedData = {
-        id: itemId,
-        data: updatedReviewData,
+        productId: reviewData?.results?.productId,
+        reviewId: reviewData?.results?.reviewId,
+        data: submittedData,
       };
 
-      const res = await updateReview(updatedData);
+      const res = await updateProductReview(updatedData);
 
       if (res.data.success) {
         toast.success(res.data.message, { id: toastId });
@@ -53,7 +49,7 @@ const ReviewEdit = ({ open, setOpen, itemId }) => {
   };
 
   useEffect(() => {
-    setFields(transformDefaultValues(reviewData, []));
+    setFields(transformDefaultValues(reviewData?.results?.result, []));
   }, [reviewData]);
 
   return (

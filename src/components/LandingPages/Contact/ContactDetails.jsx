@@ -2,30 +2,27 @@
 
 import ContactForm from "./ContactForm";
 import Link from "next/link";
-import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaLinkedin, FaYoutube } from "react-icons/fa";
 import { FaSquareXTwitter } from "react-icons/fa6";
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 
 const ContactDetails = () => {
   const { data: globalData } = useGetAllGlobalSettingQuery();
   return (
-    <section className="my-container pt-10 lg:pt-24">
-      <div className="grid grid-cols-1 md:grid-cols-3 lg:gap-10">
+    <section className="my-container pt-10">
+      <div className="grid grid-cols-1 lg:grid-cols-3 lg:gap-10">
         <div>
-          <div className="bg-white p-5 rounded-xl shadow-xl mb-10">
-            <h2 className="text-xl font-bold text-black/80 mb-4 border-b pb-2">
-              Working Days
-            </h2>
-            <p> {globalData?.results?.businessWorkHours}</p>
-          </div>
           <div className="bg-white p-5 rounded-xl shadow-xl mb-10">
             <h2 className="text-xl font-bold text-black/80 mb-4 border-b pb-2">
               Store address
             </h2>
             <div className="flex flex-col gap-4 mt-4">
               <p>Our address information</p>
-              <p>{globalData?.results?.businessAddress}</p>
-              <p> {globalData?.results?.businessNumber}</p>
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: globalData?.results?.businessAddress,
+                }}
+              />
             </div>
             <div className="flex items-center gap-4 mt-4">
               <Link
@@ -33,6 +30,13 @@ const ContactDetails = () => {
                 target="_blank"
               >
                 <FaFacebook className="text-4xl bg-primary p-2 rounded-full text-white hover:scale-110 duration-300" />
+              </Link>
+              <Link
+                href={globalData?.results?.businessYoutube ?? "/"}
+                target="_blank"
+                className="flex items-center gap-4"
+              >
+                <FaYoutube className="text-4xl bg-primary p-2 rounded-full text-white hover:scale-110 duration-300" />
               </Link>
               <Link
                 href={globalData?.results?.businessLinkedin}

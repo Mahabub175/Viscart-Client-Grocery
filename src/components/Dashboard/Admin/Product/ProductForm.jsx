@@ -8,21 +8,20 @@ import { Checkbox, Form } from "antd";
 import { RiRefreshLine } from "react-icons/ri";
 import { VariantComponent } from "./VariantComponent";
 import CustomTextEditor from "@/components/Reusable/Form/CustomTextEditor";
-import CustomVideoUploader from "@/components/Reusable/Form/VideoUploader";
 import MultipleFileUploader from "@/components/Reusable/Form/MultipleFIleUploader";
 import { useGetAllGenericsQuery } from "@/redux/services/generic/genericApi";
-import { useGetAllUnitsQuery } from "@/redux/services/unit/unitApi";
+import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 
 const ProductForm = ({
   attachment,
   handleVariantProduct,
   data,
-  videoData,
-  onChange,
   content,
   setContent,
 }) => {
   const form = Form.useFormInstance();
+
+  const { data: globalSetting } = useGetAllGlobalSettingQuery();
 
   const isVariant = Form.useWatch("isVariant", form);
 
@@ -40,15 +39,6 @@ const ProductForm = ({
     useGetAllGenericsQuery();
 
   const genericOptions = genericData?.results
-    ?.filter((item) => item?.status !== "Inactive")
-    .map((item) => ({
-      value: item?._id,
-      label: item?.name,
-    }));
-
-  const { data: unitData, isFetching: isUnitFetching } = useGetAllUnitsQuery();
-
-  const unitOptions = unitData?.results
     ?.filter((item) => item?.status !== "Inactive")
     .map((item) => ({
       value: item?._id,
@@ -96,7 +86,7 @@ const ProductForm = ({
           icon={<RiRefreshLine className="text-xl" />}
         />
       </div>
-      <div className="three-grid">
+      <div className="two-grid">
         <CustomSelect
           label={"Product Brand"}
           name={"brand"}
@@ -119,22 +109,15 @@ const ProductForm = ({
           loading={isGenericFetching}
           disabled={isGenericFetching}
         />
-        <CustomInput label={"Product Weight"} name={"weight"} type={"number"} />
-        <CustomSelect
-          label={"Product Unit"}
-          name={"unit"}
-          options={unitOptions}
-          loading={isUnitFetching}
-          disabled={isUnitFetching}
-        />
-        <CustomInput
-          label={"Product Purchase Point"}
-          name={"point"}
-          type={"number"}
-        />
+        <CustomInput label={"Product Unit"} name={"unit"} />
+        <CustomInput label={"Product Model"} name={"productModel"} />
+        <CustomInput label={"Product Weight"} name={"weight"} />
       </div>
-
+      {!globalSetting?.results?.usePointSystem && (
+        <CustomInput label={"Product Purchase Point"} name={"purchasePoint"} />
+      )}
       <CustomSelect label={"Product Tags"} name={"tags"} mode={"tags"} />
+      <CustomInput label={"Product Video Link"} name={"video"} />
 
       <div className="two-grid">
         <CustomInput
@@ -163,13 +146,6 @@ const ProductForm = ({
           />
         )}
       </div>
-      <CustomVideoUploader
-        name="video"
-        label="Product Video"
-        required={true}
-        onChange={onChange}
-        defaultValue={videoData}
-      />
       <FileUploader
         defaultValue={attachment}
         label="Product Main Image"

@@ -1,76 +1,75 @@
 "use client";
 
 import { paginationNumbers } from "@/assets/data/paginationData";
-import DeleteModal from "@/components/Reusable/Modal/DeleteModal";
-import DetailsModal from "@/components/Reusable/Modal/DetailsModal";
+import ReviewEdit from "@/components/Dashboard/User/Review/ReviewEdit";
+import { DeleteButton } from "@/components/Reusable/Button/CustomButton";
+import deleteImage from "@/assets/images/Trash-can.png";
 import {
-  useDeleteReviewMutation,
-  useGetReviewsQuery,
-  useGetSingleReviewQuery,
-} from "@/redux/services/review/reviewApi";
-import {
-  Dropdown,
-  Input,
-  Menu,
-  Pagination,
-  Space,
-  Table,
-  Tag,
-  Tooltip,
-} from "antd";
+  useDeleteProductReviewMutation,
+  useGetAllReviewsQuery,
+} from "@/redux/services/product/productApi";
+import { Button, Input, Modal, Pagination, Space, Table, Tooltip } from "antd";
+import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
-import { BsThreeDotsVertical } from "react-icons/bs";
-import { FaSearch } from "react-icons/fa";
+import { FaEdit, FaSearch } from "react-icons/fa";
 import { MdDelete } from "react-icons/md";
-import { TbListDetails } from "react-icons/tb";
+import { toast } from "sonner";
 
 const AdminReview = () => {
-  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [openEdit, setOpenEdit] = useState(false);
   const [itemId, setItemId] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
   const [search, setSearch] = useState("");
+  const [productId, setProductId] = useState(null);
 
   const handlePageChange = (page, size) => {
     setCurrentPage(page);
     setPageSize(size);
   };
 
-  const { data: reviews, isFetching } = useGetReviewsQuery({
+  const { data: reviews, isFetching } = useGetAllReviewsQuery({
     page: currentPage,
     limit: pageSize,
   });
 
-  const { data: reviewData } = useGetSingleReviewQuery(itemId, {
-    skip: !itemId,
-  });
+  const [deleteProductReview] = useDeleteProductReviewMutation();
 
-  const [deleteReview] = useDeleteReviewMutation();
+  const handleDelete = async () => {
+    try {
+      const payload = {
+        productId: productId,
+        reviewId: itemId,
+      };
 
-  const handleMenuClick = (key, id) => {
-    setItemId(id);
-    switch (key) {
-      case "delete":
-        setDeleteModalOpen(true);
-        break;
-      default:
-        break;
+      const res = await deleteProductReview(payload);
+      if (res.data.success) {
+        setDeleteModalOpen(false);
+        toast.success(res.data.message);
+      } else {
+        setDeleteModalOpen(false);
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      setDeleteModalOpen(false);
+      console.error("Error deleting item:", error);
+      toast.error("An error occurred while deleting the item.");
     }
   };
 
   const columns = [
     {
-      title: "User",
-      dataIndex: "user",
-      key: "user",
-      align: "start",
-    },
-    {
       title: "Product",
       dataIndex: "product",
       key: "product",
       align: "start",
+      render: (item, record) => (
+        <Link href={`/products/${record?.slug}`} target="_blank">
+          {item}
+        </Link>
+      ),
     },
     {
       title: "Comment",
@@ -85,73 +84,51 @@ const AdminReview = () => {
       align: "start",
     },
     {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      align: "center",
-      render: (item) => (
-        <Tag
-          color={item == "Active" ? "green" : "red"}
-          className="capitalize font-semibold"
-        >
-          {item == "Active" ? "Active" : "Inactive"}
-        </Tag>
-      ),
-    },
-    {
       title: "Action",
       key: "action",
       align: "center",
       render: (item) => {
-        const menu = (
-          <Menu
-            onClick={({ key }) => handleMenuClick(key, item.key)}
-            className="w-full flex flex-col gap-2"
-          >
-            <Menu.Item key="delete">
-              <Tooltip placement="top" title={"Delete"}>
-                <button className="bg-red-500 p-2 rounded-xl text-white hover:scale-110 duration-300">
-                  <MdDelete />
-                </button>
-              </Tooltip>
-            </Menu.Item>
-          </Menu>
-        );
-
         return (
           <Space size="middle">
-            <Tooltip placement="top" title={"Details"}>
+            <Tooltip placement="top" title={"Edit"}>
+              <button
+                className="bg-green-500 p-2 rounded-xl text-white hover:scale-110 duration-300"
+                onClick={() => {
+                  setItemId(item.key);
+                  setOpenEdit(true);
+                }}
+              >
+                <FaEdit />
+              </button>
+            </Tooltip>
+            <Tooltip placement="top" title={"Delete"}>
               <button
                 onClick={() => {
                   setItemId(item.key);
-                  setDetailsModalOpen(true);
+                  setProductId(item.productId);
+                  setDeleteModalOpen(true);
                 }}
-                className="bg-blue-600 p-2 rounded-xl text-white hover:scale-110 duration-300"
+                className="bg-red-500 p-2 rounded-xl text-white hover:scale-110 duration-300"
               >
-                <TbListDetails />
+                <MdDelete />
               </button>
             </Tooltip>
-            <Dropdown overlay={menu} trigger={["click"]} placement="bottom">
-              <Tooltip placement="top" title={"More"}>
-                <button className="bg-blue-500 p-2 rounded-xl text-white hover:scale-110 duration-300">
-                  <BsThreeDotsVertical />
-                </button>
-              </Tooltip>
-            </Dropdown>
           </Space>
         );
       },
     },
   ];
 
-  const tableData = reviews?.results?.map((item) => ({
-    key: item._id,
-    user: item?.user?.name,
-    product: item?.product?.map((item) => item.name).join(", "),
-    rating: item?.rating,
-    comment: item?.comment,
-    status: item?.status,
-  }));
+  const tableData = reviews?.results?.flatMap((product) =>
+    product?.reviews?.map((review) => ({
+      key: review?._id,
+      productId: product?._id,
+      product: product?.name,
+      slug: product?.slug,
+      rating: review?.rating,
+      comment: review?.comment,
+    }))
+  );
 
   const filteredTableData = tableData?.filter((item) => {
     if (!search) return true;
@@ -193,20 +170,38 @@ const AdminReview = () => {
         simple
       />
 
-      <DetailsModal
-        itemId={itemId}
-        modalOpen={detailsModalOpen}
-        setModalOpen={setDetailsModalOpen}
-        title={"Review"}
-        details={reviewData}
-      />
-      <DeleteModal
-        itemId={itemId}
-        modalOpen={deleteModalOpen}
-        setModalOpen={setDeleteModalOpen}
-        text={"review"}
-        func={deleteReview}
-      />
+      <ReviewEdit itemId={itemId} open={openEdit} setOpen={setOpenEdit} />
+
+      <Modal
+        centered
+        open={deleteModalOpen}
+        onOk={() => setDeleteModalOpen(false)}
+        onCancel={() => setDeleteModalOpen(false)}
+        footer={null}
+      >
+        <div className="p-8">
+          <Image
+            height={60}
+            width={60}
+            src={deleteImage}
+            alt="delete image"
+            className="w-16 h-16 mx-auto mb-4"
+          />
+          <h2 className="text-center text-2xl font-bold">
+            Are your sure you want to permanently delete this review?
+          </h2>
+          <div className="flex mt-10 gap-6 items-center justify-center">
+            <Button
+              onClick={() => setDeleteModalOpen(false)}
+              type="text"
+              className="!font-bold bg-transparent !text-red-500 px-10 py-4 border !border-red-500"
+            >
+              Cancel
+            </Button>
+            <DeleteButton func={handleDelete} text={"Delete"} />
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 };

@@ -19,6 +19,7 @@ const Wishlist = () => {
   const { data: wishlistData, isError } = useGetSingleWishlistByUserQuery(
     user?._id ?? deviceId
   );
+
   const { data: products } = useGetAllProductsQuery();
 
   const wishlistProducts = products?.results
@@ -41,12 +42,12 @@ const Wishlist = () => {
   };
 
   return (
-    <section className="container mx-auto px-5 lg:py-10">
+    <section className="container mx-auto px-5 pb-10 lg:pb-0 lg:py-10">
       <h2 className="font-normal text-2xl">My Wishlist</h2>
       <div>
         {wishlistData?.length === 0 || !wishlistData || isError ? (
-          <div className="flex items-center justify-center my-10 bg-white p-10 rounded-xl shadow-xl">
-            <h2 className="lg:text-2xl font-bold text-black/80  text-center text-xl">
+          <div className="flex items-center justify-center my-10 bg-white p-10 rounded-xl shadow">
+            <h2 className="lg:text-2xl font-bold text-black/80 text-center text-xl">
               Please add a product to wishlist to see them here
             </h2>
           </div>
@@ -69,7 +70,6 @@ const Wishlist = () => {
                       src={deleteImage}
                       alt="delete image"
                       className="w-8 h-8 mx-auto hover:cursor-pointer hover:scale-110 duration-500"
-                      priority
                     />
                   </div>
                 </div>

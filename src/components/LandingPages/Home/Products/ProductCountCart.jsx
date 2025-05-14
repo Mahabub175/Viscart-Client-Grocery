@@ -10,9 +10,11 @@ import {
 } from "@/redux/services/cart/cartApi";
 import { useDeviceId } from "@/redux/services/device/deviceSlice";
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
+import { useAddServerTrackingMutation } from "@/redux/services/serverTracking/serverTrackingApi";
 import { useDeleteWishlistMutation } from "@/redux/services/wishlist/wishlistApi";
+import useGetURL from "@/utilities/hooks/useGetURL";
 import { sendGTMEvent } from "@next/third-parties/google";
-import { Modal } from "antd";
+import { Button, Modal } from "antd";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaPlus, FaMinus, FaCartShopping } from "react-icons/fa6";
@@ -39,11 +41,14 @@ const ProductCountCart = ({
   const [btnText, setBtnText] = useState("");
   const [deleteWishlist] = useDeleteWishlistMutation();
 
+  const { data: cartData } = useGetSingleCartByUserQuery(user?._id ?? deviceId);
+
   const { data: userData } = useGetSingleUserQuery(user?._id, {
     skip: !user?._id,
   });
 
-  const { data: cartData } = useGetSingleCartByUserQuery(user?._id ?? deviceId);
+  const url = useGetURL();
+  const [addServerTracking] = useAddServerTrackingMutation();
 
   const handleCount = (action) => {
     if (action === "increment") {
@@ -128,16 +133,16 @@ const ProductCountCart = ({
     Object.keys(groupedAttributes).length ===
       Object.keys(selectedAttributes).length;
 
-  const isOutOfStock =
-    item?.stock <= 0 ||
-    previousSelectedVariant?.stock <= 0 ||
-    currentVariant?.stock <= 0;
-
   const currentPrice = currentVariant
     ? currentVariant?.sellingPrice
     : item?.offerPrice && item?.offerPrice > 0
     ? item?.offerPrice
     : item?.sellingPrice;
+
+  const isOutOfStock =
+    item?.stock <= 0 ||
+    previousSelectedVariant?.stock <= 0 ||
+    currentVariant?.stock <= 0;
 
   const addToCart = async (type) => {
     if (item?.variants?.length > 0 && !allAttributesSelected) {
@@ -149,17 +154,21 @@ const ProductCountCart = ({
 
     const data = {
       ...(user?._id ? { user: user._id } : { deviceId }),
+      product: item?._id,
+      quantity: count,
+      sku: currentVariant?.sku ?? item?.sku,
+      weight: item?.weight,
+      price: currentPrice,
       ...(user?._id && {
         userName: userData?.name,
         userNumber: userData?.number,
         userEmail: userData?.email,
       }),
-      product: item?._id,
-      name: item?.name,
-      slug: item?.slug,
-      quantity: count,
-      sku: currentVariant?.sku ?? item?.sku,
-      price: currentPrice,
+      ...(user?._id && {
+        name: userData?.name,
+        number: userData?.number,
+        email: userData?.email,
+      }),
     };
 
     const toastId = toast.loading("Adding to cart");
@@ -167,8 +176,18 @@ const ProductCountCart = ({
     try {
       const res = await addCart(data);
       if (res?.data?.success) {
-        toast.success(res.data.message, { id: toastId });
         sendGTMEvent({ event: "addToCart", value: data });
+
+        const serverData = {
+          event: "addToCart",
+          data: {
+            ...data,
+            event_source_url: url,
+          },
+        };
+        await addServerTracking(serverData);
+
+        toast.success(res.data.message, { id: toastId });
         if (isWishlist) {
           deleteWishlist(wishlistId);
         }
@@ -199,34 +218,36 @@ const ProductCountCart = ({
     >
       {!isOutOfStock ? (
         <>
-          <div className="flex items-center gap-3 border border-primaryLight rounded-xl p-1.5">
-            <button
-              className="cursor-pointer bg-primaryLight p-2 rounded text-xl"
-              onClick={() => handleCount("decrement")}
-            >
-              <FaMinus />
-            </button>
-            <span className="text-base font-bold text-textColor">{count}</span>
-            <button
-              className="cursor-pointer bg-primaryLight p-2 rounded text-xl"
-              onClick={() => handleCount("increment")}
-            >
-              <FaPlus />
-            </button>
-          </div>
-          {cartData?.some((cartItem) => cartItem?.productId === item?._id) ? (
-            <div>
-              <SubmitButton
-                func={() => addToCart("cart")}
-                text={"Already in Cart"}
-                icon={<FaCartShopping />}
-                loading={isLoading}
-                fullWidth={fullWidth}
-              />
-            </div>
+          {cartData?.length > 0 &&
+          cartData.some(
+            (cartItem) => cartItem?.productId === item?._id?.toString()
+          ) ? (
+            <SubmitButton
+              func={() => addToCart("buy")}
+              text={"Already In Cart"}
+              icon={<FaCartShopping />}
+              loading={isLoading}
+              fullWidth={fullWidth}
+            />
           ) : (
             <>
-              {" "}
+              <div className="flex items-center gap-3 border border-primary rounded-lg p-0.5">
+                <button
+                  className="cursor-pointer bg-primaryLight text-primary p-2 rounded text-xl"
+                  onClick={() => handleCount("decrement")}
+                >
+                  <FaMinus />
+                </button>
+                <span className="text-base font-bold text-textColor">
+                  {count}
+                </span>
+                <button
+                  className="cursor-pointer bg-primaryLight text-primary p-2 rounded text-xl"
+                  onClick={() => handleCount("increment")}
+                >
+                  <FaPlus />
+                </button>
+              </div>
               <SubmitButton
                 func={() => addToCart("cart")}
                 text={"Add"}
@@ -234,18 +255,22 @@ const ProductCountCart = ({
                 loading={isLoading}
                 fullWidth={fullWidth}
               />
-              <SubmitButton
-                func={() => addToCart("buy")}
-                text={"Buy Now"}
-                icon={<FaCartShopping />}
+
+              <Button
+                htmlType="submit"
+                size="large"
                 loading={isLoading}
-                fullWidth={fullWidth}
-              />
+                icon={<FaCartShopping />}
+                onClick={() => addToCart("buy")}
+                className={`bg-navyBlue text-white font-bold px-10 w-full`}
+              >
+                Buy Now
+              </Button>
             </>
           )}
         </>
       ) : (
-        <div className="p-2 bg-gradient-to-r from-red-500 to-red-700 text-white rounded font-bold text-xs">
+        <div className="p-2 bg-gradient-to-r from-red-500 to-red-700 text-white rounded font-bold text-xs z-10">
           Out Of Stock
         </div>
       )}
@@ -289,14 +314,28 @@ const ProductCountCart = ({
             </>
           ) : (
             <>
-              {btnText === "buy" ? (
+              {cartData?.length > 0 &&
+              cartData.some(
+                (cartItem) => cartItem?.productId === item?._id?.toString()
+              ) ? (
                 <SubmitButton
                   func={() => addToCart("buy")}
-                  text={"Buy Now"}
+                  text={"Already In Cart"}
                   icon={<FaCartShopping />}
                   loading={isLoading}
                   fullWidth={fullWidth}
                 />
+              ) : btnText === "buy" ? (
+                <Button
+                  htmlType="submit"
+                  size="large"
+                  loading={isLoading}
+                  icon={<FaCartShopping />}
+                  onClick={() => addToCart("buy")}
+                  className={`bg-navyBlue text-white font-bold px-10 w-full`}
+                >
+                  Buy Now
+                </Button>
               ) : (
                 <SubmitButton
                   func={() => addToCart("cart")}

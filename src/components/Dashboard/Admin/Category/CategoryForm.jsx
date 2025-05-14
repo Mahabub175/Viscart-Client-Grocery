@@ -3,7 +3,7 @@ import CustomInput from "@/components/Reusable/Form/CustomInput";
 import CustomSelect from "@/components/Reusable/Form/CustomSelect";
 import FileUploader from "@/components/Reusable/Form/FileUploader";
 import { useGetAllCategoriesQuery } from "@/redux/services/category/categoryApi";
-import { Checkbox, Form } from "antd";
+import { Form } from "antd";
 
 const CategoryForm = ({ attachment }) => {
   const form = Form.useFormInstance();
@@ -98,11 +98,6 @@ const CategoryForm = ({ attachment }) => {
         label="Category Image"
         name="attachment"
       />
-      <Form.Item name={"isFeatured"} valuePropName="checked">
-        <Checkbox className="font-semibold">
-          This Category Is Featured In Homepage
-        </Checkbox>
-      </Form.Item>
     </>
   );
 };

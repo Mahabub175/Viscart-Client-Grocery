@@ -12,11 +12,12 @@ import {
 import { appendToFormData } from "@/utilities/lib/appendToFormData";
 import { compressImage } from "@/utilities/lib/compressImage";
 import { transformDefaultValues } from "@/utilities/lib/transformedDefaultValues";
-import { ColorPicker, Divider, Form } from "antd";
-import { currencies } from "currencies.json";
-import dynamic from "next/dynamic";
+import { ColorPicker, Divider, Form, TimePicker } from "antd";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import dynamic from "next/dynamic";
+import dayjs from "dayjs";
+import { base_url_image } from "@/utilities/configs/base_api";
 
 const DynamicEditor = dynamic(
   () => import("@/components/Reusable/Form/CustomTextEditor"),
@@ -25,7 +26,7 @@ const DynamicEditor = dynamic(
   }
 );
 
-const AdminAccountSetting = () => {
+const GlobalSetting = () => {
   const [fields, setFields] = useState([]);
   const { data } = useGetAllGlobalSettingQuery();
 
@@ -52,6 +53,9 @@ const AdminAccountSetting = () => {
       const submittedData = {
         ...values,
         manualPayments,
+        popUpDuration: values.popUpDuration
+          ? values.popUpDuration.minute() * 60 + values.popUpDuration.second()
+          : 0,
       };
 
       if (typeof values?.primaryColor === "object") {
@@ -61,12 +65,28 @@ const AdminAccountSetting = () => {
         submittedData.secondaryColor = values?.secondaryColor?.toHexString();
       }
 
+      if (values?.popUpImage && values?.popUpImage[0]?.url) {
+        submittedData.popUpImage = values.popUpImage[0].url.replace(
+          base_url_image,
+          ""
+        );
+      } else if (values.popUpImage && values.popUpImage[0]?.originFileObj) {
+        submittedData.popUpImage = await compressImage(
+          values.popUpImage[0].originFileObj
+        );
+      }
+
       if (!values.logo[0].url) {
         submittedData.logo = await compressImage(values.logo[0].originFileObj);
       }
       if (!values.favicon[0].url) {
         submittedData.favicon = await compressImage(
           values.favicon[0].originFileObj
+        );
+      }
+      if (!values.storeImage[0].url) {
+        submittedData.storeImage = await compressImage(
+          values.storeImage[0].originFileObj
         );
       }
 
@@ -94,6 +114,16 @@ const AdminAccountSetting = () => {
   };
 
   useEffect(() => {
+    const popUpDurationSeconds = data?.results?.popUpDuration ?? 0;
+    const minutesPart = Math.floor(popUpDurationSeconds / 60);
+    const secondsPart = popUpDurationSeconds % 60;
+
+    const popUpDurationField = {
+      name: "popUpDuration",
+      value: dayjs().hour(0).minute(minutesPart).second(secondsPart),
+      errors: "",
+    };
+
     const manualPaymentsFields =
       data?.results?.manualPayments
         ?.map((item, i) => [
@@ -115,12 +145,13 @@ const AdminAccountSetting = () => {
         ])
         ?.flat() || [];
 
-    setFields(transformDefaultValues(data?.results, [...manualPaymentsFields]));
+    setFields(
+      transformDefaultValues(data?.results, [
+        popUpDurationField,
+        ...manualPaymentsFields,
+      ])
+    );
   }, [data]);
-
-  const currenciesOptions = currencies.map(({ name, symbol, code }) => {
-    return { label: `${name} (${symbol})`, value: code };
-  });
 
   return (
     <section className="lg:w-4/6 mx-auto">
@@ -147,6 +178,12 @@ const AdminAccountSetting = () => {
           name="favicon"
           required={true}
         />
+        <FileUploader
+          defaultValue={data?.results?.storeImage}
+          label="Store Image"
+          name="storeImage"
+          required={true}
+        />
         <div className="two-grid">
           <CustomInput
             name={"deliveryChargeInsideDhaka"}
@@ -157,6 +194,41 @@ const AdminAccountSetting = () => {
             name={"deliveryChargeOutsideDhaka"}
             label={"Delivery Charge Outside Dhaka"}
             type={"number"}
+          />
+          <CustomInput
+            name={"pricePerWeight"}
+            label={"Extra Price Per Weight"}
+            type={"number"}
+          />
+          <CustomInput
+            name={"bkashUserName"}
+            label={"Bkash User Name"}
+            type={"password"}
+          />
+          <CustomInput
+            name={"bkashPassword"}
+            label={"Bkash Password"}
+            type={"password"}
+          />
+          <CustomInput
+            name={"bkashApiKey"}
+            label={"Bkash API Key"}
+            type={"password"}
+          />
+          <CustomInput
+            name={"bkashSecretKey"}
+            label={"Bkash Secret Key"}
+            type={"password"}
+          />
+          <CustomInput
+            name={"fbPixelId"}
+            label={"Facebook Pixel ID"}
+            type={"password"}
+          />
+          <CustomInput
+            name={"fbAccessToken"}
+            label={"Facebook Access Token"}
+            type={"password"}
           />
           <CustomInput
             name={"businessNumber"}
@@ -240,14 +312,33 @@ const AdminAccountSetting = () => {
               { value: "Inactive", label: "Inactive" },
             ]}
           />
-
           <CustomSelect
-            name={"currency"}
-            label={"Global Currency"}
-            options={currenciesOptions}
-            required={true}
+            name={"useSms"}
+            label={"Use SMS Status"}
+            options={[
+              { value: true, label: "Active" },
+              { value: false, label: "Inactive" },
+            ]}
           />
-
+          <CustomInput
+            name={"smsToken"}
+            label={"SMS Token"}
+            type={"password"}
+          />
+          <CustomInput name={"smsUrl"} label={"SMS Url"} type={"password"} />
+          <CustomSelect
+            name={"usePointSystem"}
+            label={"Use Point System Status"}
+            options={[
+              { value: true, label: "Active" },
+              { value: false, label: "Inactive" },
+            ]}
+          />
+          <CustomInput
+            name={"pointConversion"}
+            type={"number"}
+            label={"Point Conversion"}
+          />
           <Form.Item
             name="primaryColor"
             label="Website Primary Color"
@@ -269,6 +360,7 @@ const AdminAccountSetting = () => {
               <CustomInput
                 name={`manualPayments[${i}].name`}
                 label={`Manual Payment ${i + 1} Name`}
+                disabled
               />
 
               <CustomSelect
@@ -324,6 +416,28 @@ const AdminAccountSetting = () => {
           <DynamicEditor />
         </Form.Item>
 
+        <section className="">
+          <Divider orientation="left" orientationMargin={0}>
+            Pop Up Settings
+          </Divider>
+          <CustomInput name={"popUpLink"} label={"Pop Up Link"} />
+          <Form.Item label={"Pop Up Duration"} name={"popUpDuration"}>
+            <TimePicker
+              format="mm:ss"
+              showHour={false}
+              showMinute={true}
+              showSecond={true}
+              secondStep={1}
+            />
+          </Form.Item>
+
+          <FileUploader
+            defaultValue={data?.results?.popUpImage}
+            label="Pop Up Image"
+            name="popUpImage"
+          />
+        </section>
+
         <div className="flex justify-center my-10">
           <SubmitButton text={"Save"} loading={isLoading} fullWidth={true} />
         </div>
@@ -332,4 +446,4 @@ const AdminAccountSetting = () => {
   );
 };
 
-export default AdminAccountSetting;
+export default GlobalSetting;

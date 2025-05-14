@@ -9,6 +9,7 @@ const CustomInput = ({
   required,
   prefix,
   placeholder,
+  disabled,
 }) => {
   return (
     <Form.Item
@@ -42,6 +43,7 @@ const CustomInput = ({
             min={type === "number" ? 0 : undefined}
             prefix={prefix ? prefix : null}
             onWheel={(e) => type === "number" && e.target.blur()}
+            disabled={disabled}
           />
         )}
     </Form.Item>

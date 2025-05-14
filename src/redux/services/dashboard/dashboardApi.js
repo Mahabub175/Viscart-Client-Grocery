@@ -10,6 +10,7 @@ const dashboardApi = baseApi.injectEndpoints({
       transformResponse: (response) => {
         return { results: response.data };
       },
+      providesTags: ["dashboard"],
     }),
     getSingleUserDashboard: build.query({
       query: (id) => ({
@@ -19,6 +20,7 @@ const dashboardApi = baseApi.injectEndpoints({
       transformResponse: (response) => {
         return response.data;
       },
+      providesTags: ["dashboard"],
     }),
   }),
   overrideExisting: true,

@@ -1,32 +1,25 @@
-import { useGetAllReviewsQuery } from "@/redux/services/review/reviewApi";
 import React from "react";
 import { Avatar, Rate, Card } from "antd";
 import dayjs from "dayjs";
 import { formatImagePath } from "@/utilities/lib/formatImagePath";
 import { UserOutlined } from "@ant-design/icons";
 
-const ProductReview = ({ productId }) => {
-  const { data: reviewData } = useGetAllReviewsQuery();
-
-  const filteredReviews = reviewData?.results.filter((review) =>
-    review.product.some((prod) => prod._id === productId)
-  );
-
-  if (filteredReviews?.length === 0) {
+const ProductReview = ({ data }) => {
+  if (data?.length === 0) {
     return <div className="mt-10 px-5">No reviews found for this product.</div>;
   }
 
   return (
-    <div className="p-4">
+    <div className="lg:p-3 mt-3">
       <div className="space-y-4">
-        {filteredReviews?.map((review) => {
-          const { user, comment, createdAt, rating } = review;
-          const { name, profile_image } = user;
+        {data?.map((review) => {
+          const { user, comment, createdAt, rating } = review || {};
+          const { name, profile_image } = user || {};
 
           return (
             <Card
               key={review._id}
-              className="border p-4 rounded-lg shadow-sm"
+              className="border p-2 lg:p-3 rounded-lg shadow-sm"
               title={
                 <div className="flex items-center space-x-3">
                   {profile_image ? (
@@ -40,7 +33,7 @@ const ProductReview = ({ productId }) => {
                     <Avatar size={40} icon={<UserOutlined />} />
                   )}
                   <div>
-                    <div className="font-semibold">{name}</div>
+                    <div className="font-semibold italic">{name}</div>
                     <div className="text-sm text-gray-500">
                       {dayjs(createdAt).format("DD/MM/YYYY")}
                     </div>

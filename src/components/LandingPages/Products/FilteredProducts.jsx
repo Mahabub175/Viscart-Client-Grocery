@@ -28,7 +28,6 @@ const FilteredProducts = ({ data }) => {
                   width={300}
                   height={260}
                   className="rounded-t-xl h-[260px] group-hover:scale-110 duration-500"
-                  priority
                 />
               </div>
               <QuickViewHover item={item} />
