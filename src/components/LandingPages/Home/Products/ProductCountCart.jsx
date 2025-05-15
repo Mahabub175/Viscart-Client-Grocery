@@ -145,7 +145,11 @@ const ProductCountCart = ({
     currentVariant?.stock <= 0;
 
   const addToCart = async (type) => {
-    if (item?.variants?.length > 0 && !allAttributesSelected) {
+    if (
+      item?.variants?.length > 0 &&
+      !allAttributesSelected &&
+      !item?.isVariant
+    ) {
       setOpenVariantModal(true);
       setBtnText(type);
       toast.info("Please select a variant combination");

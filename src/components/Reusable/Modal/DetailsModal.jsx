@@ -35,41 +35,66 @@ const DetailsModal = ({ modalOpen, setModalOpen, title, details }) => {
   const formatDate = (value) => moment(value).format("Do MMM, YYYY");
 
   const renderValue = (key, value) => {
+    if (value === null || value === undefined) {
+      return "-";
+    }
+
+    if (
+      key === "video" &&
+      typeof value === "string" &&
+      value?.startsWith("https://www.youtube.com/embed/")
+    ) {
+      return (
+        <Link href={value} target="_blank" className="text-blue-500 underline">
+          View Video
+        </Link>
+      );
+    }
+
     if (key.toLowerCase().includes("date") || key === "createdAt") {
       return formatDate(value);
     }
+
     if (key.toLowerCase() === "description") {
       return <div dangerouslySetInnerHTML={{ __html: value }} />;
     }
+
     if (typeof value === "boolean") {
       return formatBoolean(value);
     }
+
     if (Array.isArray(value)) {
       return (
         <div key={key} label={formatLabel(key)}>
-          {value.map((item, index) =>
-            typeof item === "object" ? (
-              <div
-                key={index}
-                className="my-4 grid grid-cols-1 border-t border-primary/20 first:border-0"
-              >
-                {Object.entries(item)
-                  .filter(([subKey]) => !excludedKeys.includes(subKey))
-                  .map(([subKey, subValue]) => (
-                    <div key={subKey} className="flex items-center gap-2 mt-2">
-                      <strong>{formatLabel(subKey)}:</strong>{" "}
-                      {renderValue(subKey, subValue)}
-                    </div>
-                  ))}
-              </div>
-            ) : (
-              <div key={index}>{item}</div>
-            )
-          )}
+          {value.length === 0
+            ? "-"
+            : value.map((item, index) =>
+                typeof item === "object" ? (
+                  <div
+                    key={index}
+                    className="my-4 grid grid-cols-1 border-t border-primary/20 first:border-0"
+                  >
+                    {Object.entries(item)
+                      .filter(([subKey]) => !excludedKeys.includes(subKey))
+                      .map(([subKey, subValue]) => (
+                        <div
+                          key={subKey}
+                          className="flex items-center gap-2 mt-2"
+                        >
+                          <strong>{formatLabel(subKey)}:</strong>{" "}
+                          {renderValue(subKey, subValue)}
+                        </div>
+                      ))}
+                  </div>
+                ) : (
+                  <div key={index}>{item ?? "-"}</div>
+                )
+              )}
         </div>
       );
     }
-    if (typeof value === "object" && value !== null) {
+
+    if (typeof value === "object") {
       return (
         <div className="my-4 border-t border-primary/20 first:border-0">
           {Object.entries(value)
@@ -84,27 +109,7 @@ const DetailsModal = ({ modalOpen, setModalOpen, title, details }) => {
       );
     }
 
-    if (
-      key === "video" &&
-      (value?.startsWith("https://www.youtube.com/embed/") ||
-        value?.startsWith("https://player.vimeo.com/video/"))
-    ) {
-      return (
-        <div className="my-4">
-          <iframe
-            width="100%"
-            height="400"
-            src={value}
-            title="video"
-            frameBorder="0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
-        </div>
-      );
-    }
-
-    return value;
+    return value || "-";
   };
 
   const filteredDetails = details
@@ -124,7 +129,8 @@ const DetailsModal = ({ modalOpen, setModalOpen, title, details }) => {
         ([key, value]) =>
           !excludedKeys.includes(key) &&
           typeof value === "string" &&
-          value.startsWith("http")
+          value.startsWith("http") &&
+          key !== "video"
       )
     : [];
 
@@ -145,9 +151,7 @@ const DetailsModal = ({ modalOpen, setModalOpen, title, details }) => {
           <Descriptions bordered column={1}>
             {Object.entries(filteredDetails).map(([key, value]) => (
               <Descriptions.Item key={key} label={formatLabel(key)}>
-                {key === "status"
-                  ? formatStatus(value)
-                  : key === "trending"
+                {key === "status" || key === "trending"
                   ? formatStatus(value)
                   : renderValue(key, value)}
               </Descriptions.Item>
@@ -165,9 +169,10 @@ const DetailsModal = ({ modalOpen, setModalOpen, title, details }) => {
                   )}
                 </Descriptions.Item>
               ))}
+
             {details?.images?.length > 0 && (
               <Descriptions.Item label={formatLabel("images")}>
-                {details?.images?.map((image, index) => (
+                {details.images.map((image, index) => (
                   <div
                     key={index}
                     style={{

@@ -1,6 +1,6 @@
 import { Tooltip } from "antd";
 import Image from "next/image";
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import QuickViewHover from "../../Products/QuickViewHover";
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 import { formatImagePath } from "@/utilities/lib/formatImagePath";
@@ -27,7 +27,6 @@ import { useGetSingleUserQuery } from "@/redux/services/auth/authApi";
 
 const ProductCard = ({ item }) => {
   const { data: globalData } = useGetAllGlobalSettingQuery();
-  const [isHovered, setIsHovered] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
 
   const deviceId = useSelector(useDeviceId);
@@ -116,11 +115,7 @@ const ProductCard = ({ item }) => {
   }, [wishlistData, item?._id]);
 
   return (
-    <div
-      className="relative group w-full lg:w-[200px] mx-auto h-[330px] lg:h-[360px] hover:shadow-xl duration-500 flex flex-col border border-gray-200 bg-white rounded-xl overflow-hidden"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
-    >
+    <div className="relative group w-full lg:w-[200px] mx-auto h-[330px] lg:h-[360px] hover:shadow-xl duration-500 flex flex-col border border-gray-200 bg-white rounded-xl overflow-hidden">
       <Tooltip placement="top" title={"Add to Wishlist"}>
         <div
           className="absolute top-2 right-2 z-10 text-xl cursor-pointer hover:scale-110 duration-300 text-white p-1 bg-primary rounded-full"
@@ -131,33 +126,18 @@ const ProductCard = ({ item }) => {
       </Tooltip>
       <div className="relative overflow-hidden rounded-t-xl">
         <Link href={`/products/${item?.slug}`}>
-          {item?.video && isHovered ? (
-            <video
-              src={formatImagePath(item?.video)}
-              frameBorder="0"
-              allow="autoplay; encrypted-media"
-              allowFullScreen
-              autoPlay
-              muted
-              controls={false}
-              className="w-full h-[160px] lg:h-[220px] rounded-t-xl object-cover"
-            >
-              Your browser does not support the video tag.
-            </video>
-          ) : (
-            <Image
-              src={
-                item?.mainImage
-                  ? formatImagePath(item?.mainImage)
-                  : "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
-              }
-              alt={item?.name}
-              width={200}
-              height={220}
-              className="rounded-t-xl w-full lg:w-[200px] h-[160px] lg:h-[220px] group-hover:scale-110 duration-500"
-              priority
-            />
-          )}
+          <Image
+            src={
+              item?.mainImage
+                ? formatImagePath(item?.mainImage)
+                : "https://thumbs.dreamstime.com/b/demo-demo-icon-139882881.jpg"
+            }
+            alt={item?.name}
+            width={200}
+            height={220}
+            className="rounded-t-xl w-full lg:w-[200px] h-[160px] lg:h-[220px] group-hover:scale-110 duration-500"
+            priority
+          />
         </Link>
         <div className="hidden lg:block absolute inset-x-0 bottom-0 transform translate-y-full group-hover:translate-y-0 duration-500 z-10">
           <QuickViewHover item={item} />
