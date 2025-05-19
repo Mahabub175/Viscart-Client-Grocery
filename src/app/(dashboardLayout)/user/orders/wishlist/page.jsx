@@ -132,8 +132,8 @@ const UserWishlist = () => {
       sku: wishlistData?.product?.sku,
     },
     ...(wishlistData?.user
-      ? { user: wishlistData.user }
-      : { deviceId: wishlistData.deviceId }),
+      ? { user: wishlistData?.user }
+      : { deviceId: wishlistData?.deviceId }),
   };
 
   return (

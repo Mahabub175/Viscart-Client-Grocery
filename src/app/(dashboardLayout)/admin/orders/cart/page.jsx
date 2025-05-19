@@ -158,8 +158,8 @@ const Cart = () => {
       sku: cartData?.product?.sku,
     },
     ...(cartData?.user
-      ? { user: cartData.user }
-      : { deviceId: cartData.deviceId }),
+      ? { user: cartData?.user }
+      : { deviceId: cartData?.deviceId }),
   };
 
   return (
