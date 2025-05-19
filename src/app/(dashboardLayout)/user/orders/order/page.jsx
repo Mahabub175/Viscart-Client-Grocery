@@ -8,7 +8,7 @@ import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/glob
 import { useGetOrdersByUserQuery } from "@/redux/services/order/orderApi";
 import { useAddProductReviewMutation } from "@/redux/services/product/productApi";
 import { formatImagePath } from "@/utilities/lib/formatImagePath";
-import { Empty, Form, Input, Modal, Rate } from "antd";
+import { Empty, Form, Input, Modal, Rate, Tag } from "antd";
 import dayjs from "dayjs";
 import Image from "next/image";
 import Link from "next/link";
@@ -16,6 +16,33 @@ import { useEffect, useState } from "react";
 import { FaSearch } from "react-icons/fa";
 import { useSelector } from "react-redux";
 import { toast } from "sonner";
+
+const renderOrderStatusTag = (status) => {
+  const statusMap = {
+    pending: { color: "orange", text: "Pending" },
+    confirmed: { color: "blue", text: "Confirmed" },
+    packaging: { color: "purple", text: "Packaging" },
+    "out for delivery": { color: "blue", text: "Out For Delivery" },
+    delivered: { color: "green", text: "Delivered" },
+    cancelled: { color: "red", text: "Cancelled" },
+    "failed to deliver": { color: "red", text: "Failed To Deliver" },
+    returned: { color: "red", text: "Returned" },
+    PENDING: { color: "orange", text: "Pending" },
+    SUCCESS: { color: "green", text: "Success" },
+    FAILED: { color: "red", text: "Failed" },
+  };
+
+  const { color, text } = statusMap[status] || {
+    color: "gray",
+    text: "Unknown",
+  };
+
+  return (
+    <Tag color={color} className="capitalize font-semibold cursor-pointer">
+      {text}
+    </Tag>
+  );
+};
 
 const UserOrders = () => {
   useEffect(() => {
@@ -93,7 +120,7 @@ const UserOrders = () => {
   if (isFetching) {
     return (
       <div className="flex justify-center items-center h-screen">
-        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-primary"></div>
+        <div className="animate-spin rounded-full h-32 w-32 border-t-2 border-b-2 border-gray-900"></div>
       </div>
     );
   }
@@ -113,7 +140,7 @@ const UserOrders = () => {
 
       <div className="mt-10">
         {filteredData?.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:flex lg:flex-wrap gap-5">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:flex lg:justify-center lg:items-center lg:flex-wrap gap-5">
             {filteredData?.map((item) => (
               <div
                 key={item?._id}
@@ -134,7 +161,7 @@ const UserOrders = () => {
                     </div>
                     <div className="flex justify-between items-center capitalize">
                       <p>Order Status:</p>
-                      <p>{item?.orderStatus}</p>
+                      <p>{renderOrderStatusTag(item?.orderStatus)}</p>
                     </div>
                     <div className="flex justify-between items-center">
                       <p>Payment Type:</p>
@@ -184,14 +211,15 @@ const UserOrders = () => {
 
             <p className="bg-grey p-3 mt-2">
               <strong>Order Status:</strong>{" "}
-              {singleOrder?.orderStatus?.toUpperCase()}
+              {renderOrderStatusTag(singleOrder?.orderStatus)}
             </p>
             <p className="bg-grey p-3 mt-2">
               <strong>Delivery Status:</strong>{" "}
-              {singleOrder?.deliveryStatus?.toUpperCase()}
+              {renderOrderStatusTag(singleOrder?.deliveryStatus)}
             </p>
             <p className="bg-grey p-3 mt-2">
-              <strong>Payment Status:</strong> {singleOrder?.paymentStatus}
+              <strong>Payment Status:</strong>{" "}
+              {renderOrderStatusTag(singleOrder?.paymentStatus)}
             </p>
             <p className="bg-grey p-3 mt-2">
               <strong>Payment Method:</strong>{" "}
@@ -239,26 +267,23 @@ const UserOrders = () => {
                   return (
                     <div key={index}>
                       <div className="flex items-center justify-between gap-5 mb-4">
-                        <div className="flex items-center gap-2">
-                          <Image
-                            src={formatImagePath(item?.product?.mainImage)}
-                            alt={item?.productName}
-                            width={100}
-                            height={100}
-                          />
-                          <div>
-                            <Link href={`/products/${item?.product?.slug}`}>
-                              {item?.productName}
-                            </Link>
-                            <p className="mt-2">
-                              <strong>Price:</strong>{" "}
-                              {globalData?.results?.currency}{" "}
-                              {item?.product?.offerPrice ??
-                                item?.product?.sellingPrice}
-                            </p>
-                          </div>
+                        <Image
+                          src={formatImagePath(item?.product?.mainImage)}
+                          alt={item?.productName}
+                          width={100}
+                          height={100}
+                        />
+                        <div>
+                          <Link href={`/products/${item?.product?.slug}`}>
+                            {item?.productName}
+                          </Link>
+                          <p className="mt-2">
+                            <strong>Price:</strong>{" "}
+                            {globalData?.results?.currency}{" "}
+                            {item?.product?.offerPrice ??
+                              item?.product?.sellingPrice}
+                          </p>
                         </div>
-
                         <p className="bg-black text-white px-3">
                           x{item?.quantity}
                         </p>

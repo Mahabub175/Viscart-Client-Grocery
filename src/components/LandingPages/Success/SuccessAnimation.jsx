@@ -1,21 +1,18 @@
 "use client";
 
-import SuccessSvg from "@/assets/images/svg/SuccessSvg";
-import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
+import dynamic from "next/dynamic";
+import successAnimation from "@/assets/animation/success.json";
+
+const Lottie = dynamic(() => import("lottie-react"), { ssr: false });
 
 const SuccessAnimation = () => {
-  const { data: globalData } = useGetAllGlobalSettingQuery();
   return (
-    <div>
-      <div className="hidden md:block">
-        <SuccessSvg primaryColor={globalData?.results?.primaryColor} />
-      </div>
-      <div className="md:hidden">
-        <SuccessSvg
-          primaryColor={globalData?.results?.primaryColor}
-          size={370}
-        />
-      </div>
+    <div className="w-[200px] h-[200px] mx-auto">
+      <Lottie
+        animationData={successAnimation}
+        loop={true}
+        style={{ width: 200, height: 200 }}
+      />
     </div>
   );
 };
