@@ -240,7 +240,7 @@ const UserOrders = () => {
             </p>
             <p className="bg-grey p-3 mt-2">
               <strong>Shipping Fee:</strong> {globalData?.results?.currency}{" "}
-              {singleOrder?.shippingFee + singleOrder?.extraFee}
+              {singleOrder?.shippingFee + singleOrder?.extraFee || 0}
             </p>
 
             {singleOrder?.discount && (
