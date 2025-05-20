@@ -122,12 +122,14 @@ const QuickProductView = ({
             </div>
           )}
 
-          <AttributeOptionSelector
-            groupedAttributes={groupedAttributes}
-            selectedAttributes={selectedAttributes}
-            handleAttributeSelect={handleAttributeSelect}
-            item={item}
-          />
+          {item?.isVariant && (
+            <AttributeOptionSelector
+              groupedAttributes={groupedAttributes}
+              selectedAttributes={selectedAttributes}
+              handleAttributeSelect={handleAttributeSelect}
+              item={item}
+            />
+          )}
 
           <div className="flex items-center gap-4 text-textColor font-bold my-2">
             Price:{" "}

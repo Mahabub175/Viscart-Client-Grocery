@@ -285,27 +285,28 @@ const ProductCountCart = ({
         centered
       >
         <div className="flex flex-col gap-4 p-5">
-          <AttributeOptionSelector
-            groupedAttributes={groupedAttributes}
-            selectedAttributes={selectedAttributes}
-            handleAttributeSelect={handleAttributeSelect}
-            item={item}
-          />
-
+          {item?.isVariant && (
+            <AttributeOptionSelector
+              groupedAttributes={groupedAttributes}
+              selectedAttributes={selectedAttributes}
+              handleAttributeSelect={handleAttributeSelect}
+              item={item}
+            />
+          )}
           <div className="flex items-center gap-4 text-textColor font-bold my-2">
             Price:{" "}
+            {item?.offerPrice && (
+              <p className="text-sm lg:text-base font-medium line-through text-red-500">
+                {globalData?.results?.currency + " " + item?.sellingPrice}
+              </p>
+            )}
             {item?.offerPrice ? (
-              <p className="text-primary text-xl">
+              <p className="text-primary text-sm lg:text-xl font-medium">
                 {globalData?.results?.currency + " " + item?.offerPrice}
               </p>
             ) : (
-              <p className="text-primary text-xl">
-                {globalData?.results?.currency + " " + currentPrice}
-              </p>
-            )}
-            {item?.offerPrice && (
-              <p className="text-base line-through text-red-500">
-                {globalData?.results?.currency + " " + currentPrice}
+              <p className="text-primary text-sm lg:text-xl font-medium">
+                {globalData?.results?.currency + " " + item?.sellingPrice}
               </p>
             )}
           </div>
