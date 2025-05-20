@@ -16,7 +16,7 @@ const LandingLayout = ({ children }) => {
           <SidebarCategories />
         </div>
 
-        <div className="container mx-auto overflow-x-hidden lg:pl-5">
+        <div className="container mx-auto overflow-x-hidden">
           <div>{children}</div>
           <LandingFooter />
         </div>
