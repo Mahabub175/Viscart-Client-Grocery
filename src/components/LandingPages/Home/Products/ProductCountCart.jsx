@@ -148,7 +148,7 @@ const ProductCountCart = ({
     if (
       item?.variants?.length > 0 &&
       !allAttributesSelected &&
-      !item?.isVariant
+      item?.isVariant
     ) {
       setOpenVariantModal(true);
       setBtnText(type);

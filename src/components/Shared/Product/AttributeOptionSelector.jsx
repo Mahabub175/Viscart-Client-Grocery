@@ -57,9 +57,9 @@ const AttributeOptionSelector = ({
                     }
                   >
                     {attributeName.toLowerCase() === "color" &&
-                    variantWithImage?.image ? (
+                    variantWithImage?.images?.length > 0 ? (
                       <Image
-                        src={formatImagePath(variantWithImage.image)}
+                        src={formatImagePath(variantWithImage?.images?.[0])}
                         alt={option.name}
                         width={40}
                         height={40}
