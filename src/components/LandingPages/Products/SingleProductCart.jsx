@@ -32,7 +32,11 @@ const SingleProductCart = ({ item, count, productId, productName }) => {
   const [grandTotal, setGrandTotal] = useState(0);
 
   useEffect(() => {
-    setSubTotal(item?.offerPrice ?? item?.sellingPrice * count);
+    setSubTotal(
+      item?.offerPrice > 0
+        ? item?.offerPrice * count
+        : item?.sellingPrice * count
+    );
   }, [item, count]);
 
   const onSubmit = async (values) => {

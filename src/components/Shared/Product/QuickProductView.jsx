@@ -133,12 +133,12 @@ const QuickProductView = ({
 
           <div className="flex items-center gap-4 text-textColor font-bold my-2">
             Price:{" "}
-            {item?.offerPrice && (
+            {item?.offerPrice > 0 && (
               <p className="text-base line-through text-red-500">
                 {globalData?.results?.currency + " " + item?.sellingPrice}
               </p>
             )}
-            {item?.offerPrice ? (
+            {item?.offerPrice > 0 ? (
               <p className="text-primary text-xl">
                 {globalData?.results?.currency + " " + item?.offerPrice}
               </p>

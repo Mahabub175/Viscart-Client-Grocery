@@ -233,7 +233,7 @@ const SinglePageCart = ({ params }) => {
             </div>
             <div className="flex items-center gap-4 text-textColor font-medium my-2">
               Price:{" "}
-              {singleProduct?.offerPrice ? (
+              {singleProduct?.offerPrice > 0 ? (
                 <p className="text-primary text-xl">
                   {globalData?.results?.currency +
                     " " +
@@ -244,7 +244,7 @@ const SinglePageCart = ({ params }) => {
                   {globalData?.results?.currency + " " + currentPrice}
                 </p>
               )}
-              {singleProduct?.offerPrice && (
+              {singleProduct?.offerPrice > 0 && (
                 <p className="text-base line-through text-red-500">
                   {globalData?.results?.currency +
                     " " +

@@ -83,7 +83,7 @@ const ProductCard = ({ item }) => {
       slug: item?.slug,
       quantity: 1,
       sku: item?.sku,
-      price: item?.offerPrice ? item?.offerPrice : item?.sellingPrice,
+      price: item?.offerPrice > 0 ? item?.offerPrice : item?.sellingPrice,
     };
 
     const toastId = toast.loading("Adding to cart");
@@ -173,12 +173,12 @@ const ProductCard = ({ item }) => {
       <div>
         <div className="flex justify-between items-center mb-2 px-2 absolute bottom-0 w-full">
           <div>
-            {(item?.offerPrice || item?.offerPrice > 0) && (
+            {item?.offerPrice > 0 && (
               <p className="text-xs line-through text-black/60">
                 {globalData?.results?.currency + " " + item?.sellingPrice}
               </p>
             )}
-            {item?.offerPrice || item?.offerPrice > 0 ? (
+            {item?.offerPrice > 0 ? (
               <p className="text-black text-xs lg:text-base text-primary font-medium">
                 {globalData?.results?.currency + " " + item?.offerPrice}
               </p>

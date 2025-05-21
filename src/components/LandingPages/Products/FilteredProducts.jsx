@@ -40,7 +40,7 @@ const FilteredProducts = ({ data }) => {
                   {item?.name}
                 </h2>
                 <div className="flex items-center gap-4 justify-center">
-                  {item?.offerPrice ? (
+                  {item?.offerPrice > 0 ? (
                     <p className="text-primary text-2xl font-bold">
                       {globalData?.results?.currency + " " + item?.offerPrice}
                     </p>
@@ -49,7 +49,7 @@ const FilteredProducts = ({ data }) => {
                       {globalData?.results?.currency + " " + item?.sellingPrice}
                     </p>
                   )}
-                  {item?.offerPrice && (
+                  {item?.offerPrice > 0 && (
                     <p className="text-base font-bold line-through text-red-500">
                       {globalData?.results?.currency + " " + item?.sellingPrice}
                     </p>

@@ -59,12 +59,12 @@ const RelatedGenericProducts = ({ singleProduct }) => {
               </div>
             </div>
             <div className="flex items-center gap-2">
-              {(item?.offerPrice || item?.offerPrice > 0) && (
+              {item?.offerPrice > 0 && (
                 <p className="text-sm line-through text-red-500">
                   {globalData?.results?.currency + " " + item?.sellingPrice}
                 </p>
               )}
-              {item?.offerPrice || item?.offerPrice > 0 ? (
+              {item?.offerPrice > 0 ? (
                 <p className="text-primary">
                   {globalData?.results?.currency + " " + item?.offerPrice}
                 </p>

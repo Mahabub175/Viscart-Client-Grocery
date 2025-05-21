@@ -280,8 +280,9 @@ const UserOrders = () => {
                           <p className="mt-2">
                             <strong>Price:</strong>{" "}
                             {globalData?.results?.currency}{" "}
-                            {item?.product?.offerPrice ??
-                              item?.product?.sellingPrice}
+                            {item?.product?.offerPrice > 0
+                              ? item?.product?.offerPrice
+                              : item?.product?.sellingPrice}
                           </p>
                         </div>
                         <p className="bg-black text-white px-3">

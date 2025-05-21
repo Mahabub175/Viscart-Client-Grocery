@@ -74,7 +74,7 @@ const SuccessPage = () => {
                 <span>{item?.quantity}</span> x{" "}
                 <span>
                   {globalData?.results?.currency}
-                  {item?.product?.offerPrice
+                  {item?.product?.offerPrice > 0
                     ? item?.product?.offerPrice
                     : item?.product?.sellingPrice}
                 </span>

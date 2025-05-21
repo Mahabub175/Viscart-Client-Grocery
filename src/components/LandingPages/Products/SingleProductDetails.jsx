@@ -223,14 +223,14 @@ const SingleProductDetails = ({ params }) => {
             </div>
             <div className="flex items-center gap-4 font-medium my-2">
               Price:{" "}
-              {singleProduct?.offerPrice && (
+              {singleProduct?.offerPrice > 0 && (
                 <p className="text-base line-through text-red-500">
                   {globalData?.results?.currency +
                     " " +
                     singleProduct?.sellingPrice}
                 </p>
               )}
-              {singleProduct?.offerPrice ? (
+              {singleProduct?.offerPrice > 0 ? (
                 <p className="text-primary text-xl">
                   {globalData?.results?.currency +
                     " " +
