@@ -1,14 +1,18 @@
 "use client";
 
 import LinkButton from "@/components/Shared/LinkButton";
+import { setFilter } from "@/redux/services/device/deviceSlice";
 import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
 import { useGetAllProductsQuery } from "@/redux/services/product/productApi";
 import { formatImagePath } from "@/utilities/lib/formatImagePath";
 import { Tooltip } from "antd";
 import Image from "next/image";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
 
 const RelatedGenericProducts = ({ singleProduct }) => {
+  const dispatch = useDispatch();
+
   const { data: globalData } = useGetAllGlobalSettingQuery();
   const { data: productData } = useGetAllProductsQuery();
 
@@ -24,6 +28,12 @@ const RelatedGenericProducts = ({ singleProduct }) => {
       isGenericMatch
     );
   });
+
+  const itemClickHandler = (item) => {
+    if (item?.name) {
+      dispatch(setFilter(item?.name));
+    }
+  };
 
   return (
     <section className="border-t mt-10">
@@ -50,8 +60,11 @@ const RelatedGenericProducts = ({ singleProduct }) => {
                   </Tooltip>
                 </LinkButton>
                 {item?.brand ? (
-                  <Link href={`/products?filter=${item?.brand?.name}`}>
-                    <p className="text-gray-500 text-sm">
+                  <Link href={`/products`}>
+                    <p
+                      className="text-gray-500 text-sm"
+                      onClick={() => itemClickHandler(item?.brand)}
+                    >
                       By {item?.brand?.name}
                     </p>
                   </Link>

@@ -8,15 +8,24 @@ import "swiper/css";
 import "swiper/css/pagination";
 import { useGetAllSlidersQuery } from "@/redux/services/slider/sliderApi";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { setFilter } from "@/redux/services/device/deviceSlice";
 
 const Banner = () => {
   const swiperRef = useRef();
+  const dispatch = useDispatch();
 
   const { data: sliders } = useGetAllSlidersQuery();
 
   const activeSliders = sliders?.results?.filter(
     (item) => item.status === "Active"
   );
+
+  const itemClickHandler = (item) => {
+    if (item?.category?.name) {
+      dispatch(setFilter(item));
+    }
+  };
 
   return (
     <section className="relative xxl:w-[1280px] mx-auto lg:px-5 lg:my-5">
@@ -40,7 +49,7 @@ const Banner = () => {
         {activeSliders?.map((item) => {
           return (
             <SwiperSlide key={item?._id}>
-              <Link href={`/products?filter=${item?.category?.name}`}>
+              <Link href={`/products`}>
                 <Image
                   src={
                     item?.attachment ??
@@ -51,6 +60,7 @@ const Banner = () => {
                   height={700}
                   className="h-[200px] lg:h-fit w-full rounded-xl"
                   priority
+                  onClick={() => itemClickHandler(item)}
                 />
                 <div className="absolute z-10 top-20 lg:top-[45%] left-[5%]">
                   {item?.name && (

@@ -76,7 +76,6 @@ const ProductVariantOption = ({
           file.originFileObj instanceof File;
         const url = isFile ? URL.createObjectURL(file.originFileObj) : file.url;
 
-        // Only return files that have both originFileObj and url
         if (file.originFileObj && url) {
           return {
             uid: file.uid,
@@ -211,6 +210,17 @@ const ProductVariantOption = ({
       ),
     },
     {
+      title: "Offer Price",
+      dataIndex: "offerPrice",
+      key: "offerPrice",
+      align: "center",
+      width: 150,
+      editable: true,
+      render: (offerPrice) => (
+        <span className="text-xs md:text-sm">{offerPrice}</span>
+      ),
+    },
+    {
       title: "Upload Files",
       key: "upload",
       render: (_, record) => {
@@ -293,6 +303,7 @@ const ProductVariantOption = ({
         inputType:
           col.dataIndex === "sellingPrice" ||
           col.dataIndex === "buyingPrice" ||
+          col.dataIndex === "offerPrice" ||
           col.dataIndex === "stock"
             ? "number"
             : "text",
@@ -316,6 +327,7 @@ const ProductVariantOption = ({
               stock: item.stock || 0,
               sellingPrice: item.sellingPrice || 0,
               buyingPrice: item.buyingPrice || 0,
+              offerPrice: item.offerPrice || 0,
               attributeCombination: item.attributeCombination || [],
             })) ?? [];
         setData(variantDataSource);
@@ -336,6 +348,7 @@ const ProductVariantOption = ({
               stock: item.stock || 0,
               sellingPrice: item.sellingPrice || 0,
               buyingPrice: item.buyingPrice || 0,
+              offerPrice: item.offerPrice || 0,
               attributeCombination: item.attributeCombination || [],
             })) ?? [];
         const nonMatchingItems = findNonMatchingItems(

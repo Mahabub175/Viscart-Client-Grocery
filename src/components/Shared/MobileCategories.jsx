@@ -7,8 +7,12 @@ import { RxCross1 } from "react-icons/rx";
 import LinkButton from "./LinkButton";
 import Image from "next/image";
 import { AiFillProduct } from "react-icons/ai";
+import { useDispatch } from "react-redux";
+import { setFilter } from "@/redux/services/device/deviceSlice";
 
 const MobileCategories = () => {
+  const dispatch = useDispatch();
+
   const [isOpen, setIsOpen] = useState(false);
 
   const { data: brands } = useGetAllBrandsQuery();
@@ -23,7 +27,10 @@ const MobileCategories = () => {
     (item) => item?.status !== "Inactive"
   );
 
-  const toggle = () => {
+  const toggle = (item) => {
+    if (item?.name) {
+      dispatch(setFilter(item?.name));
+    }
     setIsOpen((prev) => !prev);
   };
 
@@ -63,10 +70,10 @@ const MobileCategories = () => {
                     className="group relative w-[60px] h-[60px] rounded-xl bg-[#E5F3F3] p-1 border-2 border-transparent hover:border-primary duration-300"
                     key={item?._id}
                   >
-                    <LinkButton href={`/products?filter=${item?.name}`}>
+                    <LinkButton href={`/products`}>
                       <div
                         className="overflow-hidden w-full h-full rounded-xl"
-                        onClick={toggle}
+                        onClick={() => toggle(item)}
                       >
                         <Image
                           src={
@@ -93,10 +100,10 @@ const MobileCategories = () => {
                     className="group relative w-[60px] h-[60px] rounded-xl bg-[#E5F3F3] p-1 border-2 border-transparent hover:border-primary duration-300"
                     key={item?._id}
                   >
-                    <LinkButton href={`/products?filter=${item?.name}`}>
+                    <LinkButton href={`/products`}>
                       <div
                         className="overflow-hidden w-full h-full rounded-xl"
-                        onClick={toggle}
+                        onClick={() => toggle(item)}
                       >
                         <Image
                           src={

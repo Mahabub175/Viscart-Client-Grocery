@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useGetSingleProductBySlugQuery } from "@/redux/services/product/productApi";
-import { Rate } from "antd";
-import Zoom from "react-medium-image-zoom";
-import "react-medium-image-zoom/dist/styles.css";
-import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
-import Image from "next/image";
-import { FaWhatsapp, FaPlay, FaMinus, FaPlus } from "react-icons/fa";
-import { formatImagePath } from "@/utilities/lib/formatImagePath";
-import SingleProductCart from "./SingleProductCart";
-import { toast } from "sonner";
 import AttributeOptionSelector from "@/components/Shared/Product/AttributeOptionSelector";
+import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/globalSettingApi";
+import { useGetSingleProductBySlugQuery } from "@/redux/services/product/productApi";
+import { formatImagePath } from "@/utilities/lib/formatImagePath";
+import { Rate } from "antd";
+import { useEffect, useState } from "react";
+import { FaMinus, FaPlus, FaWhatsapp } from "react-icons/fa";
+import "react-medium-image-zoom/dist/styles.css";
+import { toast } from "sonner";
+import ProductDetailsSlider from "./ProductDetailsSlider";
+import ProductReview from "./ProductReview";
+import SingleProductCart from "./SingleProductCart";
 
 const SinglePageCart = ({ params }) => {
   const { data: globalData } = useGetAllGlobalSettingQuery();
@@ -25,10 +25,8 @@ const SinglePageCart = ({ params }) => {
     window.open(`https://wa.me/${businessWhatsapp}`, "_blank");
   };
 
-  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const [selectedAttributes, setSelectedAttributes] = useState({});
   const [currentVariant, setCurrentVariant] = useState(null);
-  const [selectedImage, setSelectedImage] = useState(null);
   const [count, setCount] = useState(1);
   const [variantMedia, setVariantMedia] = useState([]);
 
@@ -83,24 +81,9 @@ const SinglePageCart = ({ params }) => {
     }
   }, [selectedAttributes, singleProduct]);
 
-  const currentPrice = currentVariant
-    ? currentVariant?.sellingPrice
-    : singleProduct?.offerPrice && singleProduct?.offerPrice > 0
-    ? singleProduct?.offerPrice
-    : singleProduct?.sellingPrice;
-
-  const currentImage = selectedImage
-    ? selectedImage
-    : currentVariant?.images && currentVariant.images.length > 0
-    ? formatImagePath(currentVariant.images[0])
-    : formatImagePath(singleProduct?.mainImage);
-
   const allMedia =
     variantMedia.length > 0
-      ? [
-          ...variantMedia,
-          singleProduct?.video ? "video-thumbnail" : null,
-        ].filter(Boolean)
+      ? [...variantMedia].filter(Boolean)
       : [
           singleProduct?.mainImage
             ? formatImagePath(singleProduct.mainImage)
@@ -119,20 +102,7 @@ const SinglePageCart = ({ params }) => {
                   : []
               )
             : []),
-          singleProduct?.video ? "video-thumbnail" : null,
         ].filter(Boolean);
-
-  const handleMediaClick = (media) => {
-    if (media === "video-thumbnail") {
-      setIsVideoPlaying(true);
-      setSelectedImage(null);
-      setVariantMedia([]);
-    } else {
-      setIsVideoPlaying(false);
-      setSelectedImage(media);
-    }
-  };
-
   const handleCount = (action) => {
     if (action === "increment") {
       setCount((prev) => prev + 1);
@@ -151,63 +121,7 @@ const SinglePageCart = ({ params }) => {
       <div className="border-2 border-primary rounded-xl p-5 mb-10 shadow-xl">
         <div className="flex flex-col lg:flex-row items-center justify-center gap-10 mb-10">
           <div className="relative mx-auto flex flex-col lg:flex-row-reverse items-center lg:gap-5">
-            <div className="relative mx-auto lg:w-[300px] xl:w-full">
-              {isVideoPlaying && singleProduct?.video ? (
-                <video
-                  src={formatImagePath(singleProduct?.video)}
-                  controls
-                  autoPlay
-                  className="mx-auto rounded-xl w-full h-auto"
-                >
-                  Your browser does not support the video tag.
-                </video>
-              ) : currentImage ? (
-                <Zoom>
-                  <Image
-                    src={currentImage}
-                    alt="product image"
-                    height={400}
-                    width={400}
-                    className="mx-auto rounded-xl"
-                  />
-                </Zoom>
-              ) : (
-                <p>No image available</p>
-              )}
-            </div>
-
-            <div className="flex flex-row lg:flex-col justify-start gap-2 mt-5 max-h-[400px] w-[300px] lg:w-auto xl:w-[149px] border rounded-xl p-4 !overflow-x-auto lg:overflow-y-auto thumbnail">
-              {allMedia?.map((media, index) => (
-                <div
-                  key={index}
-                  onClick={() => handleMediaClick(media)}
-                  className={`cursor-pointer border-2 rounded-xl ${
-                    selectedImage === media ||
-                    (media === "video-thumbnail" && isVideoPlaying)
-                      ? "border-primary"
-                      : "border-gray-300"
-                  }`}
-                >
-                  {media === "video-thumbnail" ? (
-                    <div className="flex items-center justify-center bg-black rounded-xl w-20 h-20">
-                      <FaPlay className="text-white text-2xl" />
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex items-center justify-center bg-black rounded-xl w-20 h-20">
-                        <Image
-                          src={media}
-                          alt={`media ${index}`}
-                          height={80}
-                          width={80}
-                          className="object-cover rounded-xl"
-                        />
-                      </div>
-                    </>
-                  )}
-                </div>
-              ))}
-            </div>
+            <ProductDetailsSlider allMedia={allMedia} />
           </div>
           <div className="lg:w-1/2 flex flex-col gap-3">
             <h2 className="text-xl lg:text-3xl font-medium">
@@ -231,21 +145,44 @@ const SinglePageCart = ({ params }) => {
               />
               ({singleProduct?.ratings?.count})
             </div>
-            <div className="flex items-center gap-4 text-textColor font-medium my-2">
+            <div className="flex items-center gap-4 text-textColor font-bold my-2">
               Price:{" "}
-              {singleProduct?.offerPrice > 0 ? (
-                <p className="text-primary text-xl">
-                  {globalData?.results?.currency +
-                    " " +
-                    singleProduct?.offerPrice}
-                </p>
+              {currentVariant ? (
+                currentVariant.offerPrice > 0 ? (
+                  <>
+                    <p className="text-base line-through text-red-500">
+                      {globalData?.results?.currency +
+                        " " +
+                        currentVariant.sellingPrice}
+                    </p>
+                    <p className="text-primary text-xl">
+                      {globalData?.results?.currency +
+                        " " +
+                        currentVariant.offerPrice}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-primary text-xl">
+                    {globalData?.results?.currency +
+                      " " +
+                      currentVariant.sellingPrice}
+                  </p>
+                )
+              ) : singleProduct?.offerPrice > 0 ? (
+                <>
+                  <p className="text-base line-through text-red-500">
+                    {globalData?.results?.currency +
+                      " " +
+                      singleProduct?.sellingPrice}
+                  </p>
+                  <p className="text-primary text-xl">
+                    {globalData?.results?.currency +
+                      " " +
+                      singleProduct?.offerPrice}
+                  </p>
+                </>
               ) : (
                 <p className="text-primary text-xl">
-                  {globalData?.results?.currency + " " + currentPrice}
-                </p>
-              )}
-              {singleProduct?.offerPrice > 0 && (
-                <p className="text-base line-through text-red-500">
                   {globalData?.results?.currency +
                     " " +
                     singleProduct?.sellingPrice}
@@ -253,13 +190,14 @@ const SinglePageCart = ({ params }) => {
               )}
             </div>
 
-            <AttributeOptionSelector
-              groupedAttributes={groupedAttributes}
-              selectedAttributes={selectedAttributes}
-              handleAttributeSelect={handleAttributeSelect}
-              item={singleProduct}
-            />
-
+            {singleProduct?.isVariant && (
+              <AttributeOptionSelector
+                groupedAttributes={groupedAttributes}
+                selectedAttributes={selectedAttributes}
+                handleAttributeSelect={handleAttributeSelect}
+                item={singleProduct}
+              />
+            )}
             {!isOutOfStock ? (
               <>
                 <div className="flex items-center justify-start w-[7.5rem] gap-3 border border-primary rounded-xl p-1.5 mt-5">
@@ -313,6 +251,26 @@ const SinglePageCart = ({ params }) => {
         <div
           dangerouslySetInnerHTML={{ __html: singleProduct?.description }}
         ></div>
+        {singleProduct?.video && (
+          <div>
+            <iframe
+              width="100%"
+              height="500"
+              src={singleProduct?.video}
+              title="video"
+              frameBorder="0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+              className="h-fit lg:h-[500px]"
+            />
+          </div>
+        )}
+      </div>
+      <div className="rounded-xl p-5 mb-10 shadow bg-white/80 border">
+        <div className="bg-primary px-10 py-2 text-white font-bold rounded-xl inline-block">
+          Reviews
+        </div>
+        <ProductReview data={singleProduct?.reviews} />
       </div>
     </section>
   );

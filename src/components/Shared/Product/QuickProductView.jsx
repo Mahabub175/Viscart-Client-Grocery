@@ -59,12 +59,6 @@ const QuickProductView = ({
     }
   }, [selectedAttributes, item?.variants]);
 
-  const currentPrice = currentVariant
-    ? currentVariant?.sellingPrice
-    : item?.offerPrice && item?.offerPrice > 0
-    ? item?.offerPrice
-    : item?.sellingPrice;
-
   const currentImage = currentVariant?.images?.length
     ? formatImagePath(currentVariant.images[0])
     : formatImagePath(item?.mainImage);
@@ -130,25 +124,44 @@ const QuickProductView = ({
               item={item}
             />
           )}
-
           <div className="flex items-center gap-4 text-textColor font-bold my-2">
             Price:{" "}
-            {item?.offerPrice > 0 && (
-              <p className="text-base line-through text-red-500">
+            {currentVariant ? (
+              currentVariant.offerPrice > 0 ? (
+                <>
+                  <p className="text-base line-through text-red-500">
+                    {globalData?.results?.currency +
+                      " " +
+                      currentVariant.sellingPrice}
+                  </p>
+                  <p className="text-primary text-xl">
+                    {globalData?.results?.currency +
+                      " " +
+                      currentVariant.offerPrice}
+                  </p>
+                </>
+              ) : (
+                <p className="text-primary text-xl">
+                  {globalData?.results?.currency +
+                    " " +
+                    currentVariant.sellingPrice}
+                </p>
+              )
+            ) : item?.offerPrice > 0 ? (
+              <>
+                <p className="text-base line-through text-red-500">
+                  {globalData?.results?.currency + " " + item?.sellingPrice}
+                </p>
+                <p className="text-primary text-xl">
+                  {globalData?.results?.currency + " " + item?.offerPrice}
+                </p>
+              </>
+            ) : (
+              <p className="text-primary text-xl">
                 {globalData?.results?.currency + " " + item?.sellingPrice}
               </p>
             )}
-            {item?.offerPrice > 0 ? (
-              <p className="text-primary text-xl">
-                {globalData?.results?.currency + " " + item?.offerPrice}
-              </p>
-            ) : (
-              <p className="text-primary text-xl">
-                {globalData?.results?.currency + " " + currentPrice}
-              </p>
-            )}
           </div>
-
           <hr />
 
           <ProductCountCart

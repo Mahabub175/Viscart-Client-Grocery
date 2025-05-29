@@ -1,15 +1,19 @@
 import LinkButton from "@/components/Shared/LinkButton";
 import { useGetAllCategoriesQuery } from "@/redux/services/category/categoryApi";
+import { setFilter } from "@/redux/services/device/deviceSlice";
 import { formatImagePath } from "@/utilities/lib/formatImagePath";
 import Image from "next/image";
 import { useRef } from "react";
 import { FaAngleLeft, FaAngleRight } from "react-icons/fa";
+import { useDispatch } from "react-redux";
 import "swiper/css";
 import { Autoplay, Navigation, Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 
 const RelatedCategories = ({ searchParam }) => {
   const swiperRef = useRef();
+  const dispatch = useDispatch();
+
   const { data } = useGetAllCategoriesQuery();
 
   const filteredData = data?.results?.find(
@@ -17,6 +21,12 @@ const RelatedCategories = ({ searchParam }) => {
       item?.status !== "Inactive" &&
       item?.name?.toLowerCase() === searchParam?.toLowerCase()
   );
+
+  const itemClickHandler = (item) => {
+    if (item?.name) {
+      dispatch(setFilter(item?.name));
+    }
+  };
 
   return (
     <div>
@@ -44,8 +54,11 @@ const RelatedCategories = ({ searchParam }) => {
                 className="group relative w-[250px] h-[150px] mx-auto rounded-xl"
               >
                 <div className="bg-[#E5F3F3] rounded-xl p-2 border-2 border-transparent hover:border-primary duration-300">
-                  <LinkButton href={`/products?filter=${item?.name}`}>
-                    <div className="overflow-hidden w-full h-full rounded-xl">
+                  <LinkButton href={`/products`}>
+                    <div
+                      className="overflow-hidden w-full h-full rounded-xl"
+                      onClick={() => itemClickHandler(item)}
+                    >
                       <Image
                         src={
                           formatImagePath(item?.attachment) ??
@@ -72,8 +85,11 @@ const RelatedCategories = ({ searchParam }) => {
                 className="group relative w-[250px] h-[150px] mx-auto rounded-xl"
               >
                 <div className="bg-[#E5F3F3] rounded-xl p-2 border-2 border-transparent hover:border-primary duration-300">
-                  <LinkButton href={`/products?filter=${item?.name}`}>
-                    <div className="overflow-hidden w-full h-full rounded-xl">
+                  <LinkButton href={`/products`}>
+                    <div
+                      className="overflow-hidden w-full h-full rounded-xl"
+                      onClick={() => itemClickHandler(item)}
+                    >
                       <Image
                         src={
                           formatImagePath(item?.attachment) ??

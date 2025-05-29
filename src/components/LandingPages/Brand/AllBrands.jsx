@@ -1,12 +1,16 @@
 "use client";
 
 import { useGetAllBrandsQuery } from "@/redux/services/brand/brandApi";
+import { setFilter } from "@/redux/services/device/deviceSlice";
 import { useGetAllProductsQuery } from "@/redux/services/product/productApi";
 import Image from "next/image";
 import Link from "next/link";
 import { useRef } from "react";
+import { useDispatch } from "react-redux";
 
 const AllBrands = () => {
+  const dispatch = useDispatch();
+
   const { data: brands } = useGetAllBrandsQuery();
   const { data: products } = useGetAllProductsQuery();
 
@@ -37,6 +41,12 @@ const AllBrands = () => {
     const targetSection = sectionRefs.current[alphabet];
     if (targetSection) {
       targetSection.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
+  const itemClickHandler = (item) => {
+    if (item) {
+      dispatch(setFilter(item));
     }
   };
 
@@ -74,7 +84,7 @@ const AllBrands = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {filteredBrands?.map((brand) => (
                   <Link
-                    href={`/products?filter=${brand?.name}`}
+                    href={`/products`}
                     key={brand._id}
                     className="p-4 border rounded-xl flex items-center gap-5"
                   >
@@ -88,6 +98,7 @@ const AllBrands = () => {
                       height={100}
                       className="object-cover rounded-full border border-primary"
                       priority
+                      onClick={() => itemClickHandler(brand?.name)}
                     />
                     <div>
                       <h3 className="text-xl font-medium mb-2">{brand.name}</h3>

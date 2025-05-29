@@ -22,8 +22,9 @@ export function formatProductData(data, sku) {
       sku: skuValue,
       images: item?.images?.map((image) => formatImagePath(image)),
       stock: item.stock || 0,
-      sellingPrice: item.sellingPrice,
-      buyingPrice: item.buyingPrice,
+      sellingPrice: item.sellingPrice || 0,
+      buyingPrice: item.buyingPrice || 0,
+      offerPrice: item.offerPrice || 0,
       attributeCombination: variant_attribute_ids,
     };
   });
@@ -118,7 +119,8 @@ export const generateCombinationsFromVariantAttributes = (
   dataSource,
   variantAttributesName,
   buyingPrice = 0,
-  sellingPrice = 0
+  sellingPrice = 0,
+  offerPrice = 0
 ) => {
   if (
     !dataSource?.length ||
@@ -160,6 +162,7 @@ export const generateCombinationsFromVariantAttributes = (
         stock: 0,
         buyingPrice: buyingPrice,
         sellingPrice: sellingPrice,
+        offerPrice: offerPrice,
         attributeCombination,
       });
       return;

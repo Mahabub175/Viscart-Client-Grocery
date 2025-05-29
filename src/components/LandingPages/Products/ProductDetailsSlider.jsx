@@ -11,7 +11,7 @@ const ProductDetailsSlider = ({ allMedia }) => {
   const [thumbsSwiper, setThumbsSwiper] = useState(null);
 
   return (
-    <div className="w-full max-w-md md:max-w-lg">
+    <div className="w-full max-w-xs md:max-w-lg">
       <Swiper
         spaceBetween={10}
         navigation

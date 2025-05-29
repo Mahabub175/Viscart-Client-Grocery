@@ -14,6 +14,7 @@ const initialState = {
   deviceId: generateRandomCode(),
   lastPopupClosed: null,
   productIds: [],
+  filter: null,
 };
 
 const deviceSlice = createSlice({
@@ -41,6 +42,12 @@ const deviceSlice = createSlice({
     clearProductIds: (state) => {
       state.productIds = [];
     },
+    setFilter: (state, action) => {
+      state.filter = action.payload;
+    },
+    resetFilter: (state) => {
+      state.filter = null;
+    },
   },
 });
 
@@ -50,6 +57,8 @@ export const {
   resetPopup,
   addProductId,
   clearProductIds,
+  setFilter,
+  resetFilter,
 } = deviceSlice.actions;
 
 export default deviceSlice.reducer;
@@ -57,3 +66,4 @@ export default deviceSlice.reducer;
 export const useDeviceId = (state) => state?.device?.deviceId;
 export const selectLastPopupClosed = (state) => state?.device?.lastPopupClosed;
 export const selectProductIds = (state) => state?.device?.productIds;
+export const selectFilter = (state) => state?.device?.filter;

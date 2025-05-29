@@ -4,8 +4,12 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { DownOutlined, RightOutlined } from "@ant-design/icons";
+import { useDispatch } from "react-redux";
+import { setFilter } from "@/redux/services/device/deviceSlice";
 
 const CategoryBrandNavigation = ({ setIsDrawerOpen }) => {
+  const dispatch = useDispatch();
+
   const { data: categories } = useGetAllCategoriesQuery();
   const { data: brands } = useGetAllBrandsQuery();
   const [activeTab, setActiveTab] = useState("categories");
@@ -27,19 +31,23 @@ const CategoryBrandNavigation = ({ setIsDrawerOpen }) => {
     );
   };
 
+  const itemClickHandler = (item) => {
+    if (item) {
+      dispatch(setFilter(item));
+    }
+  };
+
   const renderSubcategories = (subcategories) => {
     return subcategories.map((subcategory) => (
       <li key={subcategory._id} className="pl-6">
-        <Link
-          href={`/products?filter=${subcategory.name}`}
-          onClick={() => setIsDrawerOpen(false)}
-        >
+        <Link href={`/products`} onClick={() => setIsDrawerOpen(false)}>
           <span
             className={`hover:text-orange duration-300 ${
               cleanedQuery === `/products?${subcategory.name}`
                 ? "text-orange"
                 : "text-white"
             }`}
+            onClick={() => itemClickHandler(subcategory?.name)}
           >
             {subcategory.name}
           </span>
@@ -59,7 +67,7 @@ const CategoryBrandNavigation = ({ setIsDrawerOpen }) => {
           }`}
         >
           <Link
-            href={`/products?filter=${category?.name}`}
+            href={`/products`}
             onClick={() => setIsDrawerOpen(false)}
             className={`hover:text-orange ${
               cleanedQuery === `/products?${category.name}`
@@ -67,7 +75,9 @@ const CategoryBrandNavigation = ({ setIsDrawerOpen }) => {
                 : "text-white"
             }`}
           >
-            <span>{category.name}</span>
+            <span onClick={() => itemClickHandler(category?.name)}>
+              {category.name}
+            </span>
           </Link>
           {category.subcategories && category.subcategories.length > 0 && (
             <span
@@ -99,16 +109,14 @@ const CategoryBrandNavigation = ({ setIsDrawerOpen }) => {
       .map((parentCategory) => (
         <div key={parentCategory._id} className="mb-4">
           <div className="flex items-center justify-between cursor-pointer pt-3.5 font-medium odd:border-t">
-            <Link
-              href={`/products?filter=${parentCategory?.name}`}
-              onClick={() => setIsDrawerOpen(false)}
-            >
+            <Link href={`/products`} onClick={() => setIsDrawerOpen(false)}>
               <span
                 className={`flex items-center gap-4 duration-300 hover:text-orange ${
                   cleanedQuery === `/products?${parentCategory.name}`
                     ? "text-orange"
                     : "text-white"
                 }`}
+                onClick={() => itemClickHandler(parentCategory?.name)}
               >
                 <span>{parentCategory.name}</span>
               </span>
@@ -167,7 +175,7 @@ const CategoryBrandNavigation = ({ setIsDrawerOpen }) => {
           <div className="flex flex-col">
             {brands?.results?.map((brand) => (
               <Link
-                href={`/products?filter=${brand.name}`}
+                href={`/products`}
                 onClick={() => setIsDrawerOpen(false)}
                 key={brand._id}
                 className={`py-4 font-medium odd:border-y hover:text-orange ${
@@ -176,7 +184,9 @@ const CategoryBrandNavigation = ({ setIsDrawerOpen }) => {
                     : "text-white"
                 }`}
               >
-                {brand.name}
+                <p onClick={() => itemClickHandler(brand?.name)}>
+                  {brand?.name}
+                </p>
               </Link>
             ))}
           </div>

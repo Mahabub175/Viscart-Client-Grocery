@@ -20,7 +20,7 @@ import ProductReview from "./ProductReview";
 import ProductDetailsSlider from "./ProductDetailsSlider";
 import { sendGTMEvent } from "@next/third-parties/google";
 import { useDispatch } from "react-redux";
-import { addProductId } from "@/redux/services/device/deviceSlice";
+import { addProductId, setFilter } from "@/redux/services/device/deviceSlice";
 import useGetURL from "@/utilities/hooks/useGetURL";
 import { useAddServerTrackingMutation } from "@/redux/services/serverTracking/serverTrackingApi";
 import LinkButton from "@/components/Shared/LinkButton";
@@ -121,12 +121,6 @@ const SingleProductDetails = ({ params }) => {
     }
   }, [selectedAttributes, singleProduct, dispatch]);
 
-  const currentPrice = currentVariant
-    ? currentVariant?.sellingPrice
-    : singleProduct?.offerPrice && singleProduct?.offerPrice > 0
-    ? singleProduct?.offerPrice
-    : singleProduct?.sellingPrice;
-
   const allMedia =
     variantMedia.length > 0
       ? [...variantMedia].filter(Boolean)
@@ -149,6 +143,12 @@ const SingleProductDetails = ({ params }) => {
               )
             : []),
         ].filter(Boolean);
+
+  const itemClickHandler = (item) => {
+    if (item?.name) {
+      dispatch(setFilter(item?.name));
+    }
+  };
 
   if (isFetching) {
     return (
@@ -176,29 +176,29 @@ const SingleProductDetails = ({ params }) => {
             </h2>
             <div className="flex items-center gap-2 mb-1 hover:text-blue-500 duration-300 cursor-pointer">
               <span className="font-medium">Category:</span>
-              <LinkButton
-                href={`/products?filter=${singleProduct?.category?.name}`}
-              >
-                {singleProduct?.category?.name}
+              <LinkButton href={`/products`}>
+                <p onClick={() => itemClickHandler(singleProduct?.category)}>
+                  {singleProduct?.category?.name}
+                </p>
               </LinkButton>
             </div>
             {singleProduct?.brand && (
               <div className="flex items-center gap-2 mb-1 hover:text-blue-500 duration-300 cursor-pointer">
                 <span className="font-medium">Brand:</span>
-                <LinkButton
-                  href={`/products?filter=${singleProduct?.brand?.name}`}
-                >
-                  {singleProduct?.brand?.name}
+                <LinkButton href={`/products`}>
+                  <p onClick={() => itemClickHandler(singleProduct?.brand)}>
+                    {singleProduct?.brand?.name}
+                  </p>
                 </LinkButton>
               </div>
             )}
             {singleProduct?.generic && (
               <div className="flex items-center gap-2 mb-1 hover:text-blue-500 duration-300 cursor-pointer">
                 <span className="font-medium">Generic:</span>
-                <LinkButton
-                  href={`/products?filter=${singleProduct?.generic?.name}`}
-                >
-                  {singleProduct?.generic?.name}
+                <LinkButton href={`/products`}>
+                  <p onClick={() => itemClickHandler(singleProduct?.generic)}>
+                    {singleProduct?.generic?.name}
+                  </p>
                 </LinkButton>
               </div>
             )}
@@ -221,24 +221,47 @@ const SingleProductDetails = ({ params }) => {
               />
               ({singleProduct?.ratings?.count})
             </div>
-            <div className="flex items-center gap-4 font-medium my-2">
+            <div className="flex items-center gap-4 text-textColor font-bold my-2">
               Price:{" "}
-              {singleProduct?.offerPrice > 0 && (
-                <p className="text-base line-through text-red-500">
+              {currentVariant ? (
+                currentVariant.offerPrice > 0 ? (
+                  <>
+                    <p className="text-base line-through text-red-500">
+                      {globalData?.results?.currency +
+                        " " +
+                        currentVariant.sellingPrice}
+                    </p>
+                    <p className="text-primary text-xl">
+                      {globalData?.results?.currency +
+                        " " +
+                        currentVariant.offerPrice}
+                    </p>
+                  </>
+                ) : (
+                  <p className="text-primary text-xl">
+                    {globalData?.results?.currency +
+                      " " +
+                      currentVariant.sellingPrice}
+                  </p>
+                )
+              ) : singleProduct?.offerPrice > 0 ? (
+                <>
+                  <p className="text-base line-through text-red-500">
+                    {globalData?.results?.currency +
+                      " " +
+                      singleProduct?.sellingPrice}
+                  </p>
+                  <p className="text-primary text-xl">
+                    {globalData?.results?.currency +
+                      " " +
+                      singleProduct?.offerPrice}
+                  </p>
+                </>
+              ) : (
+                <p className="text-primary text-xl">
                   {globalData?.results?.currency +
                     " " +
                     singleProduct?.sellingPrice}
-                </p>
-              )}
-              {singleProduct?.offerPrice > 0 ? (
-                <p className="text-primary text-xl">
-                  {globalData?.results?.currency +
-                    " " +
-                    singleProduct?.offerPrice}
-                </p>
-              ) : (
-                <p className="text-primary text-xl">
-                  {globalData?.results?.currency + " " + currentPrice}
                 </p>
               )}
             </div>
@@ -309,10 +332,12 @@ const SingleProductDetails = ({ params }) => {
                   Related Products
                 </h2>
                 <Link
-                  href={`/products?filter=${singleProduct?.category?.name}`}
+                  href={`/products`}
                   className="text-primary border-b border-primary font-semibold"
                 >
-                  Show All
+                  <p onClick={() => itemClickHandler(singleProduct?.category)}>
+                    Show All
+                  </p>
                 </Link>
               </div>
               <div className="grid grid-cols-2 md:grid-cols-3 lg:flex lg:flex-wrap justify-center gap-5">

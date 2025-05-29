@@ -52,7 +52,7 @@ const ProductEdit = ({ open, setOpen, itemId }) => {
     try {
       const submittedData = {
         ...values,
-        ...(variantData?.selectedRowData && {
+        ...(variantData?.selectedRowData?.length > 0 && {
           variants: variantData.selectedRowData.map((variant) => {
             const { images, ...rest } = variant;
 

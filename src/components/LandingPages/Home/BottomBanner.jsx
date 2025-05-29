@@ -4,8 +4,12 @@ import Image from "next/image";
 import "swiper/css";
 import { useGetAllSlidersQuery } from "@/redux/services/slider/sliderApi";
 import Link from "next/link";
+import { useDispatch } from "react-redux";
+import { setFilter } from "@/redux/services/device/deviceSlice";
 
 const BottomBanner = () => {
+  const dispatch = useDispatch();
+
   const { data: sliders } = useGetAllSlidersQuery();
 
   const activeBanner = sliders?.results?.find(
@@ -16,14 +20,20 @@ const BottomBanner = () => {
     return null;
   }
 
+  const itemClickHandler = () => {
+    if (activeBanner?.category?.name) {
+      dispatch(setFilter(activeBanner?.category?.name));
+    }
+  };
+
   return (
-    <section className="relative mt-10 lg:mt-20">
+    <section className="relative mt-10 lg:mt-20" onClick={itemClickHandler}>
       <Link
         href={
           activeBanner?.name
-            ? activeBanner.name
+            ? activeBanner?.name
             : activeBanner?.category?.name
-            ? `/products?filter=${activeBanner.category.name}`
+            ? `/products`
             : "/"
         }
         key={activeBanner?._id}

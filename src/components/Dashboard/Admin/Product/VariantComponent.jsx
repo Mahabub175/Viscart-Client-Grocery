@@ -65,16 +65,18 @@ const VariantAttributes = ({ onCustomSubmit, data: editData }) => {
 
   const mainForm = Form.useFormInstance();
 
-  const { buyingPrice, sellingPrice } = mainForm.getFieldsValue([
+  const { buyingPrice, sellingPrice, offerPrice } = mainForm.getFieldsValue([
     "buyingPrice",
     "sellingPrice",
+    "offerPrice",
   ]);
 
   const combination = generateCombinationsFromVariantAttributes(
     dataSource,
     variantAttributesName,
     buyingPrice,
-    sellingPrice
+    sellingPrice,
+    offerPrice
   );
 
   const [reset, setReset] = useState(false);

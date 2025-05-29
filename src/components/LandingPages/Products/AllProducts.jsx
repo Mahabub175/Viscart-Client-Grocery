@@ -9,10 +9,14 @@ import { useGetAllGlobalSettingQuery } from "@/redux/services/globalSetting/glob
 import ProductCard from "../Home/Products/ProductCard";
 import { debounce } from "lodash";
 import RelatedCategories from "./RelatedCategories";
+import { useSelector } from "react-redux";
+import { selectFilter } from "@/redux/services/device/deviceSlice";
 
 const { Option } = Select;
 
-const AllProducts = ({ searchParams }) => {
+const AllProducts = () => {
+  const searchParams = useSelector(selectFilter);
+
   const [selectedBrand, setSelectedBrand] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("");
   const [priceRange, setPriceRange] = useState([0, 10000]);

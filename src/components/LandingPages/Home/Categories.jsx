@@ -2,14 +2,24 @@
 
 import LinkButton from "@/components/Shared/LinkButton";
 import { useGetAllCategoriesQuery } from "@/redux/services/category/categoryApi";
+import { setFilter } from "@/redux/services/device/deviceSlice";
 import Image from "next/image";
+import { useDispatch } from "react-redux";
 
 const Categories = () => {
+  const dispatch = useDispatch();
+
   const { data: categories } = useGetAllCategoriesQuery();
 
   const activeCategories = categories?.results?.filter(
     (item) => item?.status !== "Inactive" && item?.isFeatured
   );
+
+  const itemClickHandler = (item) => {
+    if (item?.name) {
+      dispatch(setFilter(item?.name));
+    }
+  };
 
   return (
     <section className="new-container mt-10 relative">
@@ -28,7 +38,7 @@ const Categories = () => {
               className="group relative w-[160px] h-[145px] mx-auto rounded-xl"
             >
               <div className="bg-[#E5F3F3] rounded-xl p-2 border-2 border-transparent hover:border-primary duration-300">
-                <LinkButton href={`/products?filter=${item?.name}`}>
+                <LinkButton href={`/products`}>
                   <div className="overflow-hidden w-full h-full rounded-xl">
                     <Image
                       src={
@@ -40,6 +50,7 @@ const Categories = () => {
                       height={160}
                       className="w-[120px] h-[120px] object-contain rounded-xl mx-auto"
                       priority
+                      onClick={() => itemClickHandler(item)}
                     />
                   </div>
                 </LinkButton>

@@ -5,17 +5,18 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { DownOutlined, RightOutlined } from "@ant-design/icons";
-import { usePathname, useSearchParams } from "next/navigation";
+import { useDispatch, useSelector } from "react-redux";
+import { selectFilter, setFilter } from "@/redux/services/device/deviceSlice";
 
 const SidebarCategories = () => {
-  const pathname = usePathname();
-  const searchParams = useSearchParams();
+  const dispatch = useDispatch();
+  const searchParams = useSelector(selectFilter);
 
-  const fullPath = `${pathname}?${searchParams.toString()}`;
-  const cleanedQuery = fullPath
-    .replace(/filter=/, "")
-    .replace(/=/, "")
-    .replace(/[+]/g, " ");
+  const itemClickHandler = (item) => {
+    if (item) {
+      dispatch(setFilter(item));
+    }
+  };
 
   const { data: categories } = useGetAllCategoriesQuery();
   const [openKeys, setOpenKeys] = useState([]);
@@ -29,13 +30,12 @@ const SidebarCategories = () => {
   const renderSubcategories = (subcategories) => {
     return subcategories.map((subcategory) => (
       <li key={subcategory._id} className="pl-6">
-        <Link href={`/products?filter=${subcategory.name}`}>
+        <Link href={`/products`}>
           <span
             className={`hover:text-primary duration-300 ${
-              cleanedQuery === `/products?${subcategory.name}`
-                ? "text-primary"
-                : ""
+              searchParams === `${subcategory.name}` ? "text-primary" : ""
             }`}
+            onClick={() => itemClickHandler(subcategory?.name)}
           >
             {subcategory.name}
           </span>
@@ -46,18 +46,16 @@ const SidebarCategories = () => {
 
   const renderCategories = (categories) => {
     return categories.map((category) => (
-      <Link
-        href={`/products?filter=${category?.name}`}
-        key={category._id}
-        className="mt-3"
-      >
+      <Link href={`/products`} key={category._id} className="mt-3">
         <div
           className={`flex items-center justify-between cursor-pointer hover:text-primary ml-3 my-4 pr-2 duration-300 ${
-            cleanedQuery === `/products?${category.name}` ? "text-primary" : ""
+            searchParams === `${category.name}` ? "text-primary" : ""
           }`}
           onClick={() => toggleOpenKey(category._id)}
         >
-          <span>{category.name}</span>
+          <span onClick={() => itemClickHandler(category?.name)}>
+            {category.name}
+          </span>
           {category.subcategories && category.subcategories.length > 0 && (
             <span className="text-sm">
               {openKeys.includes(category._id) ? (
@@ -84,7 +82,7 @@ const SidebarCategories = () => {
       .filter((item) => item.level === "parentCategory")
       .map((parentCategory) => (
         <Link
-          href={`/products?filter=${parentCategory?.name}`}
+          href={`/products`}
           key={parentCategory._id}
           className="mt-4 group"
         >
@@ -94,10 +92,9 @@ const SidebarCategories = () => {
           >
             <span
               className={`flex items-center gap-4 ${
-                cleanedQuery === `/products?${parentCategory.name}`
-                  ? "text-primary"
-                  : ""
+                searchParams === `${parentCategory.name}` ? "text-primary" : ""
               }`}
+              onClick={() => itemClickHandler(parentCategory?.name)}
             >
               <Image
                 src={

@@ -1,9 +1,22 @@
 import { useGetAllCategoriesQuery } from "@/redux/services/category/categoryApi";
 import Link from "next/link";
 import { Popover } from "antd";
+import { useDispatch } from "react-redux";
+import { resetFilter, setFilter } from "@/redux/services/device/deviceSlice";
 
 const CategoryNavigation = () => {
+  const dispatch = useDispatch();
+
   const { data: categories } = useGetAllCategoriesQuery();
+
+  const itemClickHandler = (item) => {
+    if (item?.name) {
+      dispatch(setFilter(item?.name));
+    }
+    if (item === "all") {
+      dispatch(resetFilter());
+    }
+  };
 
   const renderCategoriesInColumns = (parentCategory) => {
     const categoriesToDisplay = parentCategory.categories || [];
@@ -24,20 +37,19 @@ const CategoryNavigation = () => {
       <div key={rowIndex} className="grid grid-cols-4 gap-8 mb-4">
         {row.map((category) => (
           <div key={category._id} className="flex flex-col">
-            <Link
-              href={`/products?filter=${category.name}`}
-              className="font-semibold text-primary"
-            >
-              {category.name}
+            <Link href={`/products`} className="font-semibold text-primary">
+              <p onClick={() => itemClickHandler(category)}>{category.name}</p>
             </Link>
             <div className="my-2 text-sm text-gray-600">
               {category.subcategories?.map((subCategory) => (
                 <Link
                   key={subCategory._id}
-                  href={`/products?filter=${subCategory.name}`}
+                  href={`/products`}
                   className="block text-gray-800 hover:text-primary mb-1"
                 >
-                  {subCategory.name}
+                  <p onClick={() => itemClickHandler(subCategory)}>
+                    {subCategory.name}
+                  </p>
                 </Link>
               ))}
             </div>
@@ -58,10 +70,12 @@ const CategoryNavigation = () => {
           overlayClassName="shadow-lg rounded-lg"
         >
           <Link
-            href={`/products?filter=${parentCategory?.name}`}
+            href={`/products`}
             className="hover:text-primary border-b-2 border-transparent hover:border-primary duration-300"
           >
-            {parentCategory.name}
+            <p onClick={() => itemClickHandler(parentCategory)}>
+              {parentCategory.name}
+            </p>
           </Link>
         </Popover>
       ));
@@ -85,7 +99,7 @@ const CategoryNavigation = () => {
           href={"/products"}
           className="hover:text-primary border-b-2 border-transparent hover:border-primary duration-300"
         >
-          All Products
+          <p onClick={() => itemClickHandler("all")}>All Products</p>
         </Link>
         {renderParentCategories()}
       </div>
