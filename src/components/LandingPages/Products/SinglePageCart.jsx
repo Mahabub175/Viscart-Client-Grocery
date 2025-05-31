@@ -244,7 +244,7 @@ const SinglePageCart = ({ params }) => {
           />
         </div>
       </div>
-      <div className="border-2 border-primary rounded-xl p-5 mb-10 shadow-xl bg-white flex flex-col items-center justify-center">
+      <div className="border-2 border-primary rounded-xl p-5 mb-10 shadow-xl bg-white">
         <div className="bg-primary mb-10 px-10 py-2 text-white font-bold rounded-xl inline-block">
           Description
         </div>
@@ -261,7 +261,7 @@ const SinglePageCart = ({ params }) => {
               frameBorder="0"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
-              className="h-fit lg:h-[500px]"
+              className="h-fit lg:h-[500px] mt-5"
             />
           </div>
         )}
