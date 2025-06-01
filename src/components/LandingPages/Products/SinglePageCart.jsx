@@ -72,9 +72,7 @@ const SinglePageCart = ({ params }) => {
       setCurrentVariant(updatedVariant);
 
       if (updatedVariant?.images) {
-        setVariantMedia(
-          updatedVariant.images.map((image) => formatImagePath(image))
-        );
+        setVariantMedia(updatedVariant.images.map((image) => image));
       } else {
         setVariantMedia([]);
       }
